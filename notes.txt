@@ -1,0 +1,269 @@
+Modules
+-----------------------
+->Dashboard
+->Marketing
+ ->Campaigns
+ ->Contacts
+ ->Organizations
+ ->Third Parties
+->Employees
+->Agenda
+->Celendar
+->Documents
+->Tools
+ ->Email Templates
+ ->Email Signatories
+->Users
+->Settings
+
+
+Table for users
+------------------------
+->users
+  ->id
+  ->first_name
+  ->last_name
+
+->user_roles
+  ->id
+  ->user_id
+  ->role_name
+  ->access_modules (array)(Show | Hide)
+  ->access_fields (array)(Invisible | Read Only | Read Write)
+
+
+->roles
+  ->id
+  ->role_name
+  ->access_modules (array)(Show | Hide)
+  ->access_fields (array)(Invisible | Read Only | Read Write)
+
+
+-users
+-------------------------------
+| id | first_name | last_name |  
+-------------------------------
+| 1  | Juan       | Dela Cruz |
+
+-user_roles
+------------------------------------------------------------
+| id | user_id | role_name | access_module | access_fields |
+------------------------------------------------------------
+| 1  | 1       | Admin     | 1,2,3,4,5,6,7 |               |
+
+-roles
+-------------------------
+
+
+
+[
+  'dashboard' => [1,0,1],
+  'marketing' => [1],
+  'campaigns' => [1,0],
+  'contacts'  => [1,0],
+  'organizations' => [1,0],
+  'third_parties' => [1,0],
+  'agenda'    => [1,0],
+  'celendar'  => [1,0],
+  'documents' => [0,1],
+  'tools'     => [0,1]
+]
+
+
+
+
+
+23
+
+
+roles
+id
+role_id (reports_to)
+role_name
+sub_role (value = 1|0)
+can_assign_records_to (All Users, Users having same role or subordinate role, subordinate role)
+privileges (Assign privileges directly to role, Assign privileges from existing profiles)
+modules_and_fields
+created_by
+created_date
+updated_by
+updated_date
+
+profiles
+id
+profile_name
+description
+modules_and_fields
+created_by
+created_date
+updated_by
+updated_date
+
+
+profile =>- role ->= user
+
+users
+id
+salutation
+first_name
+laste_name
+primary_email
+user_name => from user
+user_password => from users
+user_status
+forgot_password_code
+role_id
+created_by
+created_date
+updated_by
+updated_date
+        
+
+[
+  [
+    [module_status],
+    ["view","create","edit","delete"], // module privileges
+    [
+      ["field_name","field_status"], 
+      ["field_name","field_status"],
+      ["field_name","field_status"],
+    ] // field names and field privileges
+  ],
+  [
+    [module_status],
+    ["view","create","edit","delete"], // module privileges
+    [
+      ["field_name","field_status"], 
+      ["field_name","field_status"],
+      ["field_name","field_status"],
+    ] // field names and field privileges
+  ],
+]
+
+
+email_configurations
+->id
+->protocol
+->smtp_host
+->smtp_port
+->smtp_crypto
+->smtp_user
+->smtp_pass
+->mail_type
+->charset
+->word_wrap
+->created_by
+->created_date
+->updated_by
+->updated_date
+
+
+// 2023-05-05
+
+-> USER MANAGEMENT 
+ --> Users [done]
+ --> Roles [done]
+ --> Profiles [done]
+
+-> ROLODEX
+ --> Contacts
+   -> Reports To
+   -> Action Restriction based on roles
+   -> Import Button
+
+   -> Comment Reply Revision
+   -> Updates
+   
+ --> Organizations
+   -> Import Button
+   -> Action Restriction based on roles
+
+-> DASHBOARD
+
+
+[
+  [
+    [1],
+    [0,0,0,0],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,0],
+    ["2","2","2","2","2","2","2","2","2","2","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    ["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    ["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    ["1","1","1","1","1","1"]
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    []
+  ],
+  [
+    [1],
+    [1,1,1,1],
+    ["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1"]
+  ],
+  [
+    [1],[1,1,1,1],["1","1","1","1","1","1"]],[[0],[0,0,0,0],["1","1","1","1","1","1"]],[[0],[0,0,0,0],["1","1","1","1","1","1","1"]],[[0],[0,0,0,0],["0","0","0"]],[[1],[1,1,1,1],[]]]
+
+
+
+
+    [
+      [[1],[0,0,0,0],[]],[[1],[1,1,1,1],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"]
+      ],
+      [[1],[1,1,1,1],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"]],[[1],[1,1,1,1],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],["0","0","0","0","0","0"]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],[]],[[1],[1,1,1,1],["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"]],[[1],[1,1,1,1],["0","0","0","0","0","0"]],[[1],[1,1,1,1],["0","0","0","0","0","0"]],[[1],[1,1,1,1],["0","0","0","0","0","0","0"]],[[1],[1,1,1,1],["0","0","0"]],[[1],[1,1,1,1],[]]]
+
+
+      Please leave error message on screen below the test email configuration.
+      The popup does't last long for people to see error.
+
+      Please comment out the field & Tool Privileges.
+
+      When changing the administrator profile breaks the system.
+
+      Fix Design of Add Role Form .
+
+
+done - Last task Organization Document Updates
+
+Last task Organization Activities
