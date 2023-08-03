@@ -26,3 +26,7 @@ writable/debugbar/*
 # Test Files
 #-------------------------
 tests/coverage*
+
+index.php
+app/Database/Seeds/UsersSeeder.example.php
+app/Database/Seeds/UsersSeeder.php
