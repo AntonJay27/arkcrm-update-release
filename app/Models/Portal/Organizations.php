@@ -99,6 +99,9 @@ class Organizations extends Model
             'a.primary_email',
             'a.main_website',
             '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) assigned_to',
+            'a.billing_state',
+            'a.billing_city',
+            'a.billing_country',
             'a.created_by',
             'a.created_date'
         ];
@@ -128,15 +131,17 @@ class Organizations extends Model
     ////////////////////////////////////////////////////////////
     ///// OrganizationController->addOrganization()
     ////////////////////////////////////////////////////////////
-    public function loadOrganizationPicture($whereParams)
+    public function loadOrganizationPicture($organizationId)
     {
         $columns = [
             'a.id',
-            'a.organization_id',
             'a.picture'
         ];
 
-        $builder = $this->db->table('organization_profile_pictures a')->select($columns)->orderBy('a.id','DESC');
+        $builder = $this->db->table('organizations a');
+        $builder->select($columns);
+        $builder->where('a.id',$organizationId);
+        $builder->orderBy('a.id','DESC');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -144,22 +149,22 @@ class Organizations extends Model
     ////////////////////////////////////////////////////////////
     ///// OrganizationController->addOrganization()
     ////////////////////////////////////////////////////////////
-    public function addOrganizationDetails($arrAddressData, $arrDescriptionData, $arrPictureData)
-    {
-        try {
-            $this->db->transStart();
-                $builder = $this->db->table('organization_address_details');
-                $builder->insert($arrAddressData);
-                $builder = $this->db->table('organization_description_details');
-                $builder->insert($arrDescriptionData);
-                $builder = $this->db->table('organization_profile_pictures');
-                $builder->insert($arrPictureData);
-            $this->db->transComplete();
-            return ($this->db->transStatus() === TRUE)? 1 : 0;
-        } catch (PDOException $e) {
-            throw $e;
-        }
-    }
+    // public function addOrganizationDetails($arrAddressData, $arrDescriptionData, $arrPictureData)
+    // {
+    //     try {
+    //         $this->db->transStart();
+    //             $builder = $this->db->table('organization_address_details');
+    //             $builder->insert($arrAddressData);
+    //             $builder = $this->db->table('organization_description_details');
+    //             $builder->insert($arrDescriptionData);
+    //             $builder = $this->db->table('organization_profile_pictures');
+    //             $builder->insert($arrPictureData);
+    //         $this->db->transComplete();
+    //         return ($this->db->transStatus() === TRUE)? 1 : 0;
+    //     } catch (PDOException $e) {
+    //         throw $e;
+    //     }
+    // }
 
     ////////////////////////////////////////////////////////////
     ///// OrganizationController->selectOrganization()
@@ -196,25 +201,22 @@ class Organizations extends Model
             '(SELECT CONCAT(salutation, " ",first_name, " ", last_name) FROM users WHERE id = a.assigned_to) assigned_to_name',
             'a.created_by',
             'a.created_date',
-            'b.billing_street',
-            'b.billing_city',
-            'b.billing_state',
-            'b.billing_zip',
-            'b.billing_country',
-            'b.shipping_street',
-            'b.shipping_city',
-            'b.shipping_state',
-            'b.shipping_zip',
-            'b.shipping_country',
-            'c.description',
-            'd.picture'
+            'a.billing_street',
+            'a.billing_city',
+            'a.billing_state',
+            'a.billing_zip',
+            'a.billing_country',
+            'a.shipping_street',
+            'a.shipping_city',
+            'a.shipping_state',
+            'a.shipping_zip',
+            'a.shipping_country',
+            'a.description',
+            'a.picture'
         ];
 
         $builder = $this->db->table('organizations a')->select($columns);
         $builder->where('a.id',$organizationId);
-        $builder->join('organization_address_details b','a.id = b.organization_id','left');
-        $builder->join('organization_description_details c','a.id = c.organization_id','left');
-        $builder->join('organization_profile_pictures d','a.id = d.organization_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -228,13 +230,7 @@ class Organizations extends Model
             $this->db->transStart();
                 $this->db->table('organizations')
                         ->where(['id'=>$organizationId])
-                        ->update($arrData['organization_details']);
-                $this->db->table('organization_address_details')
-                        ->where(['organization_id'=>$organizationId])
-                        ->update($arrData['organization_address']);
-                $this->db->table('organization_profile_pictures')
-                        ->where(['organization_id'=>$organizationId])
-                        ->update($arrData['organization_picture']);
+                        ->update($arrData);
             $this->db->transComplete();
             return ($this->db->transStatus() === TRUE)? 1 : 0;
         } catch (PDOException $e) {
@@ -331,13 +327,12 @@ class Organizations extends Model
             'a.id',
             'a.organization_name',
             '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) as assigned_to_name',
-            'b.billing_city',
-            'b.billing_country'
+            'a.billing_city',
+            'a.billing_country'
         ];
 
         $builder = $this->db->table('organizations a')->select($columns);
         $builder->where('a.id',$organizationId);
-        $builder->join('organization_address_details b','a.id = b.organization_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -370,23 +365,21 @@ class Organizations extends Model
             'a.email_opt_out',
             'a.assigned_to',
             '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) as assigned_to_name',
-            'b.billing_street',
-            'b.billing_city',
-            'b.billing_state',
-            'b.billing_zip',
-            'b.billing_country',
-            'b.shipping_street',
-            'b.shipping_city',
-            'b.shipping_state',
-            'b.shipping_zip',
-            'b.shipping_country',
-            'c.description'
+            'a.billing_street',
+            'a.billing_city',
+            'a.billing_state',
+            'a.billing_zip',
+            'a.billing_country',
+            'a.shipping_street',
+            'a.shipping_city',
+            'a.shipping_state',
+            'a.shipping_zip',
+            'a.shipping_country',
+            'a.description'
         ];
 
         $builder = $this->db->table('organizations a')->select($columns);
         $builder->where('a.id',$organizationId);
-        $builder->join('organization_address_details b','a.id = b.organization_id','left');
-        $builder->join('organization_description_details c','a.id = c.organization_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }

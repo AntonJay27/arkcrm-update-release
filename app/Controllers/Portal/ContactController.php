@@ -102,96 +102,63 @@ class ContactController extends BaseController
                 'assigned_to'           => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
                 'email_opt_out'         => $fields['slc_emailOptOut'],
                 'unsubscribe_auth_code' => encrypt_code(generate_code()),
+                'mailing_street'        => $fields['txt_mailingStreet'],
+                'mailing_po_box'        => $fields['txt_mailingPOBox'],
+                'mailing_city'          => $fields['txt_mailingCity'],
+                'mailing_state'         => $fields['txt_mailingState'],
+                'mailing_zip'           => $fields['txt_mailingZip'],
+                'mailing_country'       => $fields['txt_mailingCountry'],
+                'other_street'          => $fields['txt_otherStreet'],
+                'other_po_box'          => $fields['txt_otherPOBox'],
+                'other_city'            => $fields['txt_otherCity'],
+                'other_state'           => $fields['txt_otherState'],
+                'other_zip'             => $fields['txt_otherZip'],
+                'other_country'         => $fields['txt_otherCountry'],
+                'description'           => $fields['txt_description'],
                 'created_by'            => $this->session->get('arkonorllc_user_id'),
                 'created_date'          => date('Y-m-d H:i:s')
             ];
 
-            $insertId = $this->contacts->addContact($arrData);
-            if($insertId != 0)
+            /////////////////////////
+            // contact picture start
+            /////////////////////////
+            $imageFile = $this->request->getFile('profilePicture');
+
+            if($imageFile != null)
             {
-                $arrAddressData = [
-                    'contact_id'        => $insertId,
-                    'mailing_street'    => $fields['txt_mailingStreet'],
-                    'mailing_po_box'    => $fields['txt_mailingPOBox'],
-                    'mailing_city'      => $fields['txt_mailingCity'],
-                    'mailing_state'     => $fields['txt_mailingState'],
-                    'mailing_zip'       => $fields['txt_mailingZip'],
-                    'mailing_country'   => $fields['txt_mailingCountry'],
-                    'other_street'      => $fields['txt_otherStreet'],
-                    'other_po_box'      => $fields['txt_otherPOBox'],
-                    'other_city'        => $fields['txt_otherCity'],
-                    'other_state'       => $fields['txt_otherState'],
-                    'other_zip'         => $fields['txt_otherZip'],
-                    'other_country'     => $fields['txt_otherCountry'],
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
-                $arrDescriptionData = [
-                    'contact_id'        => $insertId,
-                    'description'       => $fields['txt_description'],
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
+                $newFileName = $imageFile->getRandomName();
+                $imageFile->move(ROOTPATH . 'public/assets/uploads/images/contacts', $newFileName);
 
-                /////////////////////////
-                // contact picture start
-                /////////////////////////
-                $imageFile = $this->request->getFile('profilePicture');
-
-                if($imageFile != null)
+                if($imageFile->hasMoved())
                 {
-                    $newFileName = $imageFile->getRandomName();
-                    $imageFile->move(ROOTPATH . 'public/assets/uploads/images/contacts', $newFileName);
-
-                    if($imageFile->hasMoved())
-                    {
-                        $arrPictureData = [
-                            'contact_id'    => $insertId,
-                            'picture'       => $newFileName,
-                            'created_by'    => $this->session->get('arkonorllc_user_id'),
-                            'created_date'  => date('Y-m-d H:i:s')
-                        ];
-                    }
+                    $arrData['picture'] = $newFileName;
                 }
-                else
-                {
-                    $arrPictureData = [
-                        'contact_id'    => $insertId,
-                        'picture'       => NULL,
-                        'created_by'    => $this->session->get('arkonorllc_user_id'),
-                        'created_date'  => date('Y-m-d H:i:s')
-                    ];
-                }                
-                ///////////////////////
-                // contact picture end
-                ///////////////////////
-
-                $result = $this->contacts->addContactDetails($arrAddressData, $arrDescriptionData, $arrPictureData);
-                $msgResult[] = ($result > 0)? "Success" : "Database error"; 
-
-                // contact updates
-
-                $actionDetails = [
-                  'salutation'            => $fields['slc_salutation'],
-                  'first_name'            => $fields['txt_firstName'],
-                  'last_name'             => $fields['txt_lastName'],
-                  'position'              => $fields['txt_position'],
-                  'organization_id'       => ($fields['slc_companyName'] == "")? NULL : $fields['slc_companyName'],
-                  'primary_email'         => $fields['txt_primaryEmail']
-                ];
-
-                $arrData = [
-                    'contact_id'        => $insertId,
-                    'actions'           => 'Created Contact',
-                    'action_details'    => json_encode($actionDetails),
-                    'action_author'     => 'User',
-                    'action_icon'       => 'fa-user',
-                    'action_background' => 'bg-success',
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
-                $this->contacts->addContactUpdates($arrData);
             }
+            else
+            {
+                $arrData['picture'] = NULL;
+            }                
+            ///////////////////////
+            // contact picture end
+            ///////////////////////
+
+            $insertId = $this->contacts->addContact($arrData);
+            $msgResult[] = ($insertId > 0)? "Success" : "Database error"; 
+
+            // contact updates
+            $actionDetails = $arrData;
+
+            $arrData = [
+                'contact_id'        => $insertId,
+                'actions'           => 'Created Contact',
+                'action_details'    => json_encode($actionDetails),
+                'action_author'     => 'User',
+                'action_icon'       => 'fa-user',
+                'action_background' => 'bg-success',
+                'created_by'        => $this->session->get('arkonorllc_user_id'),
+                'created_date'      => date('Y-m-d H:i:s')
+            ];
+            $this->contacts->addContactUpdates($arrData);
         }
         else
         {
@@ -232,7 +199,7 @@ class ContactController extends BaseController
         {
             $fields = $this->request->getPost();
 
-            $arrData['contact_details'] = [
+            $arrData = [
                 'salutation'        => $fields['slc_salutation'],
                 'first_name'        => $fields['txt_firstName'],
                 'last_name'         => $fields['txt_lastName'],
@@ -257,10 +224,6 @@ class ContactController extends BaseController
                 'reports_to'        => ($fields['slc_reportsTo'] == "")? NULL : $fields['slc_reportsTo'],
                 'assigned_to'       => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
                 'email_opt_out'     => $fields['slc_emailOptOut'],
-                'updated_by'        => $this->session->get('arkonorllc_user_id')
-            ];
-
-            $arrData['contact_address'] = [
                 'mailing_street'    => $fields['txt_mailingStreet'],
                 'mailing_po_box'    => $fields['txt_mailingPOBox'],
                 'mailing_city'      => $fields['txt_mailingCity'],
@@ -273,12 +236,9 @@ class ContactController extends BaseController
                 'other_state'       => $fields['txt_otherState'],
                 'other_zip'         => $fields['txt_otherZip'],
                 'other_country'     => $fields['txt_otherCountry'],
-                'updated_by'        => $this->session->get('arkonorllc_user_id')
-            ];
-
-            $arrData['contact_description'] = [
                 'description'       => $fields['txt_description'],
-                'updated_by'        => $this->session->get('arkonorllc_user_id')
+                'updated_by'        => $this->session->get('arkonorllc_user_id'),
+                'updated_date'      => date('Y-m-d H:i:s')
             ];
 
             /////////////////////////
@@ -293,26 +253,19 @@ class ContactController extends BaseController
 
                 if($imageFile->hasMoved())
                 {
-                    $whereParams = ['contact_id' => $fields['txt_contactId']];
-                    $arrResult = $this->contacts->loadContactPicture($whereParams);
+                    $arrResult = $this->contacts->loadContactPicture($fields['txt_contactId']);
 
                     if($arrResult['picture'] != null)
                     {
                         unlink(ROOTPATH . 'public/assets/uploads/images/contacts/' . $arrResult['picture']);
                     }                    
 
-                    $arrData['contact_picture'] = [
-                        'picture'       => $newFileName,
-                        'updated_by'    => $this->session->get('arkonorllc_user_id')
-                    ];
+                    $arrData['picture'] = $newFileName;
                 }
             }
             else
             {
-                $arrData['contact_picture'] = [
-                    'picture'       => NULL,
-                    'updated_by'    => $this->session->get('arkonorllc_user_id')
-                ];
+                $arrData['picture'] = NULL;
             }
             ///////////////////////
             // contact picture end
@@ -322,14 +275,7 @@ class ContactController extends BaseController
             $msgResult[] = ($result > 0)? "Success" : "Database error";
 
             // contact updates
-            $actionDetails = [
-              'salutation'            => $fields['slc_salutation'],
-              'first_name'            => $fields['txt_firstName'],
-              'last_name'             => $fields['txt_lastName'],
-              'position'              => $fields['txt_position'],
-              'organization_id'       => ($fields['slc_companyName'] == "")? NULL : $fields['slc_companyName'],
-              'primary_email'         => $fields['txt_primaryEmail']
-            ];
+            $actionDetails = $arrData;
 
             $arrData = [
                 'contact_id'        => $fields['txt_contactId'],
@@ -432,23 +378,49 @@ class ContactController extends BaseController
           array_shift($arrData);
           $arrResult = [];
           $arrResult['upload_res'] = "";
-          if(count($validColumns) == 7 && count($arrData) > 0)
+          if(count($validColumns) == 33 && count($arrData) > 0)
           {
               $newArrData = [];
               foreach ($arrData as $key => $value) 
               {
                   $newArrData[] = [
-                     'salutation'            => checkData($value[0]),
-                     'first_name'            => checkData($value[1]),
-                     'last_name'             => checkData($value[2]),
-                     'position'              => checkData($value[3]),
-                     'primary_email'         => checkData($value[4]),
-                     'secondary_email'       => checkData($value[5]),
-                     'date_of_birth'         => checkData($value[6]),
-                     'unsubscribe_auth_code' => encrypt_code(generate_code()),
-                     'assigned_to'           => $this->session->get('arkonorllc_user_id'),
-                     'created_by'            => $this->session->get('arkonorllc_user_id'),
-                     'created_date'          => date('Y-m-d H:i:s')
+                     'salutation'           => checkData($value[0]),
+                     'first_name'           => checkData($value[1]),
+                     'last_name'            => checkData($value[2]),
+                     'date_of_birth'        => checkData($value[3]),
+                     'position'             => checkData($value[4]),
+                     'primary_email'        => checkData($value[5]),
+                     'secondary_email'      => checkData($value[6]),
+                     'office_phone'         => checkData($value[7]),
+                     'mobile_phone'         => checkData($value[8]),
+                     'home_phone'           => checkData($value[9]),
+                     'secondary_phone'      => checkData($value[10]),
+                     'fax'                  => checkData($value[11]),
+                     'do_not_call'          => checkData($value[12]),
+                     'linkedin_url'         => checkData($value[13]),
+                     'twitter_url'          => checkData($value[14]),
+                     'instagram_url'        => checkData($value[15]),
+                     'facebook_url'         => checkData($value[16]),
+                     'lead_source'          => checkData($value[17]),
+                     'department'           => checkData($value[18]),
+                     'email_opt_out'        => checkData($value[19]),
+                     'mailing_street'       => checkData($value[20]),
+                     'mailing_po_box'       => checkData($value[21]),
+                     'mailing_city'         => checkData($value[22]),
+                     'mailing_state'        => checkData($value[23]),
+                     'mailing_zip'          => checkData($value[24]),
+                     'mailing_country'      => checkData($value[25]),
+                     'other_street'         => checkData($value[26]),
+                     'other_po_box'         => checkData($value[27]),
+                     'other_city'           => checkData($value[28]),
+                     'other_state'          => checkData($value[29]),
+                     'other_zip'            => checkData($value[30]),
+                     'other_country'        => checkData($value[31]),
+                     'description'          => checkData($value[32]),
+                     'unsubscribe_auth_code'=> encrypt_code(generate_code()),
+                     'assigned_to'          => $this->session->get('arkonorllc_user_id'),
+                     'created_by'           => $this->session->get('arkonorllc_user_id'),
+                     'created_date'         => date('Y-m-d H:i:s')
                   ];
               }
               $uniqueColumns = ['primary_email','secondary_email'];

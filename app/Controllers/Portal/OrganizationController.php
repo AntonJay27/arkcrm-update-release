@@ -89,109 +89,61 @@ class OrganizationController extends BaseController
                 'member_of'             => ($fields['slc_memberOf'] == "")? NULL : $fields['slc_memberOf'],
                 'email_opt_out'         => $fields['slc_emailOptOut'],
                 'assigned_to'           => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
+                'billing_street'        => $fields['txt_billingStreet'],
+                'billing_city'          => $fields['txt_billingCity'],
+                'billing_state'         => $fields['txt_billingState'],
+                'billing_zip'           => $fields['txt_billingZip'],
+                'billing_country'       => $fields['txt_billingCountry'],
+                'shipping_street'       => $fields['txt_shippingStreet'],
+                'shipping_city'         => $fields['txt_shippingCity'],
+                'shipping_state'        => $fields['txt_shippingState'],
+                'shipping_zip'          => $fields['txt_shippingZip'],
+                'shipping_country'      => $fields['txt_shippingCountry'],
+                'description'           => $fields['txt_description'],
                 'created_by'            => $this->session->get('arkonorllc_user_id'),
                 'created_date'          => date('Y-m-d H:i:s')
             ];
 
-            $insertId = $this->organizations->addOrganization($arrData);
-            if($insertId != 0)
+            /////////////////////////
+            // organization picture start
+            /////////////////////////
+            $imageFile = $this->request->getFile('profilePicture');
+
+            if($imageFile != null)
             {
-                $arrAddressData = [
-                    'organization_id'   => $insertId,
-                    'billing_street'    => $fields['txt_billingStreet'],
-                    'billing_city'      => $fields['txt_billingCity'],
-                    'billing_state'     => $fields['txt_billingState'],
-                    'billing_zip'       => $fields['txt_billingZip'],
-                    'billing_country'   => $fields['txt_billingCountry'],
-                    'shipping_street'   => $fields['txt_shippingStreet'],
-                    'shipping_city'     => $fields['txt_shippingCity'],
-                    'shipping_state'    => $fields['txt_shippingState'],
-                    'shipping_zip'      => $fields['txt_shippingZip'],
-                    'shipping_country'  => $fields['txt_shippingCountry'],
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
-                $arrDescriptionData = [
-                    'organization_id'   => $insertId,
-                    'description'       => $fields['txt_description'],
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
+                $newFileName = $imageFile->getRandomName();
+                $imageFile->move(ROOTPATH . 'public/assets/uploads/images/organizations', $newFileName);
 
-                /////////////////////////
-                // organization picture start
-                /////////////////////////
-                $imageFile = $this->request->getFile('profilePicture');
-
-                if($imageFile != null)
+                if($imageFile->hasMoved())
                 {
-                    $newFileName = $imageFile->getRandomName();
-                    $imageFile->move(ROOTPATH . 'public/assets/uploads/images/organizations', $newFileName);
-
-                    if($imageFile->hasMoved())
-                    {
-                        $arrPictureData = [
-                            'organization_id'   => $insertId,
-                            'picture'           => $newFileName,
-                            'created_by'        => $this->session->get('arkonorllc_user_id'),
-                            'created_date'      => date('Y-m-d H:i:s')
-                        ];
-                    }
+                    $arrData['picture'] = $newFileName;
                 }
-                else
-                {
-                    $arrPictureData = [
-                        'organization_id'   => $insertId,
-                        'picture'           => NULL,
-                        'created_by'        => $this->session->get('arkonorllc_user_id'),
-                        'created_date'      => date('Y-m-d H:i:s')
-                    ];
-                }
-                ///////////////////////
-                // organization picture end
-                ///////////////////////
-
-                $result = $this->organizations->addOrganizationDetails($arrAddressData, $arrDescriptionData, $arrPictureData);
-                $msgResult[] = ($result > 0)? "Success" : "Database error";
-
-                // organization updates
-                $actionDetails = [
-                  'organization_name'     => $fields['txt_organizationName'],
-                  'primary_email'         => $fields['txt_primaryEmail'],
-                  'secondary_email'       => $fields['txt_secondaryEmail'],
-                  'main_website'          => $fields['txt_mainWebsite'],
-                  'other_website'         => $fields['txt_otherWebsite'],
-                  'phone_number'          => $fields['txt_phoneNumber'],
-                  'fax'                   => $fields['txt_fax'],
-                  'linkedin_url'          => $fields['txt_linkedinUrl'],
-                  'facebook_url'          => $fields['txt_facebookUrl'],
-                  'twitter_url'           => $fields['txt_twitterUrl'],
-                  'instagram_url'         => $fields['txt_instagramUrl'],
-                  'industry'              => $fields['slc_industry'],
-                  'naics_code'            => $fields['txt_naicsCode'],
-                  'employee_count'        => $fields['txt_employeeCount'],
-                  'annual_revenue'        => $fields['txt_annualRevenue'],
-                  'type'                  => $fields['slc_type'],
-                  'ticket_symbol'         => $fields['txt_ticketSymbol'],
-                  'member_of'             => ($fields['slc_memberOf'] == "")? NULL : $fields['slc_memberOf'],
-                  'email_opt_out'         => $fields['slc_emailOptOut'],
-                  'assigned_to'           => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
-                  'created_by'            => $this->session->get('arkonorllc_user_id'),
-                  'created_date'          => date('Y-m-d H:i:s')
-                ];
-
-                $arrData = [
-                    'organization_id'   => $insertId,
-                    'actions'           => 'Created Organization',
-                    'action_details'    => json_encode($actionDetails),
-                    'action_author'     => 'User',
-                    'action_icon'       => 'fa-user',
-                    'action_background' => 'bg-success',
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
-                $this->organizations->addOrganizationUpdates($arrData);
             }
+            else
+            {
+                $arrData['picture'] = NULL;
+            }
+            ///////////////////////
+            // organization picture end
+            ///////////////////////
+
+            $insertId = $this->organizations->addOrganization($arrData);
+            $msgResult[] = ($insertId > 0)? "Success" : "Database error";
+
+            // organization updates
+            $actionDetails = $arrData;
+
+            $arrData = [
+                'organization_id'   => $insertId,
+                'actions'           => 'Created Organization',
+                'action_details'    => json_encode($actionDetails),
+                'action_author'     => 'User',
+                'action_icon'       => 'fa-user',
+                'action_background' => 'bg-success',
+                'created_by'        => $this->session->get('arkonorllc_user_id'),
+                'created_date'      => date('Y-m-d H:i:s')
+            ];
+            $this->organizations->addOrganizationUpdates($arrData);
         }
         else
         {
@@ -240,7 +192,7 @@ class OrganizationController extends BaseController
         {
             $fields = $this->request->getPost();
 
-            $arrData['organization_details'] = [
+            $arrData = [
                 'organization_name'     => $fields['txt_organizationName'],
                 'primary_email'         => $fields['txt_primaryEmail'],
                 'secondary_email'       => $fields['txt_secondaryEmail'],
@@ -261,10 +213,6 @@ class OrganizationController extends BaseController
                 'member_of'             => ($fields['slc_memberOf'] == "")? NULL : $fields['slc_memberOf'],
                 'email_opt_out'         => $fields['slc_emailOptOut'],
                 'assigned_to'           => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
-                'updated_by'            => $this->session->get('arkonorllc_user_id')
-            ];
-
-            $arrData['organization_address'] = [
                 'billing_street'        => $fields['txt_billingStreet'],
                 'billing_city'          => $fields['txt_billingCity'],
                 'billing_state'         => $fields['txt_billingState'],
@@ -275,12 +223,9 @@ class OrganizationController extends BaseController
                 'shipping_state'        => $fields['txt_shippingState'],
                 'shipping_zip'          => $fields['txt_shippingZip'],
                 'shipping_country'      => $fields['txt_shippingCountry'],
-                'updated_by'            => $this->session->get('arkonorllc_user_id')
-            ];
-
-            $arrData['organization_description'] = [
                 'description'           => $fields['txt_description'],
-                'updated_by'            => $this->session->get('arkonorllc_user_id')
+                'updated_by'            => $this->session->get('arkonorllc_user_id'),
+                'updated_date'          => date('Y-m-d H:i:s')
             ];
 
             /////////////////////////
@@ -295,26 +240,19 @@ class OrganizationController extends BaseController
 
                 if($imageFile->hasMoved())
                 {
-                    $whereParams = ['organization_id' => $fields['txt_organizationId']];
-                    $arrResult = $this->organizations->loadOrganizationPicture($whereParams);
+                    $arrResult = $this->organizations->loadOrganizationPicture($fields['txt_organizationId']);
 
                     if($arrResult['picture'] != null)
                     {
                         unlink(ROOTPATH . 'public/assets/uploads/images/organizations/' . $arrResult['picture']);
                     }                    
 
-                    $arrData['organization_picture'] = [
-                        'picture'       => $newFileName,
-                        'updated_by'    => $this->session->get('arkonorllc_user_id')
-                    ];
+                    $arrData['picture'] = $newFileName;
                 }
             }
             else
             {
-                $arrData['organization_picture'] = [
-                    'picture'       => NULL,
-                    'updated_by'    => $this->session->get('arkonorllc_user_id')
-                ];
+                $arrData['picture'] = NULL;
             }         
             ///////////////////////
             // organization picture end
@@ -324,29 +262,7 @@ class OrganizationController extends BaseController
             $msgResult[] = ($result > 0)? "Success" : "Database error";
 
             // organization updates
-            $actionDetails = [
-               'organization_name'     => $fields['txt_organizationName'],
-               'primary_email'         => $fields['txt_primaryEmail'],
-               'secondary_email'       => $fields['txt_secondaryEmail'],
-               'main_website'          => $fields['txt_mainWebsite'],
-               'other_website'         => $fields['txt_otherWebsite'],
-               'phone_number'          => $fields['txt_phoneNumber'],
-               'fax'                   => $fields['txt_fax'],
-               'linkedin_url'          => $fields['txt_linkedinUrl'],
-               'facebook_url'          => $fields['txt_facebookUrl'],
-               'twitter_url'           => $fields['txt_twitterUrl'],
-               'instagram_url'         => $fields['txt_instagramUrl'],
-               'industry'              => $fields['slc_industry'],
-               'naics_code'            => $fields['txt_naicsCode'],
-               'employee_count'        => $fields['txt_employeeCount'],
-               'annual_revenue'        => $fields['txt_annualRevenue'],
-               'type'                  => $fields['slc_type'],
-               'ticket_symbol'         => $fields['txt_ticketSymbol'],
-               'member_of'             => ($fields['slc_memberOf'] == "")? NULL : $fields['slc_memberOf'],
-               'email_opt_out'         => $fields['slc_emailOptOut'],
-               'assigned_to'           => ($fields['slc_assignedTo'] == "")? NULL : $fields['slc_assignedTo'],
-               'updated_by'            => $this->session->get('arkonorllc_user_id')
-            ];
+            $actionDetails = $arrData;
 
             $arrData = [
                 'organization_id'   => $fields['txt_organizationId'],
@@ -451,7 +367,7 @@ class OrganizationController extends BaseController
           array_shift($arrData);
           $arrResult = [];
           $arrResult['upload_res'] = "";
-          if(count($validColumns) == 7 && count($arrData) > 0)
+          if(count($validColumns) == 29 && count($arrData) > 0)
           {
               $newArrData = [];
               foreach ($arrData as $key => $value) 
@@ -464,10 +380,31 @@ class OrganizationController extends BaseController
                      'other_website'         => checkData($value[4]),
                      'phone_number'          => checkData($value[5]),
                      'fax'                   => checkData($value[6]),
+                     'linkedin_url'          => checkData($value[7]),
+                     'facebook_url'          => checkData($value[8]),
+                     'twitter_url'           => checkData($value[9]),
+                     'instagram_url'         => checkData($value[10]),
+                     'industry'              => checkData($value[11]),
+                     'naics_code'            => checkData($value[12]),
+                     'employee_count'        => checkData($value[13]),
+                     'annual_revenue'        => checkData($value[14]),
+                     'type'                  => checkData($value[15]),
+                     'email_opt_out'         => checkData($value[16]),
+                     'billing_street'        => checkData($value[17]),
+                     'billing_city'          => checkData($value[18]),
+                     'billing_state'         => checkData($value[19]),
+                     'billing_zip'           => checkData($value[20]),
+                     'billing_country'       => checkData($value[21]),
+                     'shipping_street'       => checkData($value[22]),
+                     'shipping_city'         => checkData($value[23]),
+                     'shipping_state'        => checkData($value[24]),
+                     'shipping_zip'          => checkData($value[25]),
+                     'shipping_country'      => checkData($value[26]),
+                     'description'           => checkData($value[27]),
                      'unsubscribe_auth_code' => encrypt_code(generate_code()),
                      'assigned_to'           => $this->session->get('arkonorllc_user_id'),
                      'created_by'            => $this->session->get('arkonorllc_user_id'),
-                     'created_date'          => date('Y-m-d H:i:s')
+                     'created_date'          => (checkData($value[28]) == "")? date('Y-m-d H:i:s') : date_format(date_create(checkData($value[28])),"Y-m-d H:i:s")
                   ];
               }
               $uniqueColumns = ['primary_email','secondary_email'];
@@ -524,10 +461,31 @@ class OrganizationController extends BaseController
                   'other_website'         => $value['other_website'],
                   'phone_number'          => $value['phone_number'],
                   'fax'                   => $value['fax'],
+                  'linkedin_url'          => $value['linkedin_url'],
+                  'facebook_url'          => $value['facebook_url'],
+                  'twitter_url'           => $value['twitter_url'],
+                  'instagram_url'         => $value['instagram_url'],
+                  'industry'              => $value['industry'],
+                  'naics_code'            => $value['naics_code'],
+                  'employee_count'        => $value['employee_count'],
+                  'annual_revenue'        => $value['annual_revenue'],
+                  'type'                  => $value['type'],
+                  'email_opt_out'         => $value['email_opt_out'],
+                  'billing_street'        => $value['billing_street'],
+                  'billing_city'          => $value['billing_city'],
+                  'billing_state'         => $value['billing_state'],
+                  'billing_zip'           => $value['billing_zip'],
+                  'billing_country'       => $value['billing_country'],
+                  'shipping_street'       => $value['shipping_street'],
+                  'shipping_city'         => $value['shipping_city'],
+                  'shipping_state'        => $value['shipping_state'],
+                  'shipping_zip'          => $value['shipping_zip'],
+                  'shipping_country'      => $value['shipping_country'],
+                  'description'           => $value['description'],
                   'unsubscribe_auth_code' => encrypt_code(generate_code()),
                   'assigned_to'           => $this->session->get('arkonorllc_user_id'),
                   'created_by'            => $this->session->get('arkonorllc_user_id'),
-                  'created_date'          => date('Y-m-d H:i:s')
+                  'created_date'          => ($value['created_date'] == "")? date('Y-m-d H:i:s') : $value['created_date']
               ];
           }
       }

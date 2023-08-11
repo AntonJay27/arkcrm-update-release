@@ -114,7 +114,7 @@
                       <th class="p-2" data-priority="3">Website</th>
                       <th class="p-2">State</th>
                       <th class="p-2">City</th>
-                      <th class="p-2">Leads</th>
+                      <th class="p-2">Country</th>
                       <th class="p-2">Assigned To</th>
                       <th class="p-2">Action</th>
                     </tr>

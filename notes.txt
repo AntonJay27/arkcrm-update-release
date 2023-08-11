@@ -267,3 +267,83 @@ email_configurations
 done - Last task Organization Document Updates
 
 Last task Organization Activities
+
+
+organization_name
+website
+primary_phone
+primary_email
+linkedIn Profile
+Facebook Profile
+Instagram Profile
+Email Message
+Youtube Profile
+Contact Us
+Twitter Profile
+Annual Revenue
+Secondary Email
+Type
+Secondary Phone
+Ownership
+Fax
+Organization number
+Email OPT OUT
+SIC Code
+Employees
+Last Modified By
+Notify Owner
+Industry
+Created Time
+Rating
+Source
+Ticker Symbol - remove
+Is converted from lead
+member of
+Modified Time
+Assigned To
+
+
+notes
+done github-master
+done github-updates
+done github-dev
+
+Marcos 7:7
+
+
+Github Accounts
+user : ajhay.dev@gmail.com
+pass : AntonJay.github@2023
+
+
+Email Accounts
+email : ajhay.dev@gmail.com
+pass : !DevPass@2023
+EMAIL PASS : nbouxonjczkovgtp
+
+
+oranization_name
+primary_email
+Secondary_email
+main_website
+Phone_number
+Fax
+LinkedIn
+Facebook
+Twitter
+Instagram
+Industry
+SIC Code
+Employees
+Annual Revenue
+Type
+Email_opt
+
+
+billing_address
+shipping_address
+
+description
+
+
+lbc tracking number : 381059308268

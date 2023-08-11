@@ -99,7 +99,7 @@
                            <tr>
                              <td class="p-1 text-muted" width="40%;" valign="middle">SMTP Crypto *</td>
                              <td class="p-1">
-                               <select class="form-control" id="slc_smtpCrypto" name="slc_smtpCrypto" required>
+                               <select class="form-control form-control-sm" id="slc_smtpCrypto" name="slc_smtpCrypto" required>
                                  <option value="ssl">SSL</option>
                                  <option value="tls">TLS</option>
                                </select>

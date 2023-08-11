@@ -144,6 +144,73 @@ class CreateContactsTable extends Migration
                 'unsigned'          => true,
                 'null'              => true,
             ],
+            'mailing_street'            => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'mailing_po_box'            => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'mailing_city'              => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'mailing_state'             => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'mailing_zip'               => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'mailing_country'           => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'other_street'              => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'other_po_box'              => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'other_city'                => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'other_state'               => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'other_zip'                 => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'other_country'             => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => false,
+            ],
+            'description'               => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'picture'                  => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
             'created_by'                => [
                 'type'              => 'INT',
                 'constraint'        => 11,

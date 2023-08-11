@@ -123,6 +123,63 @@ class CreateOrganizationsTable extends Migration
                 'unsigned'          => true,
                 'null'              => true,
             ],
+            'billing_street'            => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'billing_city'              => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'billing_state'             => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'billing_zip'               => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'billing_country'           => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'shipping_street'           => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'shipping_city'             => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'shipping_state'            => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'shipping_zip'              => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'shipping_country'          => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
+            'description'               => [
+                'type'              => 'TEXT',
+                'null'              => true,
+            ],
+            'picture'                   => [
+                'type'              => 'VARCHAR',
+                'constraint'        => 100,
+                'null'              => true,
+            ],
             'created_by'                => [
                 'type'              => 'INT',
                 'constraint'        => 11,

@@ -93,7 +93,7 @@ const ORGANIZATION = (function(){
         {
           let tbody = '';
           data.forEach(function(value,key){
-            let website = (_arrEmptyValues.includes(value['main_website']))? '---' : `<a href="${baseUrl}/contact-preview/${value['id']}">${value['main_website']}</a>`;
+            let website = (HELPER.checkEmptyFields(value['main_website'],"") == "")? '---' : `<a href="${value['main_website']}" title="${value['main_website']}" target="_blank">${value['main_website'].substring(0,25)}...</a>`;
             
             let selectOrganization = `<a href="javascript:void(0)" onclick="ORGANIZATION.selectOrganization('edit',${value['id']})" class="mr-2">
                                         <i class="fa fa-pen"></i>
@@ -105,9 +105,9 @@ const ORGANIZATION = (function(){
                         <td class="p-1 pl-4"><a href="${baseUrl}/organization-preview/${value['id']}">${value['organization_name']}</a></td>
                         <td class="p-1"><a href="javascript:void(0)" onclick="ORGANIZATION.selectOrganizationEmail(${value['id']},'${value['primary_email']}')">${value['primary_email']}</a></td>
                         <td class="p-1">${website}</td>
-                        <td class="p-1">N/A</td>
-                        <td class="p-1">N/A</td>
-                        <td class="p-1">N/A</td>
+                        <td class="p-1">${(HELPER.checkEmptyFields(value['billing_state'],"") == "")? '---' : value['billing_state']}</td>
+                        <td class="p-1">${(HELPER.checkEmptyFields(value['billing_city'],"") == "")? '---' : value['billing_city']}</td>
+                        <td class="p-1">${(HELPER.checkEmptyFields(value['billing_country'],"") == "")? '---' : value['billing_country']}</td>
                         <td class="p-1">${(_arrEmptyValues.includes(value['assigned_to']))? '---' : value['assigned_to']}</td>
                         <td class="p-1">
                           ${($('#txt_updateOrganization').val() == '1')? selectOrganization:''}
@@ -912,13 +912,13 @@ const ORGANIZATION = (function(){
       {
         console.log(data);
 
-        let mainWebsite = (_arrEmptyValues.includes(data['main_website']))? '---' : `<a href="${data['main_website']}" target="_blank">${data['main_website']}</a>`;
-        let otherWebsite = (_arrEmptyValues.includes(data['other_website']))? '---' : `<a href="${data['other_website']}" target="_blank">${data['other_website']}</a>`;
+        let mainWebsite = (_arrEmptyValues.includes(data['main_website']))? '---' : `<a href="${data['main_website']}" title="${data['main_website']}" target="_blank">${data['main_website'].substring(0,25)}...</a>`;
+        let otherWebsite = (_arrEmptyValues.includes(data['other_website']))? '---' : `<a href="${data['other_website']}" title="${data['other_website']}" target="_blank">${data['other_website'].substring(0,25)}...</a>`;
 
-        let linkedIn = (_arrEmptyValues.includes(data['linkedin_url']))? '---' : `<a href="${data['linkedin_url']}" target="_blank">${data['linkedin_url']}</a>`;
-        let facebook = (_arrEmptyValues.includes(data['facebook_url']))? '---' : `<a href="${data['facebook_url']}" target="_blank">${data['facebook_url']}</a>`;
-        let twitter = (_arrEmptyValues.includes(data['twitter_url']))? '---' : `<a href="${data['twitter_url']}" target="_blank">${data['twitter_url']}</a>`;
-        let instagram = (_arrEmptyValues.includes(data['instagram_url']))? '---' : `<a href="${data['instagram_url']}" target="_blank">${data['instagram_url']}</a>`;
+        let linkedIn = (_arrEmptyValues.includes(data['linkedin_url']))? '---' : `<a href="${data['linkedin_url']}" title="${data['linkedin_url']}" target="_blank">${data['linkedin_url'].substring(0,25)}...</a>`;
+        let facebook = (_arrEmptyValues.includes(data['facebook_url']))? '---' : `<a href="${data['facebook_url']}" title="${data['facebook_url']}" target="_blank">${data['facebook_url'].substring(0,25)}...</a>`;
+        let twitter = (_arrEmptyValues.includes(data['twitter_url']))? '---' : `<a href="${data['twitter_url']}" title="${data['twitter_url']}" target="_blank">${data['twitter_url'].substring(0,25)}...</a>`;
+        let instagram = (_arrEmptyValues.includes(data['instagram_url']))? '---' : `<a href="${data['instagram_url']}" title="${data['instagram_url']}" target="_blank">${data['instagram_url'].substring(0,25)}...</a>`;
         // Details
         $('#div_details table:eq(0) tbody tr td:eq(1)').html((_arrEmptyValues.includes(data['organization_name']))? '---' : data['organization_name']);
         $('#div_details table:eq(1) tbody tr td:eq(1)').html((_arrEmptyValues.includes(data['assigned_to_name']))? '---' : data['assigned_to_name']);
