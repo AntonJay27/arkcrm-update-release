@@ -132,15 +132,17 @@ class Contacts extends Model
     ////////////////////////////////////////////////////////////
     ///// ContactController->addContact()
     ////////////////////////////////////////////////////////////
-    public function loadContactPicture($whereParams)
+    public function loadContactPicture($contactId)
     {
         $columns = [
             'a.id',
-            'a.contact_id',
             'a.picture'
         ];
 
-        $builder = $this->db->table('contact_profile_pictures a')->select($columns)->orderBy('a.id','DESC');
+        $builder = $this->db->table('contacts a');
+        $builder->select($columns);
+        $builder->where('a.id',$contactId);
+        $builder->orderBy('a.id','DESC');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -148,22 +150,22 @@ class Contacts extends Model
     ////////////////////////////////////////////////////////////
     ///// ContactController->addContact()
     ////////////////////////////////////////////////////////////
-    public function addContactDetails($arrAddressData, $arrDescriptionData, $arrPictureData)
-    {
-        try {
-            $this->db->transStart();
-                $builder = $this->db->table('contact_address_details');
-                $builder->insert($arrAddressData);
-                $builder = $this->db->table('contact_description_details');
-                $builder->insert($arrDescriptionData);
-                $builder = $this->db->table('contact_profile_pictures');
-                $builder->insert($arrPictureData);
-            $this->db->transComplete();
-            return ($this->db->transStatus() === TRUE)? 1 : 0;
-        } catch (PDOException $e) {
-            throw $e;
-        }
-    }
+    // public function addContactDetails($arrAddressData, $arrDescriptionData, $arrPictureData)
+    // {
+    //     try {
+    //         $this->db->transStart();
+    //             $builder = $this->db->table('contact_address_details');
+    //             $builder->insert($arrAddressData);
+    //             $builder = $this->db->table('contact_description_details');
+    //             $builder->insert($arrDescriptionData);
+    //             $builder = $this->db->table('contact_profile_pictures');
+    //             $builder->insert($arrPictureData);
+    //         $this->db->transComplete();
+    //         return ($this->db->transStatus() === TRUE)? 1 : 0;
+    //     } catch (PDOException $e) {
+    //         throw $e;
+    //     }
+    // }
 
     ////////////////////////////////////////////////////////////
     ///// ContactController->selectContact()
@@ -205,27 +207,24 @@ class Contacts extends Model
             'a.unsubscribe_auth_code',
             'a.created_by',
             'a.created_date',
-            'b.mailing_street',
-            'b.mailing_po_box',
-            'b.mailing_city',
-            'b.mailing_state',
-            'b.mailing_zip',
-            'b.mailing_country',
-            'b.other_street',
-            'b.other_po_box',
-            'b.other_city',
-            'b.other_state',
-            'b.other_zip',
-            'b.other_country',
-            'c.description',
-            'd.picture'
+            'a.mailing_street',
+            'a.mailing_po_box',
+            'a.mailing_city',
+            'a.mailing_state',
+            'a.mailing_zip',
+            'a.mailing_country',
+            'a.other_street',
+            'a.other_po_box',
+            'a.other_city',
+            'a.other_state',
+            'a.other_zip',
+            'a.other_country',
+            'a.description',
+            'a.picture'
         ];
 
         $builder = $this->db->table('contacts a')->select($columns);
         $builder->where('a.id',$contactId);
-        $builder->join('contact_address_details b','a.id = b.contact_id','left');
-        $builder->join('contact_description_details c','a.id = c.contact_id','left');
-        $builder->join('contact_profile_pictures d','a.id = d.contact_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -239,16 +238,7 @@ class Contacts extends Model
             $this->db->transStart();
                 $this->db->table('contacts')
                         ->where(['id'=>$contactId])
-                        ->update($arrData['contact_details']);
-                $this->db->table('contact_address_details')
-                        ->where(['contact_id'=>$contactId])
-                        ->update($arrData['contact_address']);
-                $this->db->table('contact_description_details')
-                        ->where(['contact_id'=>$contactId])
-                        ->update($arrData['contact_description']);
-                $this->db->table('contact_profile_pictures')
-                        ->where(['contact_id'=>$contactId])
-                        ->update($arrData['contact_picture']);
+                        ->update($arrData);
             $this->db->transComplete();
             return ($this->db->transStatus() === TRUE)? 1 : 0;
         } catch (PDOException $e) {
@@ -346,13 +336,12 @@ class Contacts extends Model
             '(SELECT organization_name FROM organizations WHERE id = a.organization_id) as organization_name',
             'a.assigned_to',
             '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) as assigned_to',
-            'b.mailing_city',
-            'b.mailing_country'
+            'a.mailing_city',
+            'a.mailing_country'
         ];
 
         $builder = $this->db->table('contacts a')->select($columns);
         $builder->where('a.id',$contactId);
-        $builder->join('contact_address_details b','a.id = b.contact_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }
@@ -391,25 +380,23 @@ class Contacts extends Model
             'a.assigned_to',
             '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) as assigned_to_name',
             'a.email_opt_out',
-            'b.mailing_street',
-            'b.mailing_po_box',
-            'b.mailing_city',
-            'b.mailing_state',
-            'b.mailing_zip',
-            'b.mailing_country',
-            'b.other_street',
-            'b.other_po_box',
-            'b.other_city',
-            'b.other_state',
-            'b.other_zip',
-            'b.other_country',
-            'c.description'
+            'a.mailing_street',
+            'a.mailing_po_box',
+            'a.mailing_city',
+            'a.mailing_state',
+            'a.mailing_zip',
+            'a.mailing_country',
+            'a.other_street',
+            'a.other_po_box',
+            'a.other_city',
+            'a.other_state',
+            'a.other_zip',
+            'a.other_country',
+            'a.description'
         ];
 
         $builder = $this->db->table('contacts a')->select($columns);
         $builder->where('a.id',$contactId);
-        $builder->join('contact_address_details b','a.id = b.contact_id','left');
-        $builder->join('contact_description_details c','a.id = c.contact_id','left');
         $query = $builder->get();
         return  $query->getRowArray();
     }
