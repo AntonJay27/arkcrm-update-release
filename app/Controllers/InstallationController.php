@@ -172,7 +172,7 @@ class InstallationController extends BaseController
     {
       try 
       {
-         exec('git branch arkcrm-updates');
+         exec('git branch github-updates');
          return $this->response->setJSON(["Success","Installation in Progress!"]);
       } 
       catch (\Throwable $e) 
@@ -185,7 +185,7 @@ class InstallationController extends BaseController
     {
       try 
       {
-         exec('git checkout arkcrm-updates');
+         exec('git checkout github-updates');
          return $this->response->setJSON(["Success","Installation in Progress!"]);
       } 
       catch (\Throwable $e) 
@@ -211,7 +211,7 @@ class InstallationController extends BaseController
     {
       try 
       {
-         exec('git pull github arkcrm-updates --allow-unrelated-histories');
+         exec('git pull github github-updates --allow-unrelated-histories');
          return $this->response->setJSON(["Success","Installation in Progress!"]);
       } 
       catch (\Throwable $e) 
