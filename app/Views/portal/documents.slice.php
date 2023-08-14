@@ -624,10 +624,9 @@
 </div>
 <!-- /.content-wrapper -->
 <footer class="main-footer pt-2 pb-2">
-  <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
-  All rights reserved.
+  Powered by <strong>Arkonor LLC CRM</strong> &#169; <?php echo date('Y') ?>
   <div class="float-right d-none d-sm-inline-block">
-    <b>Version</b> 3.2.0
+    <b>Version</b> 1.0.0
   </div>
   <!-- <center>
     <button type="button" class="btn btn-info btn-sm"><i class="fa fa-save mr-1"></i> Save</button>
