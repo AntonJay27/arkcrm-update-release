@@ -347,3 +347,7 @@ description
 
 
 lbc tracking number : 381059308268
+
+Skype Account
+user: 09395202340
+pass: Skype@2023
