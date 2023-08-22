@@ -138,6 +138,9 @@ $routes->get('my-account', 'Portal\NavigationController::myAccount');
 //////////////////////////// SETTINGS ////////////////////////////////
 $routes->get('settings', 'Portal\NavigationController::settings');
 
+//////////////////////////// TEST ////////////////////////////////
+$routes->get('test-fe', 'Portal\NavigationController::testFE');
+
 /*
  * --------------------------------------------------------------------
  * INSIDE METHODS

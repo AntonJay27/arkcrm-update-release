@@ -32,7 +32,8 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/daterangepicker/daterangepicker.css">
 <!-- summernote -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/summernote/summernote-bs4.min.css">
-
+<!-- loader -->
+<link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/lib/loader/waitMe.min.css">
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">

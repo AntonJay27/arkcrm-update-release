@@ -13,6 +13,7 @@ const ROLES = (function(){
 
   thisRoles.loadRoles = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* RoleController->loadRoles() */
       url : `${baseUrl}/user-management/load-roles`,
@@ -20,10 +21,8 @@ const ROLES = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let divRoles = '';
-        
         data.forEach(function(value, index){
           if(value['reports_to'] == null)
           {
@@ -37,9 +36,7 @@ const ROLES = (function(){
                         </li>`;
           }
         });
-
         $('#ul_roles').html(divRoles);
-
         $('#ul_roles').treed({openedClass:'fa fa-minus-square', closedClass:'fa fa-plus-square'});
       }
     });
@@ -48,12 +45,10 @@ const ROLES = (function(){
   thisRoles.loadSubRoles = function(roleId, subRole, data)
   {
     let devSubRoles = '';
-
     if(subRole == 1)
     {
       devSubRoles += `<ul>`;
     }
-
     data.forEach(function(value, index){
       if(roleId == value['reports_to'])
       {
@@ -93,6 +88,7 @@ const ROLES = (function(){
 
   thisRoles.loadReportsTo = function(roleId = null)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* RoleController->loadRoles() */
       url : `${baseUrl}/user-management/load-roles`,
@@ -100,10 +96,8 @@ const ROLES = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let slcReportsTo = '<option value="" selected>---</option>';
-
         data.forEach(function(value, index){
           if(roleId == value['id'])
           {
@@ -122,6 +116,7 @@ const ROLES = (function(){
 
   thisRoles.loadProfiles = function(selectOptions, selectedData = [])
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* ProfileController->loadProfiles() */
       url : `${baseUrl}/user-management/load-profiles`,
@@ -129,8 +124,7 @@ const ROLES = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         if(selectOptions == 'single-select')
         {
           let slcProfile = '<option value="" selected>Choose Profile</option>';
@@ -164,6 +158,7 @@ const ROLES = (function(){
 
   thisRoles.copyProfile = function(thisInput)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let profileId = $(thisInput).val();
     $.ajax({
       /* ProfileController->selectProfile() */
@@ -173,8 +168,7 @@ const ROLES = (function(){
       data : {profileId : profileId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let count = 0;
         let moduleStatusChecked = 0;
         let moduleStatus = false;
@@ -277,6 +271,7 @@ const ROLES = (function(){
 
   thisRoles.addRole = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let arrModulesAndFields = [];
     $('#tbl_profilePrivileges tbody tr.module').each(function(){
       
@@ -322,6 +317,7 @@ const ROLES = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         $('#modal_roles').modal('hide');
         if(result == 'Success')
         {
@@ -346,6 +342,7 @@ const ROLES = (function(){
 
   thisRoles.selectRole = function(roleId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* RoleController->selectRole() */
       url : `${baseUrl}/user-management/select-role`,
@@ -354,7 +351,7 @@ const ROLES = (function(){
       data : {roleId : roleId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
 
         $('#txt_roleId').val(data['id']);
         $('#txt_subRole').val(data['sub_role']);
@@ -467,6 +464,7 @@ const ROLES = (function(){
 
   thisRoles.editRole = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let arrModulesAndFields = [];
     $('#tbl_profilePrivileges tbody tr.module').each(function(){
       
@@ -512,6 +510,7 @@ const ROLES = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         $('#modal_roles').modal('hide');
         if(result == 'Success')
         {
@@ -537,11 +536,10 @@ const ROLES = (function(){
   thisRoles.removeRole = function(roleId)
   {
     let formData = new FormData();
-
     formData.set('roleId',roleId);
-
     if(confirm('Please Confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       $.ajax({
         /* RoleController->removeRole() */
         url : `${baseUrl}/user-management/remove-role`,
@@ -552,6 +550,7 @@ const ROLES = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           $('#modal_roles').modal('hide');
           if(result[0] == 'Success')
           {
@@ -577,6 +576,7 @@ const ROLES = (function(){
 
   thisRoles.loadOrganizationName = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* RoleController->loadOrganizationName() */
       url : `${baseUrl}/user-management/load-organization-name`,
@@ -584,7 +584,7 @@ const ROLES = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data['organization_name']);
+        $('body').waitMe('hide');
         if(data['organization_name'] == '__ORGANIZATION_NAME__')
         {
           $('#lbl_organizationName').text('Organization');
@@ -604,6 +604,7 @@ const ROLES = (function(){
 
   thisRoles.editOrganizationName = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
     $.ajax({
       /* RoleController->editOrganizationName() */
@@ -615,6 +616,7 @@ const ROLES = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({

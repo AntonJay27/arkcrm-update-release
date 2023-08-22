@@ -35,12 +35,10 @@
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/sweetalert2/sweetalert2.min.js"></script>
 <!-- Toaster -->
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/toastr/toastr.min.js"></script>
+<!-- Loader -->
+<script src="<?php echo base_url(); ?>/public/assets/lib/loader/waitMe.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/dist/js/adminlte.js"></script>
-<!-- AdminLTE for demo purposes -->
-<!-- <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/dist/js/demo.js"></script> -->
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<!-- <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/dist/js/pages/dashboard.js"></script> -->
 
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -74,6 +72,29 @@
       // ['insert', ['link', 'picture', 'video']],
     ],
     height: 300
+  };
+
+  let _waitMeLoaderConfig = {
+    //none, rotateplane, stretch, orbit, roundBounce, win8,
+    //win8_linear, ios, facebook, rotation, timer, pulse,
+    //progressBar, bouncePulse or img
+    effect:'roundBounce',
+    //place text under the effect (string).
+    text:'Processing, Please Wait...',
+    //background for container (string).
+    bg:'rgba(255,255,255,0.7)',
+    //color for background animation and text (string).
+    color:'#000',
+    //max size
+    // maxSize:'',
+    //wait time im ms to close
+    waitTime: 0,
+    //url to image
+    // source:'<?php echo base_url(); ?>/public/assets/img/upp-logo.png',
+    //or 'horizontal'
+    textPos:'vertical',
+    //font size
+    fontSize:'',
   };
 
   // HELPER.autoLogout();

@@ -588,6 +588,8 @@ class OrganizationController extends BaseController
 
           $msgResult = [];
 
+          $assignedTo = ($fields['slc_assignedToContact'] == "")? NULL : $fields['slc_assignedToContact'];
+
           $arrData = [
               'salutation'            => $fields['slc_salutation'],
               'first_name'            => $fields['txt_firstName'],
@@ -595,7 +597,7 @@ class OrganizationController extends BaseController
               'organization_id'       => $fields['slc_companyName'],
               'primary_email'         => $fields['txt_primaryEmail'],
               'office_phone'          => $fields['txt_officePhone'],
-              'assigned_to'           => ($fields['slc_assignedToContact'] == "")? NULL : $fields['slc_assignedToContact'],
+              'assigned_to'           => $assignedTo,
               'unsubscribe_auth_code' => encrypt_code(generate_code()),
               'created_by'            => $this->session->get('arkonorllc_user_id'),
               'created_date'          => date('Y-m-d H:i:s')

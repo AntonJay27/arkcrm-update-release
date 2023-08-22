@@ -16,6 +16,7 @@ const CAMPAIGN = (function(){
 
   thisCampaign.loadCampaigns = function(loadTo)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadCampaigns() */
       url : `${baseUrl}/marketing/load-campaigns`,
@@ -23,7 +24,7 @@ const CAMPAIGN = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(loadTo == 'table')
         {
           let tbody = '';
@@ -74,6 +75,7 @@ const CAMPAIGN = (function(){
 
   thisCampaign.loadUsers = function(elemId, userId = '')
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadUsers() */
       url : `${baseUrl}/marketing/campaigns/load-users`,
@@ -81,7 +83,7 @@ const CAMPAIGN = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let options = '<option value="">--Select user--</option>';
         data.forEach(function(value,key){
           let userName = `${HELPER.checkEmptyFields(value['salutation'],'')} ${HELPER.checkEmptyFields(value['first_name'],'')} ${HELPER.checkEmptyFields(value['last_name'],'')}`;
@@ -101,8 +103,8 @@ const CAMPAIGN = (function(){
 
   thisCampaign.addCampaign = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveCampaign').text('Please wait...');
     $('#btn_saveCampaign').prop('disabled',true);
     $.ajax({
@@ -115,7 +117,7 @@ const CAMPAIGN = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_campaign').modal('hide');
         if(result == 'Success')
         {
@@ -140,6 +142,7 @@ const CAMPAIGN = (function(){
 
   thisCampaign.selectCampaign = function(action, campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->selectCampaign() */
       url : `${baseUrl}/marketing/select-campaign`,
@@ -148,7 +151,7 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(action == 'edit')
         {
           $('#lbl_stateCampaign span').text('Edit Campaign');
@@ -202,10 +205,9 @@ const CAMPAIGN = (function(){
 
   thisCampaign.editCampaign = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_campaignId", $('#txt_campaignId').val());
-
     $('#btn_saveCampaign').text('Please wait...');
     $('#btn_saveCampaign').prop('disabled',true);
     $.ajax({
@@ -218,7 +220,7 @@ const CAMPAIGN = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_contact').modal('hide');
         if(result == 'Success')
         {
@@ -245,10 +247,9 @@ const CAMPAIGN = (function(){
   {
     if(confirm('Please Confirm'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("campaignId", campaignId);
-
       $.ajax({
         /* CampaignController->removeCampaign() */
         url : `${baseUrl}/marketing/remove-campaign`,
@@ -259,6 +260,7 @@ const CAMPAIGN = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -284,6 +286,7 @@ const CAMPAIGN = (function(){
   //details
   thisCampaign.loadCampaignDetails = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadCampaignDetails() */
       url : `${baseUrl}/marketing/load-campaign-details`,
@@ -292,9 +295,8 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Details
-        
         $('#div_details table:eq(0) tbody tr td:eq(1)').text((data['campaign_name'])? data['campaign_name'] : '---');
         $('#div_details table:eq(1) tbody tr td:eq(1)').text((data['assigned_to_name'])? data['assigned_to_name'] : '---');
         $('#div_details table:eq(2) tbody tr td:eq(1)').text((data['campaign_status'])? data['campaign_status'] : '---');
@@ -328,6 +330,7 @@ const CAMPAIGN = (function(){
   //updates
   thisCampaign.loadCampaignUpdates = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadCampaignUpdates() */
       url : `${baseUrl}/marketing/load-campaign-updates`,
@@ -336,21 +339,16 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let div_campaignUpdates = '';
         let createdDate = '';
-
         data.forEach(function(value,key){
-
           let actionDetails = ``;
-
           if(value['actions'].replace(/\s/g,'-') == 'Created-Campaign')
           {
             actionDetails += `<span><b>Campaign Name : </b> ${value['action_details']['campaign_name']}</span><br>`;
             actionDetails += `<span><b>Campaign Status : </b> ${value['action_details']['campaign_status']}</span><br>`;
             actionDetails += `<span><b>Campaign Type : </b> ${value['action_details']['campaign_type']}</span><br>`;
-            
             // actionDetails += `<a href="javascript:void(0)"><i>More details ...</i></a>`;
           }
 
@@ -359,7 +357,6 @@ const CAMPAIGN = (function(){
             actionDetails += `<span><b>Campaign Name : </b> ${value['action_details']['campaign_name']}</span><br>`;
             actionDetails += `<span><b>Campaign Status : </b> ${value['action_details']['campaign_status']}</span><br>`;
             actionDetails += `<span><b>Campaign Type : </b> ${value['action_details']['campaign_type']}</span><br>`;
-            
             // actionDetails += `<a href="javascript:void(0)"><i>More details ...</i></a>`;
           }
 
@@ -427,6 +424,7 @@ const CAMPAIGN = (function(){
   //contacts
   thisCampaign.loadSelectedContactCampaigns = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadSelectedContactCampaigns() */
       url : `${baseUrl}/marketing/load-selected-contact-campaigns`,
@@ -435,7 +433,7 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let count = 0;
         let tbody = '';
         data.forEach(function(value,key){
@@ -495,10 +493,9 @@ const CAMPAIGN = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("contactCampaignId", contactCampaignId);
-
       $.ajax({
         /* ContactController->unlinkContactCampaign() */
         url : `${baseUrl}/marketing/unlink-contact-campaign`,
@@ -509,7 +506,7 @@ const CAMPAIGN = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -540,6 +537,7 @@ const CAMPAIGN = (function(){
 
   thisCampaign.loadUnlinkContacts = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadUnlinkContacts() */
       url : `${baseUrl}/marketing/load-unlink-contacts`,
@@ -548,7 +546,7 @@ const CAMPAIGN = (function(){
       data : {campaignId:campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -600,11 +598,10 @@ const CAMPAIGN = (function(){
 
   thisCampaign.addSelectedContact = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("campaignId", $('#txt_campaignId').val());
     formData.set("arrSelectedContacts", _arrSelectedContacts);
-
     $.ajax({
       /* ContactController->addSelectedContactCampaigns() */
       url : `${baseUrl}/marketing/add-selected-contact-campaigns`,
@@ -615,7 +612,7 @@ const CAMPAIGN = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectContact').modal('hide');
         if(result == 'Success')
         {
@@ -640,6 +637,7 @@ const CAMPAIGN = (function(){
   //Activities
   thisCampaign.loadCampaignActivities = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadCampaignActivities() */
       url : `${baseUrl}/marketing/load-campaign-activities`,
@@ -648,7 +646,7 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Activities
         let tbody = '';
         let count = 0;
@@ -727,6 +725,7 @@ const CAMPAIGN = (function(){
   //organizations
   thisCampaign.loadSelectedOrganizationCampaigns = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadSelectedOrganizationCampaigns() */
       url : `${baseUrl}/marketing/load-selected-organization-campaigns`,
@@ -735,7 +734,7 @@ const CAMPAIGN = (function(){
       data : {campaignId : campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let count = 0;
         let tbody = '';
         data.forEach(function(value,key){
@@ -796,10 +795,9 @@ const CAMPAIGN = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("organizationCampaignId", organizationCampaignId);
-
       $.ajax({
         /* OrganizationController->unlinkOrganizationCampaign() */
         url : `${baseUrl}/marketing/unlink-organization-campaign`,
@@ -810,7 +808,7 @@ const CAMPAIGN = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -841,6 +839,7 @@ const CAMPAIGN = (function(){
 
   thisCampaign.loadUnlinkOrganizations = function(campaignId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CampaignController->loadUnlinkOrganizations() */
       url : `${baseUrl}/marketing/load-unlink-organizations`,
@@ -849,7 +848,7 @@ const CAMPAIGN = (function(){
       data : {campaignId:campaignId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -902,11 +901,10 @@ const CAMPAIGN = (function(){
 
   thisCampaign.addSelectedOrganization = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("campaignId", $('#txt_campaignId').val());
     formData.set("arrSelectedOrganizations", _arrSelectedOrganizations);
-
     $.ajax({
       /* OrganizationController->addSelectedOrganizationCampaigns() */
       url : `${baseUrl}/marketing/add-selected-organization-campaigns`,
@@ -917,7 +915,7 @@ const CAMPAIGN = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectOrganization').modal('hide');
         if(result == 'Success')
         {
@@ -937,8 +935,6 @@ const CAMPAIGN = (function(){
       }
     });
   }
-
-  
 
   return thisCampaign;
 

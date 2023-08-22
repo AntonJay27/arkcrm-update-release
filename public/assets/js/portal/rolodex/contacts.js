@@ -101,6 +101,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadContacts = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContacts() */
 		  url : `${baseUrl}/marketing/load-contacts`,
@@ -108,7 +109,7 @@ const CONTACTS = (function(){
 		  dataType: 'json',
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
 		    let tbody = '';
 		    data.forEach(function(value,key){
 		    	let organizationName = (_arrEmptyValues.includes(value['organization_id']))? '---' : `<a href="${baseUrl}/organization-preview/${value['organization_id']}">${value['organization_name']}</a>`;
@@ -158,6 +159,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadUsers = function(elemId, userId = '')
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 	  $.ajax({
 	    /* ContactController->loadUsers() */
 	    url : `${baseUrl}/marketing/contacts/load-users`,
@@ -165,7 +167,7 @@ const CONTACTS = (function(){
 	    dataType: 'json',
 	    success : function(data)
 	    {
-	      console.log(data);
+	      $('body').waitMe('hide');
 	      let options = '<option value="">--Select user--</option>';
 	      data.forEach(function(value,key){
 	      	let userName = `${HELPER.checkEmptyFields(value['salutation'],'')} ${HELPER.checkEmptyFields(value['first_name'],'')} ${HELPER.checkEmptyFields(value['last_name'],'')}`;
@@ -185,6 +187,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadOrganizations = function(elemId, organizationId = '')
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 	  $.ajax({
 	    /* OrganizationController->loadOrganizations() */
 	    url : `${baseUrl}/marketing/load-organizations`,
@@ -192,7 +195,7 @@ const CONTACTS = (function(){
 	    dataType: 'json',
 	    success : function(data)
 	    {
-	      console.log(data);
+	      $('body').waitMe('hide');
         let options = '<option value="">--Select organization--</option>';
         data.forEach(function(value,key){
         	if(organizationId == value['id'])
@@ -212,7 +215,6 @@ const CONTACTS = (function(){
 	thisContacts.uploadContactPicturePreview = function(imageFile)
 	{
 	  let fileLen = imageFile.files.length;
-
 	  if(fileLen > 0)
 	  {
 	    let imageName = imageFile.files[0]['name'];
@@ -292,11 +294,10 @@ const CONTACTS = (function(){
 
 	thisContacts.addContact = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("chk_doNotCall", ($('#chk_doNotCall').is(':checked'))? 1 : 0);
 		formData.append("profilePicture", $('#file_profilePicture')[0].files[0]);
-
 		$.ajax({
 			/* ContactController->addContact() */
 		  url : `${baseUrl}/marketing/add-contact`,
@@ -307,7 +308,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_contact').modal('hide');
 		    if(result == 'Success')
 		    {
@@ -332,6 +333,7 @@ const CONTACTS = (function(){
 
 	thisContacts.selectContact = function(action, contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->selectContact() */
 		  url : `${baseUrl}/marketing/select-contact`,
@@ -340,7 +342,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
 	    	if(action == 'edit')
 	    	{
 	        $('#lbl_stateContact span').text('Edit Contact');
@@ -421,13 +423,11 @@ const CONTACTS = (function(){
 
 	thisContacts.editContact = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
 		formData.set("chk_doNotCall", ($('#chk_doNotCall').is(':checked'))? 1 : 0);
-
 		formData.append("profilePicture", $('#file_profilePicture')[0].files[0]);
-
 		$.ajax({
 			/* ContactController->editContact() */
 		  url : `${baseUrl}/marketing/edit-contact`,
@@ -438,7 +438,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_contact').modal('hide');
 		    if(result == 'Success')
 		    {
@@ -465,10 +465,9 @@ const CONTACTS = (function(){
 	{
 		if(confirm('Please Confirm'))
 		{
+			$('body').waitMe(_waitMeLoaderConfig);
 			let formData = new FormData();
-
 			formData.set("contactId", contactId);
-
 			$.ajax({
 				/* ContactController->removeContact() */
 			  url : `${baseUrl}/marketing/remove-contact`,
@@ -479,6 +478,7 @@ const CONTACTS = (function(){
 			  data : formData,
 			  success : function(result)
 			  {
+			  	$('body').waitMe('hide');
 			    if(result == 'Success')
 			    {
 	          Toast.fire({
@@ -521,11 +521,10 @@ const CONTACTS = (function(){
 
 	thisContacts.checkCSVFile = function(thisInput)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		var fileName = thisInput.files[0].name;
-
 		let formData = new FormData();
 		formData.set('contactList',thisInput.files[0],fileName);
-		
 		$('#lbl_loader').show();
 		$('#div_checkResult').hide();
 		$('#div_errorResult').hide();
@@ -540,7 +539,7 @@ const CONTACTS = (function(){
 			data : formData,
 			success : function(result)
 			{
-				console.log(result);
+				$('body').waitMe('hide');
 				__arrFileResult = result;
 				$('#lbl_loader').hide();
 				if(result['upload_res'] == "")
@@ -583,6 +582,7 @@ const CONTACTS = (function(){
 		$('#lbl_uploadingProgress').show();
 		if(confirm("Please confirm!"))
 		{
+			$('body').waitMe(_waitMeLoaderConfig);
 			let rawData = __arrFileResult;
 			$.ajax({
 				// ContactController->uploadContacts
@@ -597,7 +597,7 @@ const CONTACTS = (function(){
 				},
 				success : function(result)
 				{
-					console.log(result);
+					$('body').waitMe('hide');
 					$('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
           location.reload();			
 				}
@@ -610,6 +610,7 @@ const CONTACTS = (function(){
 	//summary
 	thisContacts.loadContactSummary = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactSummary() */
 		  url : `${baseUrl}/marketing/load-contact-summary`,
@@ -618,7 +619,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Summary
     		$('#lbl_firstName').text((_arrEmptyValues.includes(data['first_name']))? '---' : data['first_name']);
     		$('#lbl_lastName').text((_arrEmptyValues.includes(data['last_name']))? '---' : data['last_name']);
@@ -646,6 +647,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadContactCommentSummary = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactComments() */
 		  url : `${baseUrl}/marketing/load-contact-comments`,
@@ -654,10 +656,8 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		  	console.log(data);
-
+		  	$('body').waitMe('hide');
 		  	let divCommentSummary = '';
-		  	
 		    data.forEach(function(value, index){
 		    	if(value['comment_id'] == null)
 		    	{
@@ -679,7 +679,6 @@ const CONTACTS = (function(){
 				    		                  </div>`;
 		    	}
 		    });
-
 		    $('#tbl_recentComments tbody tr td #div_loadCommentSummary').html(divCommentSummary);
 		  }
 		});
@@ -717,10 +716,9 @@ const CONTACTS = (function(){
 
 	thisContacts.addContactCommentSummary = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
-
 		$.ajax({
 			/* ContactController->addContactCommentSummary() */
 		  url : `${baseUrl}/marketing/add-contact-comment-summary`,
@@ -731,7 +729,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    if(result == 'Success')
 		    {
           Toast.fire({
@@ -772,12 +770,11 @@ const CONTACTS = (function(){
 
 	thisContacts.replyContactCommentSummary = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
 		formData.set("txt_replyCommentId", $('#txt_replyCommentId').val());
 		formData.set("txt_replyComments", $('#txt_replyComments').val());
-
 		$.ajax({
 			/* ContactController->replyContactComment() */
 		  url : `${baseUrl}/marketing/reply-contact-comment`,
@@ -788,7 +785,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    if(result == 'Success')
 		    {
           Toast.fire({
@@ -811,6 +808,7 @@ const CONTACTS = (function(){
 	//details
 	thisContacts.loadContactDetails = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactDetails() */
 		  url : `${baseUrl}/marketing/load-contact-details`,
@@ -819,6 +817,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
+		  	$('body').waitMe('hide');
     		let orgName = (_arrEmptyValues.includes(data['organization_id']))? '---' : `<a href="${baseUrl}/organization-preview/${data['organization_id']}">${data['organization_name']}</a>`;
     		
     		$('#div_details table:eq(0) tbody tr td:eq(1)').html(`${data['salutation']} ${data['first_name']}`);
@@ -867,6 +866,7 @@ const CONTACTS = (function(){
 	//updates
 	thisContacts.loadContactUpdates = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactUpdates() */
 		  url : `${baseUrl}/marketing/load-contact-updates`,
@@ -875,7 +875,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-    		console.log(data);
+    		$('body').waitMe('hide');
 
     		let div_contactUpdates = '';
 				let createdDate = '';
@@ -1092,6 +1092,7 @@ const CONTACTS = (function(){
 	//Activities
 	thisContacts.loadContactActivities = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactActivities() */
 		  url : `${baseUrl}/marketing/load-contact-activities`,
@@ -1100,7 +1101,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Activities
 		    let tbody = '';
 		    let count = 0;
@@ -1178,6 +1179,7 @@ const CONTACTS = (function(){
 	//emails
 	thisContacts.loadContactEmails = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactEmails() */
 		  url : `${baseUrl}/marketing/load-contact-emails`,
@@ -1186,7 +1188,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Emails
 		    let tbody = '';
 		    let count = 0;
@@ -1238,6 +1240,7 @@ const CONTACTS = (function(){
 	//documents
 	thisContacts.loadContactDocuments = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactDocuments() */
 		  url : `${baseUrl}/marketing/load-contact-documents`,
@@ -1246,7 +1249,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Documents
 		    let tbody = '';
 		    let count = 0;
@@ -1327,10 +1330,9 @@ const CONTACTS = (function(){
 	{
 		if(confirm('Please confirm!'))
 		{
+			$('body').waitMe(_waitMeLoaderConfig);
 			let formData = new FormData();
-
 			formData.set("contactDocumentId", contactDocumentId);
-
 			$.ajax({
 				/* ContactController->unlinkContactDocument() */
 			  url : `${baseUrl}/marketing/unlink-contact-document`,
@@ -1341,7 +1343,7 @@ const CONTACTS = (function(){
 			  data : formData,
 			  success : function(result)
 			  {
-			    console.log(result);
+			    $('body').waitMe('hide');
 			    if(result == 'Success')
 			    {
 	          Toast.fire({
@@ -1372,6 +1374,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadUnlinkContactDocuments = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadUnlinkContactDocuments() */
 		  url : `${baseUrl}/marketing/load-unlink-contact-documents`,
@@ -1380,7 +1383,7 @@ const CONTACTS = (function(){
 		  data : {contactId:contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Emails
 		    let tbody = '';
 		    data.forEach(function(value,key){
@@ -1439,11 +1442,10 @@ const CONTACTS = (function(){
 
 	thisContacts.addSelectedDocuments = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
-
 		formData.set("contactId", $('#txt_contactId').val());
 		formData.set("arrSelectedDocuments", _arrSelectedDocuments);
-
 		$.ajax({
 			/* ContactController->addSelectedContactDocuments() */
 		  url : `${baseUrl}/marketing/add-selected-contact-documents`,
@@ -1454,7 +1456,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_selectDocuments').modal('hide');
 		    if(result == 'Success')
 		    {
@@ -1485,10 +1487,9 @@ const CONTACTS = (function(){
 
 	thisContacts.addContactDocument = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
-
 		if($('#slc_uploadtype').val() == 1)
 		{
 		  let files = document.getElementById('file_fileName').files;
@@ -1498,7 +1499,6 @@ const CONTACTS = (function(){
 		     formData.append("file_fileName[]", files[index]);
 		  }
 		}
-
 		$.ajax({
 			/* ContactController->addContactDocument() */
 		  url : `${baseUrl}/marketing/add-contact-document`,
@@ -1509,7 +1509,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_addDocument').modal('hide');
 		    if(result == 'Success')
 		    {
@@ -1535,6 +1535,7 @@ const CONTACTS = (function(){
 	//campaigns
 	thisContacts.loadContactCampaigns = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactCampaigns() */
 		  url : `${baseUrl}/marketing/load-contact-campaigns`,
@@ -1543,7 +1544,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Emails
 		    let tbody = '';
 		    let count = 0;
@@ -1603,10 +1604,9 @@ const CONTACTS = (function(){
 	{
 		if(confirm('Please confirm!'))
 		{
+			$('body').waitMe(_waitMeLoaderConfig);
 			let formData = new FormData();
-
 			formData.set("contactCampaignId", contactCampaignId);
-
 			$.ajax({
 				/* ContactController->unlinkContactCampaign() */
 			  url : `${baseUrl}/marketing/unlink-contact-campaign`,
@@ -1617,7 +1617,7 @@ const CONTACTS = (function(){
 			  data : formData,
 			  success : function(result)
 			  {
-			    console.log(result);
+			    $('body').waitMe('hide');
 			    if(result == 'Success')
 			    {
 	          Toast.fire({
@@ -1648,6 +1648,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadUnlinkContactCampaigns = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadUnlinkContactCampaigns() */
 		  url : `${baseUrl}/marketing/load-unlink-contact-campaigns`,
@@ -1656,7 +1657,7 @@ const CONTACTS = (function(){
 		  data : {contactId:contactId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
     		// Emails
 		    let tbody = '';
 		    data.forEach(function(value,key){
@@ -1707,11 +1708,10 @@ const CONTACTS = (function(){
 
 	thisContacts.addSelectedCampaigns = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
-
 		formData.set("contactId", $('#txt_contactId').val());
 		formData.set("arrSelectedCampaigns", _arrSelectedCampaigns);
-
 		$.ajax({
 			/* ContactController->addSelectedContactCampaigns() */
 		  url : `${baseUrl}/marketing/add-selected-contact-campaigns`,
@@ -1722,7 +1722,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_selectCampaigns').modal('hide');
 		    if(result == 'Success')
 		    {
@@ -1747,6 +1747,7 @@ const CONTACTS = (function(){
 	//comments
 	thisContacts.loadContactComments = function(contactId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* ContactController->loadContactComments() */
 		  url : `${baseUrl}/marketing/load-contact-comments`,
@@ -1755,8 +1756,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId},
 		  success : function(data)
 		  {
-		  	console.log(data);
-
+		  	$('body').waitMe('hide');
 		  	let divComments = '';
 		    data.forEach(function(value, index){
 		    	if(value['comment_id'] == null)
@@ -1828,10 +1828,9 @@ const CONTACTS = (function(){
 
 	thisContacts.addContactComment = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
-
 		$.ajax({
 			/* ContactController->addContactComment() */
 		  url : `${baseUrl}/marketing/add-contact-comment`,
@@ -1842,7 +1841,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    if(result == 'Success')
 		    {
           Toast.fire({
@@ -1883,12 +1882,11 @@ const CONTACTS = (function(){
 
 	thisContacts.replyContactComment = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
 		formData.set("txt_replyCommentId", $('#txt_replyCommentId').val());
 		formData.set("txt_replyComments", $('#txt_replyComments').val());
-
 		$.ajax({
 			/* ContactController->replyContactComment() */
 		  url : `${baseUrl}/marketing/reply-contact-comment`,
@@ -1899,7 +1897,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    if(result == 'Success')
 		    {
           Toast.fire({
@@ -1923,6 +1921,7 @@ const CONTACTS = (function(){
 	//Sending Email
 	thisContacts.selectEmailConfig = function(from, contactId=null, contactEmail=null)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 	  $.ajax({
       /* EmailConfigurationController->selectEmailConfig() */
       url : `${baseUrl}/settings/select-email-config`,
@@ -1930,7 +1929,7 @@ const CONTACTS = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(data != null)
         {
         	CONTACTS.loadEmailTemplates();
@@ -1969,6 +1968,7 @@ const CONTACTS = (function(){
 
 	thisContacts.loadEmailTemplates = function()
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 		  /* EmailTemplateController->loadTemplates() */
 		  url : `${baseUrl}/tools/load-templates/Contacts`,
@@ -1976,7 +1976,7 @@ const CONTACTS = (function(){
 		  dataType: 'json',
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
 		    let options = '<option value="">--Optional--</option>';
 		    data.forEach(function(value,key){
 		      options += `<option value="${value['id']}">${value['template_name']}</option>`;
@@ -1989,6 +1989,7 @@ const CONTACTS = (function(){
 
 	thisContacts.selectEmailTemplate = function(contactId,templateId)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 		  /* ContactController->selectEmailTemplate() */
 		  url : `${baseUrl}/marketing/select-contact-email-template`,
@@ -1997,7 +1998,7 @@ const CONTACTS = (function(){
 		  data : {contactId : contactId, templateId : templateId},
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
 		    $('#txt_subject').val(data['template_subject']);
 		    $('#txt_content').summernote('destroy');
 		    $('#txt_content').val(data['template_content']);
@@ -2008,18 +2009,15 @@ const CONTACTS = (function(){
 
 	thisContacts.sendContactEmail = function(thisForm)
 	{
+		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData(thisForm);
-
 		formData.set("txt_contactId", $('#txt_contactId').val());
-
 		if($('#chk_unsubscribe').is(':checked'))
 		{
 			formData.set("chk_unsubscribe", 1);
 		}
-
 		$('#btn_sendContactEmail').html('<i class="fa fa-paper-plane mr-1"></i> Sending...');
 		$('#btn_sendContactEmail').prop('disabled',true);
-
 		$.ajax({
 			/* ContactController->sendContactEmail() */
 		  url : `${baseUrl}/marketing/send-contact-email`,
@@ -2030,7 +2028,7 @@ const CONTACTS = (function(){
 		  data : formData,
 		  success : function(result)
 		  {
-		    console.log(result);
+		    $('body').waitMe('hide');
 		    $('#modal_sendContactEmail').modal('hide');
 		    if(result == 'Success')
 		    {

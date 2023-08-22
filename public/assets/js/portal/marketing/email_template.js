@@ -75,6 +75,7 @@ const EMAIL_TEMPLATE = (function(){
 
   thisEmailTemplate.loadTemplates = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailTemplateController->loadTemplates() */
       url : `${baseUrl}/tools/load-templates/All`,
@@ -82,7 +83,7 @@ const EMAIL_TEMPLATE = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let tbody = '';
         data.forEach(function(value,key){
           let templateStatus = (value['template_status'] == "1")? 'Active' : 'Inactive';
@@ -154,8 +155,8 @@ const EMAIL_TEMPLATE = (function(){
 
   thisEmailTemplate.addTemplate = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $.ajax({
       /* EmailTemplateController->addTemplate() */
       url : `${baseUrl}/tools/add-template`,
@@ -166,6 +167,7 @@ const EMAIL_TEMPLATE = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         if(result == "Success")
         {
           Toast.fire({
@@ -191,6 +193,7 @@ const EMAIL_TEMPLATE = (function(){
 
   thisEmailTemplate.selectTemplate = function(templateId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailTemplateController->selectTemplate() */
       url : `${baseUrl}/tools/select-template`,
@@ -199,7 +202,7 @@ const EMAIL_TEMPLATE = (function(){
       data : {templateId : templateId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         $('#lbl_stateTemplate span').text('Edit Email Template');
         $('#lbl_stateTemplate i').removeClass('fa-plus');
         $('#lbl_stateTemplate i').addClass('fa-pen');
@@ -226,8 +229,8 @@ const EMAIL_TEMPLATE = (function(){
 
   thisEmailTemplate.editTemplate = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $.ajax({
       /* EmailTemplateController->editTemplate() */
       url : `${baseUrl}/tools/edit-template`,
@@ -238,6 +241,7 @@ const EMAIL_TEMPLATE = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         if(result == "Success")
         {
           Toast.fire({
@@ -265,10 +269,9 @@ const EMAIL_TEMPLATE = (function(){
   {
     if(confirm('Are you sure you want to remove this item? \nClick OK button to proceed!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set('templateId',templateId);
-
       $.ajax({
         /* EmailTemplateController->removeTemplate() */
         url : `${baseUrl}/tools/remove-template`,
@@ -279,6 +282,7 @@ const EMAIL_TEMPLATE = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result == "Success")
           {
             Toast.fire({

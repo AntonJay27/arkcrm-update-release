@@ -132,7 +132,6 @@ class InstallationController extends BaseController
       try 
       {
          exec('git init');
-         exec('git commit -m "Initial Commit"');
          return $this->response->setJSON(["Success","Installation in Progress!"]);
       } 
       catch (\Throwable $e) 

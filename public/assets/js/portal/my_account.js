@@ -13,6 +13,7 @@ const MY_ACCOUNT = (function(){
 
   thisMyAccount.loadMyAccount = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* MyAccountController->loadMyAccount() */
       url : `${baseUrl}/load-my-account`,
@@ -20,7 +21,7 @@ const MY_ACCOUNT = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         $('#lbl_userCompleteName').html(data['complete_name']);
         $('#lbl_userPosition').html(data['position']);
         $('#img_profilePicture').prop('src', (data['picture'] == null)? `${baseUrl}/public/assets/img/user-placeholder.png` : `${baseUrl}/public/assets/uploads/images/users/${data['picture']}`);
@@ -31,7 +32,6 @@ const MY_ACCOUNT = (function(){
   thisMyAccount.uploadMyAccountPicturePreview = function(imageFile)
   {
     let fileLen = imageFile.files.length;
-
     if(fileLen > 0)
     {
       let imageName = imageFile.files[0]['name'];
@@ -87,12 +87,10 @@ const MY_ACCOUNT = (function(){
 
   thisMyAccount.changeMyAccountPicture = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.append("profilePicture", $('#file_profilePicture')[0].files[0]);
-
     $('#btn_savePicture').prop('disabled',true);
-
     $.ajax({
       /* MyAccountController->changeMyAccountPicture() */
       url : `${baseUrl}/change-my-account-picture`,
@@ -104,7 +102,7 @@ const MY_ACCOUNT = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({
@@ -128,6 +126,7 @@ const MY_ACCOUNT = (function(){
 
   thisMyAccount.loadMyAccountDetails = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* MyAccountController->loadMyAccountDetails() */
       url : `${baseUrl}/load-my-account-details`,
@@ -135,7 +134,7 @@ const MY_ACCOUNT = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         $('#slc_salutation').val(data['salutation']);
         $('#txt_firstName').val(data['first_name']);
         $('#txt_lastName').val(data['last_name']);
@@ -150,10 +149,9 @@ const MY_ACCOUNT = (function(){
   {
     if(confirm('Please Confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData(thisForm);
-
       $('#btn_saveChanges').prop('disabled',true);
-
       $.ajax({
         /* MyAccountController->editMyAccountDetails() */
         url : `${baseUrl}/edit-my-account-details`,
@@ -164,7 +162,7 @@ const MY_ACCOUNT = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -201,10 +199,9 @@ const MY_ACCOUNT = (function(){
     }
     else
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData(thisForm);
-
       $('#btn_saveChanges').prop('disabled',true);
-
       $.ajax({
         /* MyAccountController->editMyAccountPassword() */
         url : `${baseUrl}/edit-my-account-password`,
@@ -215,7 +212,7 @@ const MY_ACCOUNT = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
