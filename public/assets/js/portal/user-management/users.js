@@ -13,6 +13,7 @@ const USERS = (function(){
 
   thisUsers.loadUsers = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
 		$.ajax({
 			/* UserController->loadUsers() */
 		  url : `${baseUrl}/user-management/load-users`,
@@ -20,7 +21,7 @@ const USERS = (function(){
 		  dataType: 'json',
 		  success : function(data)
 		  {
-		    console.log(data);
+		    $('body').waitMe('hide');
 		    let tbody = '';
 		    data.forEach(function(value,key){
           let userStatus = '';
@@ -79,6 +80,7 @@ const USERS = (function(){
 
   thisUsers.selectEmailConfig = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailConfigurationController->selectEmailConfig() */
       url : `${baseUrl}/settings/select-email-config`,
@@ -86,7 +88,7 @@ const USERS = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(data != null)
         {
           $('#txt_userId').val('');
@@ -111,6 +113,7 @@ const USERS = (function(){
 
   thisUsers.loadRoles = function(roleId = "")
   {
+    $('body').waitMe(_waitMeLoaderConfig);
   	$.ajax({
       /* RoleController->loadRoles() */
       url : `${baseUrl}/user-management/load-roles`,
@@ -118,6 +121,7 @@ const USERS = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
       	let roleOptions = '<option value="">---</option>';
       	data.forEach(function(value,key){
       		if(roleId == value['id'])
@@ -136,13 +140,11 @@ const USERS = (function(){
 
   thisUsers.addUser = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
   	let formData = new FormData(thisForm);
-
     formData.set('chk_admin',($('#chk_admin').is(':checked'))? 1:0);
-
   	$('#btn_submitUser').text('Please wait...');
   	$('#btn_submitUser').prop('disabled',true);
-
   	$.ajax({
   		/* UserController->addUser() */
   	  url : `${baseUrl}/user-management/add-user`,
@@ -153,6 +155,7 @@ const USERS = (function(){
   	  data : formData,
   	  success : function(result)
   	  {
+        $('body').waitMe('hide');
   	    if(result == "Success")
         {
           Toast.fire({
@@ -180,6 +183,7 @@ const USERS = (function(){
 
   thisUsers.selectUser = function(userId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
   	$.ajax({
   	  /* UserController->selectUser() */
   	  url : `${baseUrl}/user-management/select-user`,
@@ -188,7 +192,7 @@ const USERS = (function(){
   	  data : {userId : userId},
   	  success : function(data)
   	  {
-  	  	console.log(data);
+  	  	$('body').waitMe('hide');
   	  	$('#lbl_titleHeader').html('<i class="fa fa-pen mr-1"></i> Update User');
   	  	$('#modal_users').modal('show');
   	  	$('#txt_userId').val(data['user_id']);
@@ -204,13 +208,11 @@ const USERS = (function(){
 
   thisUsers.editUser = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
   	let formData = new FormData(thisForm);
-
     formData.set('chk_admin',($('#chk_admin').is(':checked'))? 1:0);
-
   	$('#btn_submitUser').text('Please wait...');
   	$('#btn_submitUser').prop('disabled',true);
-
   	$.ajax({
   		/* UserController->editUser() */
   	  url : `${baseUrl}/user-management/edit-user`,
@@ -221,6 +223,7 @@ const USERS = (function(){
   	  data : formData,
   	  success : function(result)
   	  {
+        $('body').waitMe('hide');
   	    if(result == "Success")
         {
           Toast.fire({
@@ -249,10 +252,9 @@ const USERS = (function(){
   {
   	if(confirm('Please Confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set('userId',userId);
-
       $.ajax({
         /* UserController->removeUser() */
         url : `${baseUrl}/user-management/remove-user`,
@@ -263,6 +265,7 @@ const USERS = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result == "Success")
           {
             Toast.fire({

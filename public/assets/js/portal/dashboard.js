@@ -13,6 +13,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadAllCampaigns = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DashboardController->loadAllCampaigns() */
       url : `${baseUrl}/dashboard/load-all-campaigns`,
@@ -20,6 +21,7 @@ const DASHBOARD = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#lbl_campaignsCount').text(data);
       }
     });
@@ -27,6 +29,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadAllContacts = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DashboardController->loadAllContacts() */
       url : `${baseUrl}/dashboard/load-all-contacts`,
@@ -34,6 +37,7 @@ const DASHBOARD = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#lbl_contactsCount').text(data);
       }
     });
@@ -41,6 +45,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadContactChart = function(monthYearDate)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $('#modal_contactChart').modal('show');
     $.ajax({
       /* DashboardController->loadContactReports() */
@@ -50,8 +55,8 @@ const DASHBOARD = (function(){
       data: {monthYearDate:monthYearDate},
       success : function(data)
       {
+        $('body').waitMe('hide');
         const ctx = document.getElementById('canvas_contactChart');
-
         new Chart(ctx, {
           type: 'bar',
           data: {
@@ -90,6 +95,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadAllOrganizations = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DashboardController->loadAllOrganizations() */
       url : `${baseUrl}/dashboard/load-all-organizations`,
@@ -97,6 +103,7 @@ const DASHBOARD = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#lbl_organizationsCount').text(data);
       }
     });
@@ -104,6 +111,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadOrganizationChart = function(monthYearDate)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $('#modal_organizationChart').modal('show');
     $.ajax({
       /* DashboardController->loadOrganizationReports() */
@@ -113,8 +121,8 @@ const DASHBOARD = (function(){
       data: {monthYearDate:monthYearDate},
       success : function(data)
       {
+        $('body').waitMe('hide');
         const ctx = document.getElementById('canvas_organizationChart');
-
         new Chart(ctx, {
           type: 'bar',
           data: {
@@ -153,6 +161,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadAllUsers = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DashboardController->loadAllUsers() */
       url : `${baseUrl}/dashboard/load-all-users`,
@@ -160,6 +169,7 @@ const DASHBOARD = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#lbl_usersCount').text(data);
       }
     });
@@ -167,6 +177,7 @@ const DASHBOARD = (function(){
 
   thisDashboard.loadSummaryReports = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DashboardController->loadSummaryReports() */
       url : `${baseUrl}/dashboard/load-summary-reports`,
@@ -174,7 +185,7 @@ const DASHBOARD = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         const ctx = document.getElementById('myChart');
         new Chart(ctx, {
           type: 'pie',

@@ -81,6 +81,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadOrganizations = function(loadTo, elemId = '', organizationId = '')
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizations() */
       url : `${baseUrl}/marketing/load-organizations`,
@@ -88,7 +89,7 @@ const ORGANIZATION = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(loadTo == 'table')
         {
           let tbody = '';
@@ -149,6 +150,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadUsers = function(elemId, userId = '')
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadUsers() */
       url : `${baseUrl}/marketing/organizations/load-users`,
@@ -156,7 +158,7 @@ const ORGANIZATION = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let options = '<option value="">--Select user--</option>';
         data.forEach(function(value,key){
           let userName = `${HELPER.checkEmptyFields(value['salutation'],'')} ${HELPER.checkEmptyFields(value['first_name'],'')} ${HELPER.checkEmptyFields(value['last_name'],'')}`;
@@ -257,10 +259,9 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addOrganization = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.append("profilePicture", $('#file_profilePicture')[0].files[0]);
-
     $.ajax({
       /* OrganizationController->addOrganization() */
       url : `${baseUrl}/marketing/add-organization`,
@@ -271,7 +272,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_organization').modal('hide');
         if(result == 'Success')
         {
@@ -297,6 +298,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.selectOrganization = function(action, organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->selectOrganization() */
       url : `${baseUrl}/marketing/select-organization`,
@@ -305,7 +307,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(action == 'edit')
         {
           $('#lbl_stateOrganization span').text('Edit Organization');
@@ -380,11 +382,10 @@ const ORGANIZATION = (function(){
 
   thisOrganization.editOrganization = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
     formData.append("profilePicture", $('#file_profilePicture')[0].files[0]);
-
     $.ajax({
       /* OrganizationController->editOrganization() */
       url : `${baseUrl}/marketing/edit-organization`,
@@ -395,7 +396,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_organization').modal('hide');
         if(result == 'Success')
         {
@@ -423,10 +424,9 @@ const ORGANIZATION = (function(){
   {
     if(confirm('Please Confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("organizationId", organizationId);
-
       $.ajax({
         /* OrganizationController->removeOrganization() */
         url : `${baseUrl}/marketing/remove-organization`,
@@ -437,6 +437,7 @@ const ORGANIZATION = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -479,11 +480,10 @@ const ORGANIZATION = (function(){
 
   thisOrganization.checkCSVFile = function(thisInput)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     var fileName = thisInput.files[0].name;
-
     let formData = new FormData();
     formData.set('organizationList',thisInput.files[0],fileName);
-    
     $('#lbl_loader').show();
     $('#div_checkResult').hide();
     $('#div_errorResult').hide();
@@ -498,7 +498,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         __arrFileResult = result;
         $('#lbl_loader').hide();
         if(result['upload_res'] == "")
@@ -541,6 +541,7 @@ const ORGANIZATION = (function(){
     $('#lbl_uploadingProgress').show();
     if(confirm("Please confirm!"))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let rawData = __arrFileResult;
       $.ajax({
         // OrganizationController->uploadOrganizations
@@ -555,7 +556,7 @@ const ORGANIZATION = (function(){
         },
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           $('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
           location.reload();      
         }
@@ -567,6 +568,7 @@ const ORGANIZATION = (function(){
   // Send Email
   thisOrganization.selectEmailConfig = function(from, organizationId=null, organizationEmail=null)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailConfigurationController->selectEmailConfig() */
       url : `${baseUrl}/settings/select-email-config`,
@@ -574,7 +576,7 @@ const ORGANIZATION = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(data != null)
         {
           ORGANIZATION.loadEmailTemplates();
@@ -613,6 +615,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadEmailTemplates = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailTemplateController->loadTemplates() */
       url : `${baseUrl}/tools/load-templates/Organizations`,
@@ -620,7 +623,7 @@ const ORGANIZATION = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let options = '<option value="">--Optional--</option>';
         data.forEach(function(value,key){
           options += `<option value="${value['id']}">${value['template_name']}</option>`;
@@ -633,6 +636,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.selectEmailTemplate = function(organizationId,templateId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->selectEmailTemplate() */
       url : `${baseUrl}/marketing/select-organization-email-template`,
@@ -641,7 +645,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId, templateId : templateId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         $('#txt_subject').val(data['template_subject']);
         $('#txt_content').summernote('destroy');
         $('#txt_content').val(data['template_content']);
@@ -652,18 +656,15 @@ const ORGANIZATION = (function(){
 
   thisOrganization.sendOrganizationEmail = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
-
     if($('#chk_unsubscribe').is(':checked'))
     {
       formData.set("chk_unsubscribe", 1);
     }
-
     $('#btn_sendOrganizationEmail').html('<i class="fa fa-paper-plane mr-1"></i> Sending...');
     $('#btn_sendOrganizationEmail').prop('disabled',true);
-
     $.ajax({
       /* OrganizationController->sendOrganizationEmail() */
       url : `${baseUrl}/marketing/send-organization-email`,
@@ -674,7 +675,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_sendOrganizationEmail').modal('hide');
         if(result == 'Success')
         {
@@ -705,6 +706,7 @@ const ORGANIZATION = (function(){
   //summary
   thisOrganization.loadOrganizationSummary = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationSummary() */
       url : `${baseUrl}/marketing/load-organization-summary`,
@@ -713,7 +715,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Summary
         $('#lbl_orgName').html(data['organization_name']);
         $('#lbl_assignedTo').text(data['assigned_to_name']);
@@ -736,6 +738,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadOrganizationCommentSummary = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationComments() */
       url : `${baseUrl}/marketing/load-organization-comments`,
@@ -744,10 +747,8 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let divCommentSummary = '';
-        
         data.forEach(function(value, index){
           if(value['comment_id'] == null)
           {
@@ -769,7 +770,6 @@ const ORGANIZATION = (function(){
                                   </div>`;
           }
         });
-
         $('#tbl_recentComments tbody tr td #div_loadCommentSummary').html(divCommentSummary);
       }
     });
@@ -807,10 +807,9 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addOrganizationCommentSummary = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
-
     $.ajax({
       /* OrganizationController->addOrganizationCommentSummary() */
       url : `${baseUrl}/marketing/add-organization-comment-summary`,
@@ -821,7 +820,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({
@@ -862,12 +861,11 @@ const ORGANIZATION = (function(){
 
   thisOrganization.replyOrganizationCommentSummary = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
     formData.set("txt_replyCommentId", $('#txt_replyCommentId').val());
     formData.set("txt_replyComments", $('#txt_replyComments').val());
-
     $.ajax({
       /* OrganizationController->replyOrganizationComment() */
       url : `${baseUrl}/marketing/reply-organization-comment`,
@@ -878,7 +876,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({
@@ -902,6 +900,7 @@ const ORGANIZATION = (function(){
   //details
   thisOrganization.loadOrganizationDetails = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationDetails() */
       url : `${baseUrl}/marketing/load-organization-details`,
@@ -910,7 +909,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
 
         let mainWebsite = (_arrEmptyValues.includes(data['main_website']))? '---' : `<a href="${data['main_website']}" title="${data['main_website']}" target="_blank">${data['main_website'].substring(0,25)}...</a>`;
         let otherWebsite = (_arrEmptyValues.includes(data['other_website']))? '---' : `<a href="${data['other_website']}" title="${data['other_website']}" target="_blank">${data['other_website'].substring(0,25)}...</a>`;
@@ -960,6 +959,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadOrganizationUpdates = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationUpdates() */
       url : `${baseUrl}/marketing/load-organization-updates`,
@@ -968,7 +968,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
 
         let div_organizationUpdates = '';
         let createdDate = '';
@@ -1179,6 +1179,7 @@ const ORGANIZATION = (function(){
   //contacts
   thisOrganization.loadOrganizationContacts = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationContacts() */
       url : `${baseUrl}/marketing/load-organization-contacts`,
@@ -1187,7 +1188,7 @@ const ORGANIZATION = (function(){
       data : {organizationId:organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let tbody = '';
         let count = 0;
         data.forEach(function(value,key){
@@ -1248,15 +1249,15 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addContactModal = function(organizationId)
   {
-    $('#modal_addContact').modal({'backdrop':'static'});
+    $('#modal_addContactQuickForm').modal({'backdrop':'static'});
     ORGANIZATION.loadUsers('#slc_assignedToContact');
     ORGANIZATION.loadOrganizations('select','#slc_companyName',organizationId);
   }
 
   thisOrganization.addContactToOrganization = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $.ajax({
       /* OrganizationController->addContactToOrganization() */
       url : `${baseUrl}/rolodex/add-contact-to-organization`,
@@ -1267,7 +1268,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_contact').modal('hide');
         if(result == 'Success')
         {
@@ -1278,7 +1279,7 @@ const ORGANIZATION = (function(){
           setTimeout(function(){
             ORGANIZATION.loadOrganizationContacts($('#slc_companyName').val());
           }, 1000);
-          $('#modal_addContact').modal('hide');
+          $('#modal_addContactQuickForm').modal('hide');
         }
         else
         {
@@ -1295,10 +1296,9 @@ const ORGANIZATION = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("contactId", contactId);
-
       $.ajax({
         /* OrganizationController->unlinkOrganizationContact() */
         url : `${baseUrl}/marketing/unlink-organization-contact`,
@@ -1309,7 +1309,7 @@ const ORGANIZATION = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           $('#modal_organization').modal('hide');
           if(result == 'Success')
           {
@@ -1341,6 +1341,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadUnlinkContacts = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadUnlinkOrganizationContacts() */
       url : `${baseUrl}/marketing/load-unlink-organization-contacts`,
@@ -1349,7 +1350,7 @@ const ORGANIZATION = (function(){
       data : {organizationId:organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -1401,11 +1402,10 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addSelectedContacts = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("organizationId", $('#txt_organizationId').val());
     formData.set("arrSelectedContacts", _arrSelectedContacts);
-
     $.ajax({
       /* OrganizationController->addSelectedOrganizationContacts() */
       url : `${baseUrl}/marketing/add-selected-organization-contacts`,
@@ -1416,7 +1416,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectContact').modal('hide');
         if(result == 'Success')
         {
@@ -1440,6 +1440,7 @@ const ORGANIZATION = (function(){
   //activities
   thisOrganization.loadOrganizationActivities = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationActivities() */
       url : `${baseUrl}/marketing/load-organization-activities`,
@@ -1448,7 +1449,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Activities
         let tbody = '';
         let count = 0;
@@ -1526,6 +1527,7 @@ const ORGANIZATION = (function(){
   //emails
   thisOrganization.loadOrganizationEmails = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationEmails() */
       url : `${baseUrl}/marketing/load-organization-emails`,
@@ -1534,7 +1536,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         let count = 0;
@@ -1586,6 +1588,7 @@ const ORGANIZATION = (function(){
   //documents
   thisOrganization.loadOrganizationDocuments = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationDocuments() */
       url : `${baseUrl}/marketing/load-organization-documents`,
@@ -1594,7 +1597,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Documents
         let tbody = '';
         let count = 0;
@@ -1668,10 +1671,9 @@ const ORGANIZATION = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("organizationDocumentId", organizationDocumentId);
-
       $.ajax({
         /* OrganizationController->unlinkOrganizationDocument() */
         url : `${baseUrl}/marketing/unlink-organization-document`,
@@ -1682,7 +1684,7 @@ const ORGANIZATION = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -1713,6 +1715,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadUnlinkOrganizationDocuments = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadUnlinkOrganizationDocuments() */
       url : `${baseUrl}/marketing/load-unlink-organization-documents`,
@@ -1721,7 +1724,7 @@ const ORGANIZATION = (function(){
       data : {organizationId:organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -1780,11 +1783,10 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addSelectedDocuments = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("organizationId", $('#txt_organizationId').val());
     formData.set("arrSelectedDocuments", _arrSelectedDocuments);
-
     $.ajax({
       /* OrganizationController->addSelectedOrganizationDocuments() */
       url : `${baseUrl}/marketing/add-selected-organization-documents`,
@@ -1795,7 +1797,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectDocuments').modal('hide');
         if(result == 'Success')
         {
@@ -1826,10 +1828,9 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addOrganizationDocument = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
-
     $.ajax({
       /* OrganizationController->addOrganizationDocument() */
       url : `${baseUrl}/marketing/add-organization-document`,
@@ -1840,7 +1841,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_addDocument').modal('hide');
         if(result == 'Success')
         {
@@ -1866,6 +1867,7 @@ const ORGANIZATION = (function(){
   //Campaigns
   thisOrganization.loadOrganizationCampaigns = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationCampaigns() */
       url : `${baseUrl}/marketing/load-organization-campaigns`,
@@ -1874,7 +1876,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         let count = 0;
@@ -1932,6 +1934,7 @@ const ORGANIZATION = (function(){
 
   thisOrganization.loadUnlinkOrganizationCampaigns = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadUnlinkOrganizationCampaigns() */
       url : `${baseUrl}/marketing/load-unlink-organization-campaigns`,
@@ -1940,7 +1943,7 @@ const ORGANIZATION = (function(){
       data : {organizationId:organizationId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -2000,11 +2003,10 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addSelectedCampaign = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("organizationId", $('#txt_organizationId').val());
     formData.set("arrSelectedCampaigns", _arrSelectedCampaigns);
-
     $.ajax({
       /* OrganizationController->addSelectedOrganizationCampaigns() */
       url : `${baseUrl}/marketing/add-selected-organization-campaigns`,
@@ -2015,7 +2017,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectCampaigns').modal('hide');
         if(result == 'Success')
         {
@@ -2040,10 +2042,9 @@ const ORGANIZATION = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("organizationCampaignId", organizationCampaignId);
-
       $.ajax({
         /* OrganizationController->unlinkOrganizationCampaign() */
         url : `${baseUrl}/marketing/unlink-organization-campaign`,
@@ -2054,7 +2055,7 @@ const ORGANIZATION = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -2080,6 +2081,7 @@ const ORGANIZATION = (function(){
   //comments
   thisOrganization.loadOrganizationComments = function(organizationId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* OrganizationController->loadOrganizationComments() */
       url : `${baseUrl}/marketing/load-organization-comments`,
@@ -2088,8 +2090,7 @@ const ORGANIZATION = (function(){
       data : {organizationId : organizationId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         let divComments = '';
         data.forEach(function(value, index){
           if(value['comment_id'] == null)
@@ -2162,10 +2163,9 @@ const ORGANIZATION = (function(){
 
   thisOrganization.addOrganizationComment = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
-
     $.ajax({
       /* OrganizationController->addOrganizationComment() */
       url : `${baseUrl}/marketing/add-organization-comment`,
@@ -2176,7 +2176,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({
@@ -2217,12 +2217,11 @@ const ORGANIZATION = (function(){
 
   thisOrganization.replyOrganizationComment = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("txt_organizationId", $('#txt_organizationId').val());
     formData.set("txt_replyCommentId", $('#txt_replyCommentId').val());
     formData.set("txt_replyComments", $('#txt_replyComments').val());
-
     $.ajax({
       /* OrganizationController->replyOrganizationComment() */
       url : `${baseUrl}/marketing/reply-organization-comment`,
@@ -2233,7 +2232,7 @@ const ORGANIZATION = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         if(result == 'Success')
         {
           Toast.fire({

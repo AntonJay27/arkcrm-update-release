@@ -246,14 +246,13 @@ class Documents extends Model
             'b.organization_id',
             '(SELECT organization_name FROM organizations WHERE id = b.organization_id) as organization_name',
             '(SELECT CONCAT(salutation, " ", first_name, " ", last_name) FROM users WHERE id = b.assigned_to) as assigned_to_name',
-            'c.mailing_city',
-            'c.mailing_country'
+            'b.mailing_city',
+            'b.mailing_country'
         ];
 
         $builder = $this->db->table('contact_documents a')->select($columns);
         $builder->where('a.document_id',$documentId);
         $builder->join('contacts b','a.contact_id = b.id','left');
-        $builder->join('contact_address_details c','c.contact_id = b.id','left');
         $query = $builder->get();
         return  $query->getResultArray();
     }
@@ -293,7 +292,6 @@ class Documents extends Model
         $builder = $this->db->table('organization_documents a')->select($columns);
         $builder->where('a.document_id',$documentId);
         $builder->join('organizations b','a.organization_id = b.id','left');
-        $builder->join('organization_address_details c','c.organization_id = b.id','left');
         $query = $builder->get();
         return  $query->getResultArray();
     }

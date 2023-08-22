@@ -18,6 +18,7 @@ const DOCUMENTS = (function(){
 
   thisDocuments.loadDocuments = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadDocuments() */
       url : `${baseUrl}/load-documents`,
@@ -25,7 +26,7 @@ const DOCUMENTS = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Documents
         let tbody = '';
         let count = 0;
@@ -96,10 +97,9 @@ const DOCUMENTS = (function(){
   {
     if(confirm('Please Confirm'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("documentId", documentId);
-
       $.ajax({
         /* DocumentController->removeDocument() */
         url : `${baseUrl}/remove-document`,
@@ -110,6 +110,7 @@ const DOCUMENTS = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result[0] == 'Success')
           {
             Toast.fire({
@@ -144,6 +145,7 @@ const DOCUMENTS = (function(){
 
   thisDocuments.loadUsers = function(elemId, userId = '')
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* UserController->loadUsers() */
       url : `${baseUrl}/documents/load-users`,
@@ -151,7 +153,7 @@ const DOCUMENTS = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let options = '<option value="">--Select user--</option>';
         data.forEach(function(value,key){
           let userName = `${HELPER.checkEmptyFields(value['salutation'],'')} ${HELPER.checkEmptyFields(value['first_name'],'')} ${HELPER.checkEmptyFields(value['last_name'],'')}`;
@@ -171,8 +173,8 @@ const DOCUMENTS = (function(){
 
   thisDocuments.addDocument = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     if($('#slc_uploadtype').val() == 1)
     {
       let files = document.getElementById('file_fileName').files;
@@ -182,7 +184,6 @@ const DOCUMENTS = (function(){
          formData.append("file_fileName[]", files[index]);
       }
     }
-
     $.ajax({
       /* DocumentController->addDocument() */
       url : `${baseUrl}/add-document`,
@@ -193,7 +194,7 @@ const DOCUMENTS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_document').modal('hide');
         if(result == 'Success')
         {
@@ -219,6 +220,7 @@ const DOCUMENTS = (function(){
 
   thisDocuments.selectDocument = function(action, documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     // CONTACTS.loadUsers(['#slc_reportsTo','#slc_assignedTo']);
     $.ajax({
       /* DocumentController->selectDocument() */
@@ -228,7 +230,7 @@ const DOCUMENTS = (function(){
       data : {documentId : documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(action == 'edit')
         {
           $('#lbl_stateDocument span').text('Edit Document');
@@ -290,10 +292,9 @@ const DOCUMENTS = (function(){
 
   thisDocuments.editDocument = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     formData.set("txt_documentId", $('#txt_documentId').val());
-
     if($('#slc_uploadtype').val() == 1)
     {
       let files = document.getElementById('file_fileName').files;
@@ -303,7 +304,6 @@ const DOCUMENTS = (function(){
          formData.append("file_fileName[]", files[index]);
       }
     }
-
     $.ajax({
       /* DocumentController->editDocument() */
       url : `${baseUrl}/edit-document`,
@@ -314,7 +314,7 @@ const DOCUMENTS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_document').modal('hide');
         if(result == 'Success')
         {
@@ -341,6 +341,7 @@ const DOCUMENTS = (function(){
   {
     if(confirm('Please Confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       $.ajax({
         /* DocumentController->downloadDocument() */
         url : `${baseUrl}/download-document`,
@@ -349,8 +350,8 @@ const DOCUMENTS = (function(){
         data : {documentId : documentId},
         success : function(data)
         {
+          $('body').waitMe('hide');
           let documentFile = `${baseUrl}/public/assets/uploads/documents/${documentFileName}`;
-        
           var a = document.createElement('A');
           a.href = documentFile;
           a.download = documentFile.substr(documentFile.lastIndexOf('/') + 1);
@@ -375,6 +376,7 @@ const DOCUMENTS = (function(){
   //details
   thisDocuments.loadDocumentDetails = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->selectDocument() */
       url : `${baseUrl}/select-document`,
@@ -383,15 +385,14 @@ const DOCUMENTS = (function(){
       data : {documentId : documentId},
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#div_details table:eq(0) tbody tr td:eq(1)').text(data['title']);
         $('#div_details table:eq(1) tbody tr td:eq(1)').text(data['assigned_to_name']);
         $('#div_details table:eq(2) tbody tr td:eq(1)').text('/public/assets/uploads/documents/');
         // $('#div_details table:eq(3) tbody tr td:eq(1)').text(data['assigned_to_name']);
         $('#div_details table:eq(4) tbody tr td:eq(1)').text(data['created_date']);
         $('#div_details table:eq(5) tbody tr td:eq(1)').text((data['updated_date'] == null)? '---' : data['updated_date']);
-
         $('#div_details table:eq(6) tbody tr td:eq(0)').html((data['notes'] == "")? '---' : data['notes']);
-
         $('#div_details table:eq(7) tbody tr td:eq(1)').html((data['file_name'] == null)? '---' : data['file_name']);
         $('#div_details table:eq(8) tbody tr td:eq(1)').html((data['file_size'] == null)? '---' : data['file_size']);
         $('#div_details table:eq(9) tbody tr td:eq(1)').html((data['file_type'] == null)? '---' : data['file_type']);
@@ -407,6 +408,7 @@ const DOCUMENTS = (function(){
   //updates
   thisDocuments.loadDocumentUpdates = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadDocumentUpdates() */
       url : `${baseUrl}/load-document-updates`,
@@ -415,7 +417,7 @@ const DOCUMENTS = (function(){
       data : {documentId : documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
 
         let div_documentUpdates = '';
         let createdDate = '';
@@ -493,6 +495,7 @@ const DOCUMENTS = (function(){
   //contacts
   thisDocuments.loadSelectedContactDocuments = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadSelectedContactDocuments() */
       url : `${baseUrl}/load-selected-contact-documents`,
@@ -501,7 +504,7 @@ const DOCUMENTS = (function(){
       data : {documentId : documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let count = 0;
         let tbody = '';
         data.forEach(function(value,key){
@@ -564,10 +567,9 @@ const DOCUMENTS = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("contactDocumentId", contactDocumentId);
-
       $.ajax({
         /* ContactController->unlinkContactDocument() */
         url : `${baseUrl}/marketing/unlink-contact-document`,
@@ -578,7 +580,7 @@ const DOCUMENTS = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -609,6 +611,7 @@ const DOCUMENTS = (function(){
 
   thisDocuments.loadUnlinkContacts = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadUnlinkContacts() */
       url : `${baseUrl}/load-unlink-contacts`,
@@ -617,7 +620,7 @@ const DOCUMENTS = (function(){
       data : {documentId:documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -669,11 +672,10 @@ const DOCUMENTS = (function(){
 
   thisDocuments.addSelectedContact = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("documentId", $('#txt_documentId').val());
     formData.set("arrSelectedContacts", _arrSelectedContacts);
-
     $.ajax({
       /* ContactController->addSelectedContactDocuments() */
       url : `${baseUrl}/marketing/add-selected-contact-documents`,
@@ -684,7 +686,7 @@ const DOCUMENTS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectContact').modal('hide');
         if(result == 'Success')
         {
@@ -719,6 +721,7 @@ const DOCUMENTS = (function(){
   //organization
   thisDocuments.loadSelectedOrganizationDocuments = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadSelectedOrganizationDocuments() */
       url : `${baseUrl}/load-selected-organization-documents`,
@@ -727,7 +730,7 @@ const DOCUMENTS = (function(){
       data : {documentId : documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let count = 0;
         let tbody = '';
         data.forEach(function(value,key){
@@ -791,10 +794,9 @@ const DOCUMENTS = (function(){
   {
     if(confirm('Please confirm!'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("organizationDocumentId", organizationDocumentId);
-
       $.ajax({
         /* OrganizationController->unlinkOrganizationDocument() */
         url : `${baseUrl}/marketing/unlink-organization-document`,
@@ -805,7 +807,7 @@ const DOCUMENTS = (function(){
         data : formData,
         success : function(result)
         {
-          console.log(result);
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({
@@ -836,6 +838,7 @@ const DOCUMENTS = (function(){
 
   thisDocuments.loadUnlinkOrganizations = function(documentId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* DocumentController->loadUnlinkOrganizations() */
       url : `${baseUrl}/load-unlink-organizations`,
@@ -844,7 +847,7 @@ const DOCUMENTS = (function(){
       data : {documentId:documentId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         // Emails
         let tbody = '';
         data.forEach(function(value,key){
@@ -897,13 +900,10 @@ const DOCUMENTS = (function(){
 
   thisDocuments.addSelectedOrganization = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData();
-
     formData.set("documentId", $('#txt_documentId').val());
     formData.set("arrSelectedOrganizations", _arrSelectedOrganizations);
-
-    // console.log(_arrSelectedOrganizations)
-
     $.ajax({
       /* OrganizationController->addSelectedOrganizationDocuments() */
       url : `${baseUrl}/marketing/add-selected-organization-documents`,
@@ -914,7 +914,7 @@ const DOCUMENTS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_selectOrganization').modal('hide');
         if(result == 'Success')
         {

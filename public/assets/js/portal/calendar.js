@@ -13,6 +13,7 @@ const CALENDAR = (function(){
 
   thisCalendar.loadCalendars = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CalendarController->loadCalendars() */
       url : `${baseUrl}/load-calendars`,
@@ -20,7 +21,7 @@ const CALENDAR = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         if(data['arrCalendars'].length > 0)
         {
           $('#lnk_addEvent').removeClass('disabled');
@@ -187,10 +188,9 @@ const CALENDAR = (function(){
 
   thisCalendar.addCalendar = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveCalendar').prop('disabled',true);
-
     $.ajax({
       /* CalendarController->addCalendar() */
       url : `${baseUrl}/add-calendar`,
@@ -201,7 +201,7 @@ const CALENDAR = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_calendar').modal('hide');
         if(result == 'Success')
         {
@@ -241,6 +241,7 @@ const CALENDAR = (function(){
 
   thisCalendar.loadUsers = function(elemId, userId = '')
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* CalendarController->loadUsers() */
       url : `${baseUrl}/calendar/load-users`,
@@ -248,7 +249,7 @@ const CALENDAR = (function(){
       dataType: 'json',
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
         let options = '<option value="">--Select user--</option>';
         data.forEach(function(value,key){
           let userName = `${HELPER.checkEmptyFields(value['salutation'],'')} ${HELPER.checkEmptyFields(value['first_name'],'')} ${HELPER.checkEmptyFields(value['last_name'],'')}`;
@@ -269,10 +270,9 @@ const CALENDAR = (function(){
 
   thisCalendar.addEvent = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveEvent').prop('disabled',true);
-
     $.ajax({
       /* EventController->addEvent() */
       url : `${baseUrl}/add-event`,
@@ -283,7 +283,7 @@ const CALENDAR = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_events').modal('hide');
         if(result == 'Success')
         {
@@ -322,6 +322,7 @@ const CALENDAR = (function(){
 
   thisCalendar.selectEvent = function(eventId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EventController->selectEvent() */
       url : `${baseUrl}/select-event`,
@@ -330,10 +331,8 @@ const CALENDAR = (function(){
       data : {eventId : eventId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         $('#lbl_eventHeader').html('<i class="fa fa-pen mr-1"></i> Update Event');
-
         $('#txt_eventId').val(data['id']);
         $('#txt_eventSubject').val(data['subject']);
         CALENDAR.loadTimezones('#slc_eventTimezone',data['event_timezone']);
@@ -344,7 +343,6 @@ const CALENDAR = (function(){
         CALENDAR.loadUsers('#slc_eventAssignedTo',data['assigned_to']);
         $('#slc_eventStatus').val(data['status']);
         $('#slc_eventType').val(data['type']);
-
         $('#modal_events').modal({'backdrop':'static'});
       }
     });
@@ -352,10 +350,9 @@ const CALENDAR = (function(){
 
   thisCalendar.editEvent = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveEvent').prop('disabled',true);
-
     $.ajax({
       /* EventController->editEvent() */
       url : `${baseUrl}/edit-event`,
@@ -366,7 +363,7 @@ const CALENDAR = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_events').modal('hide');
         if(result == 'Success')
         {
@@ -397,10 +394,9 @@ const CALENDAR = (function(){
 
   thisCalendar.addTask = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveTask').prop('disabled',true);
-
     $.ajax({
       /* TaskController->addTask() */
       url : `${baseUrl}/add-task`,
@@ -411,7 +407,7 @@ const CALENDAR = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#modal_tasks').modal('hide');
         if(result == 'Success')
         {
@@ -449,6 +445,7 @@ const CALENDAR = (function(){
 
   thisCalendar.selectTask = function(taskId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EventController->selectTask() */
       url : `${baseUrl}/select-task`,
@@ -457,10 +454,8 @@ const CALENDAR = (function(){
       data : {taskId : taskId},
       success : function(data)
       {
-        console.log(data);
-
+        $('body').waitMe('hide');
         $('#lbl_taskHeader').html('<i class="fa fa-pen mr-1"></i> Update Task');
-
         $('#txt_taskId').val(data['id']);
         $('#txt_taskSubject').val(data['subject']);
         CALENDAR.loadTimezones('#slc_taskTimezone',data['task_timezone']);
@@ -471,7 +466,6 @@ const CALENDAR = (function(){
         CALENDAR.loadUsers('#slc_taskAssignedTo',data['assigned_to']);
         $('#slc_taskStatus').val(data['status']);
         $('#slc_taskType').val(data['type']);
-
         $('#modal_tasks').modal({'backdrop':'static'});
       }
     });
@@ -479,10 +473,9 @@ const CALENDAR = (function(){
 
   thisCalendar.editTask = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_saveTask').prop('disabled',true);
-
     $.ajax({
       /* EventController->editTask() */
       url : `${baseUrl}/edit-task`,
@@ -493,7 +486,7 @@ const CALENDAR = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide'); 
         $('#modal_tasks').modal('hide');
         if(result == 'Success')
         {

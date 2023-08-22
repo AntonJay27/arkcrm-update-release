@@ -14,6 +14,7 @@ const PROFILES = (function(){
 
   thisProfiles.loadProfiles = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* ProfileController->loadProfiles() */
       url : `${baseUrl}/user-management/load-profiles`,
@@ -21,8 +22,8 @@ const PROFILES = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         let tbody = '';
-
         data.forEach(function(value, index){
           tbody += `<tr>
                       <td>
@@ -75,6 +76,7 @@ const PROFILES = (function(){
 
   thisProfiles.addProfile = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let arrModulesAndFields = [];
     $('#tbl_profilePrivileges tbody tr.module').each(function(){
       
@@ -114,6 +116,7 @@ const PROFILES = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         $('#modal_profiles').modal('hide');
         if(result == 'Success')
         {
@@ -138,6 +141,7 @@ const PROFILES = (function(){
 
   thisProfiles.duplicateProfile = function(profileId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* ProfileController->selectProfile() */
       url : `${baseUrl}/user-management/select-profile`,
@@ -146,10 +150,10 @@ const PROFILES = (function(){
       data : {profileId : profileId},
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#txt_profileId').val('');
         $('#txt_profileName').val(data['profile_name']);
         $('#txt_description').val(data['description']);
-
         $('#lbl_modalTitle').html('<i class="fa fa-copy"></i> Duplicate Profile');
         $('#modal_profiles').modal('show');
       }
@@ -158,6 +162,7 @@ const PROFILES = (function(){
 
   thisProfiles.selectProfile = function(profileId)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* ProfileController->selectProfile() */
       url : `${baseUrl}/user-management/select-profile`,
@@ -166,7 +171,7 @@ const PROFILES = (function(){
       data : {profileId : profileId},
       success : function(data)
       {
-        console.log(data);
+        $('body').waitMe('hide');
 
         $('#txt_profileId').val(data['id']);
         $('#txt_profileName').val(data['profile_name']);
@@ -242,6 +247,7 @@ const PROFILES = (function(){
 
   thisProfiles.editProfile = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let arrModulesAndFields = [];
     $('#tbl_profilePrivileges tbody tr.module').each(function(){
       
@@ -281,6 +287,7 @@ const PROFILES = (function(){
       data : formData,
       success : function(result)
       {
+        $('body').waitMe('hide');
         $('#modal_profiles').modal('hide');
         if(result == 'Success')
         {
@@ -307,10 +314,9 @@ const PROFILES = (function(){
   {
     if(confirm('Please Confirm'))
     {
+      $('body').waitMe(_waitMeLoaderConfig);
       let formData = new FormData();
-
       formData.set("profileId", profileId);
-
       $.ajax({
         /* ProfileController->removeProfile() */
         url : `${baseUrl}/user-management/remove-profile`,
@@ -321,6 +327,7 @@ const PROFILES = (function(){
         data : formData,
         success : function(result)
         {
+          $('body').waitMe('hide');
           if(result == 'Success')
           {
             Toast.fire({

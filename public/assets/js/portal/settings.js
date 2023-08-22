@@ -14,11 +14,10 @@ const SETTINGS = (function(){
 
   thisSetting.addEmailConfig = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_submitEmailConfig').html('<i>Please Wait</i>');
     $('#btn_submitEmailConfig').prop('disabled',true);
-
     $.ajax({
       /* EmailConfigurationController->addEmailConfig() */
       url : `${baseUrl}/settings/add-email-config`,
@@ -29,7 +28,7 @@ const SETTINGS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#btn_submitEmailConfig').html('Save Configuration');
         $('#btn_submitEmailConfig').prop('disabled',false);
         if(result == 'Success')
@@ -55,6 +54,7 @@ const SETTINGS = (function(){
 
   thisSetting.selectEmailConfig = function()
   { 
+    $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
       /* EmailConfigurationController->selectEmailConfig() */
       url : `${baseUrl}/settings/select-email-config`,
@@ -62,6 +62,7 @@ const SETTINGS = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         if(data != null)
         {
           $('#txt_emailConfigId').val(data['id']);
@@ -81,11 +82,10 @@ const SETTINGS = (function(){
 
   thisSetting.editEmailConfig = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_submitEmailConfig').html('<i>Please Wait</i>');
     $('#btn_submitEmailConfig').prop('disabled',true);
-
     $.ajax({
       /* EmailConfigurationController->editEmailConfig() */
       url : `${baseUrl}/settings/edit-email-config`,
@@ -96,7 +96,7 @@ const SETTINGS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#btn_submitEmailConfig').html('Save Configuration');
         $('#btn_submitEmailConfig').prop('disabled',false);
         if(result == 'Success')
@@ -122,11 +122,10 @@ const SETTINGS = (function(){
 
   thisSetting.testEmailConfiguration = function(thisForm)
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     let formData = new FormData(thisForm);
-
     $('#btn_testEmailConfig').html('<i>Please Wait</i>');
     $('#btn_testEmailConfig').prop('disabled',true);
-
     $.ajax({
       /* EmailConfigurationController->testEmailConfiguration() */
       url : `${baseUrl}/settings/test-email-config`,
@@ -137,12 +136,10 @@ const SETTINGS = (function(){
       data : formData,
       success : function(result)
       {
-        console.log(result);
+        $('body').waitMe('hide');
         $('#btn_testEmailConfig').html('Test Email Configuration');
         $('#btn_testEmailConfig').prop('disabled',false);
-
         $('#txt_testEmailAddress').val();
-
         if(result[0] == 'Success')
         {
           Toast.fire({
@@ -177,6 +174,7 @@ const SETTINGS = (function(){
 
   thisSetting.systemUpdates = function()
   {
+    $('body').waitMe(_waitMeLoaderConfig);
     $('#btn_systemUpdates').prop('disabled',true);
     $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
     $.ajax({
@@ -186,6 +184,7 @@ const SETTINGS = (function(){
       dataType: 'json',
       success : function(data)
       {
+        $('body').waitMe('hide');
         $('#btn_systemUpdates').prop('disabled',false);
         $('#div_systemUpdateResult').html(`<code>${data[0]}</code>`);
       }
