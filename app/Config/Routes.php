@@ -272,7 +272,8 @@ $routes->get('marketing/load-organization-updates','Portal\OrganizationControlle
 
 //organization contacts
 $routes->get('marketing/load-organization-contacts','Portal\OrganizationController::loadOrganizationContacts');
-$routes->post('rolodex/add-contact-to-organization','Portal\OrganizationController::addContactToOrganization');
+$routes->post('rolodex/add-contact-to-organization-quick-form','Portal\OrganizationController::addContactToOrganizationQuickForm');
+$routes->post('rolodex/add-contact-to-organization-full-form','Portal\OrganizationController::addContactToOrganizationFullForm');
 $routes->post('marketing/unlink-organization-contact','Portal\OrganizationController::unlinkOrganizationContact');
 $routes->get('marketing/load-unlink-organization-contacts','Portal\OrganizationController::loadUnlinkOrganizationContacts');
 $routes->post('marketing/add-selected-organization-contacts','Portal\OrganizationController::addSelectedOrganizationContacts');
