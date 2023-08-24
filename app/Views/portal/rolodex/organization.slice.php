@@ -1468,7 +1468,7 @@
 						<form id="form_sendOrganizationEmail">
 							<div class="row">
 								<div class="col-lg-6 col-sm-12">
-									<label class="col-form-label text-muted" for="inputError">
+									<label class="col-form-label text-muted">
 										<i class="fa fa-info-circle"></i> Choose Email Template 
 									</label>
 									<select class="form-control select2" id="slc_emailTemplate" style="width:100%;">
@@ -1476,7 +1476,7 @@
 									</select>
 								</div>
 								<div class="col-lg-6 col-sm-12">
-									<label class="col-form-label text-muted" for="inputError">
+									<label class="col-form-label text-muted">
 										<i class="fa fa-info-circle"></i> Choose Signature
 									</label>
 									<select class="form-control select2" id="slc_emailSignature" style="width:100%;">
@@ -1485,7 +1485,7 @@
 								</div>
 							</div>
 
-							<label class="col-form-label text-muted" for="inputError">
+							<label class="col-form-label text-muted">
 								<i class="fa fa-info-circle"></i> To *
 							</label>
 							<div class="input-group">
@@ -1527,11 +1527,11 @@
                   </div>
                </div> -->
 
-               <label class="col-form-label text-muted" for="inputError">
+               <label class="col-form-label text-muted">
                	<i class="fa fa-info-circle"></i> Subject *
                </label>
                <input type="text" class="form-control form-control-sm" id="txt_subject" name="txt_subject" placeholder="Required" required>
-               <label class="col-form-label text-muted" for="inputError">
+               <label class="col-form-label text-muted">
                	<i class="fa fa-info-circle"></i> Content *
                </label>
                <textarea id="txt_content" name="txt_content" required></textarea>
@@ -1544,7 +1544,7 @@
                <hr>
                <div class="card shadow-none">
                	<div class="card-header p-0">
-               		<label class="col-form-label text-muted" for="inputError">
+               		<label class="col-form-label text-muted">
                			<i class="fa fa-info-circle"></i> Possible Substitutions 
                		</label>
                		<button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -2080,7 +2080,7 @@
 											<tr>
 												<td class="p-1" width="120px;" valign="middle">Assigned To *</td>
 												<td class="p-1">
-													<select class="form-control select2" id="slc_assignedToFullForm" name="slc_assignedToFullForm" style="width:100%;" required>
+													<select class="form-control select2" id="slc_assignedToContactFullForm" name="slc_assignedToContactFullForm" style="width:100%;" required>
 														<option value="">--Select user--</option>
 													</select>
 												</td>
@@ -2223,17 +2223,17 @@
 								<div class="col-lg-6 col-sm-12">
 									<div class="info-box shadow-none bg-light mb-2">
 										<span class="info-box-icon bg-dark">
-											<div class="text-center bg-light" id="div_imagePreview">
-												<img class="profile-user-img img-fluid img-circle" id="img_profilePicture"
+											<div class="text-center bg-light" id="div_imagePreviewFullForm">
+												<img class="profile-user-img img-fluid img-circle" id="img_profilePictureFullForm"
 												src="<?php echo base_url(); ?>/public/assets/img/user-placeholder.png"
 												alt="User profile picture">
 											</div>
 										</span>
 										<div class="info-box-content">
 											<div id="div_imageDetails">
-												<span class="info-box-number" id="lbl_fileName">/*************/</span>
-												<span class="info-box-text" id="lbl_fileSize">/*****/</span>
-												<span id="lbl_fileStatus">/*****/</span>
+												<span class="info-box-number" id="lbl_fileNameFullForm">/*************/</span>
+												<span class="info-box-text" id="lbl_fileSizeFullForm">/*****/</span>
+												<span id="lbl_fileStatusFullForm">/*****/</span>
 											</div>
 										</div>
 									</div>
@@ -2494,8 +2494,8 @@
 
       //topNav icon & label
 
-      let topNav = `<i class="fas fa-users mr-2"></i>
-      <b>MARKETING</b>`;
+      let topNav = `<i class="fas fa-address-book mr-2"></i>
+      <b>ROLODEX</b>`;
       $('#lnk_topNav').html(topNav);
 
       //events
@@ -2662,16 +2662,33 @@
 
       $('#form_addContactQuickForm').on('submit',function(e){
       	e.preventDefault();
-      	ORGANIZATION.addContactToOrganization(this);
+      	ORGANIZATION.addContactToOrganizationQuickForm(this);
       });
 
       $('#btn_goToFullForm').on('click',function(){
       	$('#modal_addContactQuickForm').modal('hide');
       	$('body').waitMe(_waitMeLoaderConfig);
       	setTimeout(function(){
+      		$('#modal_addContactFullForm').modal({'backdrop':'static'});
+      		$('#slc_salutationFullForm').val($('#slc_salutationQuickForm').val());
+      		$('#txt_firstNameFullForm').val($('#txt_firstNameQuickForm').val());
+      		$('#txt_lastNameFullForm').val($('#txt_lastNameQuickForm').val());
+      		$('#txt_officePhoneFullForm').val($('#txt_officePhoneQuickForm').val());
+      		$('#txt_primaryEmailFullForm').val($('#txt_primaryEmailQuickForm').val());
+      		ORGANIZATION.loadOrganizations('select','#slc_companyNameFullForm',$('#slc_companyNameQuickForm').val());
+      		ORGANIZATION.loadUsers('#slc_reportsToFullForm');
+      		ORGANIZATION.loadUsers('#slc_assignedToContactFullForm',$('#slc_assignedToContactQuickForm').val());
       		$('body').waitMe('hide');
-      	  	$('#modal_addContactFullForm').modal({'backdrop':'static'});
       	}, 1000);
+      });
+
+      $('#file_profilePictureFullForm').on('change',function(){
+      	ORGANIZATION.uploadContactPicturePreview(this);
+      });
+
+      $('#form_addContactFullForm').on('submit',function(e){
+      	e.preventDefault();
+      	ORGANIZATION.addContactToOrganizationFullForm(this);
       });
 
       $('#btn_addSelectedContacts').on('click',function(){

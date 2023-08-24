@@ -179,8 +179,8 @@
 
     //topNav icon & label
 
-    let topNav = `<i class="fas fa-tools mr-2"></i>
-                  <b>TOOLS</b>`;
+    let topNav = `<i class="fas fa-bullhorn mr-2"></i>
+                    <b>MARKETING</b>`;
     $('#lnk_topNav').html(topNav);
 
     //methods

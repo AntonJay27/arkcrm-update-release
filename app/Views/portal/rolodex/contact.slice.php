@@ -1995,8 +1995,8 @@
 
       //topNav icon & label
 
-      let topNav = `<i class="fas fa-users mr-2"></i>
-                    <b>MARKETING</b>`;
+      let topNav = `<i class="fas fa-address-book mr-2"></i>
+                    <b>ROLODEX</b>`;
       $('#lnk_topNav').html(topNav);
 
       //events
@@ -2004,7 +2004,7 @@
       $('.select2').select2();
 
       $('#btn_addContacts').on('click',function(){
-        // CONTACTS.loadUsers('#slc_reportsTo');
+        CONTACTS.loadUsers('#slc_reportsTo');
         CONTACTS.loadUsers('#slc_assignedTo');
         CONTACTS.loadOrganizations('#slc_companyName');
         $('#lbl_stateContact span').text('Add Contact');

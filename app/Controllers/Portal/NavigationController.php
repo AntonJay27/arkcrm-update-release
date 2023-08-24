@@ -485,7 +485,7 @@ class NavigationController extends BaseController
                     $data['accessModules'] = $accessModules;
                     $data['accessActionsAndFields'] = $accessModulesAndFields[7];
                 }
-                return $this->slice->view('portal.tools.email_template', $data);
+                return $this->slice->view('portal.marketing.email_template', $data);
             }
             else
             {
@@ -521,7 +521,7 @@ class NavigationController extends BaseController
                     $accessModules = loadAccessModulesFromProfile($arrProfiles);
                     $data['accessModules'] = $accessModules;
                 }
-                return $this->slice->view('portal.tools.email_signature', $data);
+                return $this->slice->view('portal.marketing.email_signature', $data);
             }
             else
             {
@@ -925,24 +925,24 @@ class NavigationController extends BaseController
 
     public function testFE()
     {
-        $data['pageTitle'] = "Arkonor LLC | TEST FE";
-        $data['customScripts'] = 'settings';
-        $userData = $this->users->selectUser($this->session->get('arkonorllc_user_id'));
-        $roleData = $this->roles->selectRole($userData['role_id']);
-        if($roleData['profiles'] == null)
-        {
-            $accessModules = json_decode($roleData['modules_and_fields']);
-            $accessModules = loadAccessModulesFromRole($accessModules);
-            $data['accessModules'] = $accessModules;
-        }
-        else
-        {
-            $profileIds = json_decode($roleData['profiles'],true);
-            $arrProfiles = $this->profiles->loadProfiles($profileIds);
-            $accessModules = loadAccessModulesFromProfile($arrProfiles);
-            $data['accessModules'] = $accessModules;
-        }
-        return $this->slice->view('portal.test', $data);
+        // $data['pageTitle'] = "Arkonor LLC | TEST FE";
+        // $data['customScripts'] = 'settings';
+        // $userData = $this->users->selectUser($this->session->get('arkonorllc_user_id'));
+        // $roleData = $this->roles->selectRole($userData['role_id']);
+        // if($roleData['profiles'] == null)
+        // {
+        //     $accessModules = json_decode($roleData['modules_and_fields']);
+        //     $accessModules = loadAccessModulesFromRole($accessModules);
+        //     $data['accessModules'] = $accessModules;
+        // }
+        // else
+        // {
+        //     $profileIds = json_decode($roleData['profiles'],true);
+        //     $arrProfiles = $this->profiles->loadProfiles($profileIds);
+        //     $accessModules = loadAccessModulesFromProfile($arrProfiles);
+        //     $data['accessModules'] = $accessModules;
+        // }
+        // return $this->slice->view('portal.test', $data);
     }
 
     public function logout()

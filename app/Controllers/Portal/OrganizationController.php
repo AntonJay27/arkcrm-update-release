@@ -563,17 +563,17 @@ class OrganizationController extends BaseController
         return $this->response->setJSON($data);
     }
 
-    public function addContactToOrganization()
+    public function addContactToOrganizationQuickForm()
     {
       $this->validation->setRules([
-          'txt_lastName' => [
+          'txt_lastNameQuickForm' => [
               'label'  => 'Last Name',
               'rules'  => 'required',
               'errors' => [
                   'required'    => 'Last Name is required',
               ],
           ],
-          'slc_assignedToContact' => [
+          'slc_assignedToContactQuickForm' => [
               'label'  => 'Assigned To',
               'rules'  => 'required',
               'errors' => [
@@ -588,15 +588,15 @@ class OrganizationController extends BaseController
 
           $msgResult = [];
 
-          $assignedTo = ($fields['slc_assignedToContact'] == "")? NULL : $fields['slc_assignedToContact'];
+          $assignedTo = ($fields['slc_assignedToContactQuickForm'] == "")? NULL : $fields['slc_assignedToContactQuickForm'];
 
           $arrData = [
-              'salutation'            => $fields['slc_salutation'],
-              'first_name'            => $fields['txt_firstName'],
-              'last_name'             => $fields['txt_lastName'],
-              'organization_id'       => $fields['slc_companyName'],
-              'primary_email'         => $fields['txt_primaryEmail'],
-              'office_phone'          => $fields['txt_officePhone'],
+              'salutation'            => $fields['slc_salutationQuickForm'],
+              'first_name'            => $fields['txt_firstNameQuickForm'],
+              'last_name'             => $fields['txt_lastNameQuickForm'],
+              'organization_id'       => ($fields['slc_companyNameQuickForm'] == "")? NULL : $fields['slc_companyNameQuickForm'],
+              'primary_email'         => $fields['txt_primaryEmailQuickForm'],
+              'office_phone'          => $fields['txt_officePhoneQuickForm'],
               'assigned_to'           => $assignedTo,
               'unsubscribe_auth_code' => encrypt_code(generate_code()),
               'created_by'            => $this->session->get('arkonorllc_user_id'),
@@ -604,79 +604,200 @@ class OrganizationController extends BaseController
           ];
 
           $insertId = $this->contacts->addContact($arrData);
-          if($insertId != 0)
+          $msgResult[] = ($insertId > 0)? "Success" : "Database error"; 
+          
+          // contact updates
+          $actionDetails = [
+            'salutation'          => $fields['slc_salutationQuickForm'],
+            'first_name'          => $fields['txt_firstNameQuickForm'],
+            'last_name'           => $fields['txt_lastNameQuickForm'],
+            'organization_id'     => ($fields['slc_companyNameQuickForm'] == "")? NULL : $fields['slc_companyNameQuickForm'],
+            'primary_email'       => $fields['txt_primaryEmailQuickForm']
+          ];
+
+          $arrData = [
+              'contact_id'        => $insertId,
+              'actions'           => 'Quick Create Contact',
+              'action_details'    => json_encode($actionDetails),
+              'action_author'     => 'User',
+              'action_icon'       => 'fa-user',
+              'action_background' => 'bg-success',
+              'created_by'        => $this->session->get('arkonorllc_user_id'),
+              'created_date'      => date('Y-m-d H:i:s')
+          ];
+          $this->contacts->addContactUpdates($arrData);
+
+          if($fields['slc_companyNameQuickForm'] != "")
           {
-              $arrAddressData = [
-                  'contact_id'        => $insertId,
-                  'created_by'        => $this->session->get('arkonorllc_user_id'),
-                  'created_date'      => date('Y-m-d H:i:s')
-              ];
-              $arrDescriptionData = [
-                  'contact_id'        => $insertId,
-                  'created_by'        => $this->session->get('arkonorllc_user_id'),
-                  'created_date'      => date('Y-m-d H:i:s')
-              ];
+            // organization updates
+            $arrContacts[] = [
+              'contact_id'  => $insertId,
+              'salutation'  => $fields['slc_salutationQuickForm'],
+              'first_name'  => $fields['txt_firstNameQuickForm'],
+              'last_name'   => $fields['txt_lastNameQuickForm'],
+            ];
+            $actionDetails = $arrContacts;
 
-              /////////////////////////
-              // contact picture start
-              /////////////////////////
-              $arrPictureData = [
-                  'contact_id'    => $insertId,
-                  'picture'       => NULL,
-                  'created_by'    => $this->session->get('arkonorllc_user_id'),
-                  'created_date'  => date('Y-m-d H:i:s')
-              ];                
-              ///////////////////////
-              // contact picture end
-              ///////////////////////
+            $arrData = [
+                'organization_id'   => $fields['slc_companyNameQuickForm'],
+                'actions'           => 'Linked Contact To Organization',
+                'action_details'    => json_encode($actionDetails),
+                'action_author'     => 'User',
+                'action_icon'       => 'fa-link',
+                'action_background' => 'bg-success',
+                'created_by'        => $this->session->get('arkonorllc_user_id'),
+                'created_date'      => date('Y-m-d H:i:s')
+            ];
+            $this->organizations->addOrganizationUpdates($arrData);
+          }
+      }
+      else
+      {
+          $msgResult[] = $this->validation->getErrors();
+      }
 
-              $result = $this->contacts->addContactDetails($arrAddressData, $arrDescriptionData, $arrPictureData);
-              $msgResult[] = ($result > 0)? "Success" : "Database error"; 
+      return $this->response->setJSON($msgResult);
+    }
 
-              // contact updates
-              $actionDetails = [
-                'salutation'            => $fields['slc_salutation'],
-                'first_name'            => $fields['txt_firstName'],
-                'last_name'             => $fields['txt_lastName'],
-                'organization_id'       => ($fields['slc_companyName'] == "")? NULL : $fields['slc_companyName'],
-                'primary_email'         => $fields['txt_primaryEmail']
-              ];
+    public function addContactToOrganizationFullForm()
+    {
+      $this->validation->setRules([
+          'txt_lastNameFullForm' => [
+              'label'  => 'Last Name',
+              'rules'  => 'required',
+              'errors' => [
+                  'required'    => 'Last Name is required',
+              ],
+          ],
+          'slc_assignedToContactFullForm' => [
+              'label'  => 'Assigned To',
+              'rules'  => 'required',
+              'errors' => [
+                  'required'    => 'Assigned To is required',
+              ],
+          ]
+      ]);
 
-              $arrData = [
-                  'contact_id'        => $insertId,
-                  'actions'           => 'Quick Create Contact',
-                  'action_details'    => json_encode($actionDetails),
-                  'action_author'     => 'User',
-                  'action_icon'       => 'fa-user',
-                  'action_background' => 'bg-success',
-                  'created_by'        => $this->session->get('arkonorllc_user_id'),
-                  'created_date'      => date('Y-m-d H:i:s')
-              ];
-              $this->contacts->addContactUpdates($arrData);
+      if($this->validation->withRequest($this->request)->run())
+      {
+          $fields = $this->request->getPost();
 
-              if($fields['slc_companyName'] != "")
+          $msgResult = [];
+
+          $assignedTo = ($fields['slc_assignedToContactFullForm'] == "")? NULL : $fields['slc_assignedToContactFullForm'];
+
+          $arrData = [
+              'salutation'            => $fields['slc_salutationFullForm'],
+              'first_name'            => $fields['txt_firstNameFullForm'],
+              'last_name'             => $fields['txt_lastNameFullForm'],
+              'position'              => $fields['txt_positionFullForm'],
+              'organization_id'       => ($fields['slc_companyNameFullForm'] == "")? NULL : $fields['slc_companyNameFullForm'],
+              'primary_email'         => $fields['txt_primaryEmailFullForm'],
+              'secondary_email'       => $fields['txt_secondaryEmailFullForm'],
+              'date_of_birth'         => $fields['txt_birthDateFullForm'],
+              'intro_letter'          => $fields['slc_introLetterFullForm'],
+              'office_phone'          => $fields['txt_officePhoneFullForm'],
+              'mobile_phone'          => $fields['txt_mobilePhoneFullForm'],
+              'home_phone'            => $fields['txt_homePhoneFullForm'],
+              'secondary_phone'       => $fields['txt_secondaryPhoneFullForm'],
+              'fax'                   => $fields['txt_faxFullForm'],
+              'do_not_call'           => $fields['chk_doNotCall'],
+              'linkedin_url'          => $fields['txt_linkedinUrlFullForm'],
+              'twitter_url'           => $fields['txt_twitterUrlFullForm'],
+              'facebook_url'          => $fields['txt_facebookUrlFullForm'],
+              'instagram_url'         => $fields['txt_instagramUrlFullForm'],
+              'lead_source'           => $fields['slc_leadSourceFullForm'],
+              'department'            => $fields['txt_departmentFullForm'],
+              'reports_to'            => ($fields['slc_reportsToFullForm'] == "")? NULL : $fields['slc_reportsToFullForm'],
+              'assigned_to'           => $assignedTo,
+              'email_opt_out'         => $fields['slc_emailOptOutFullForm'],
+              'unsubscribe_auth_code' => encrypt_code(generate_code()),
+              'mailing_street'        => $fields['txt_mailingStreetFullForm'],
+              'mailing_po_box'        => $fields['txt_mailingPOBoxFullForm'],
+              'mailing_city'          => $fields['txt_mailingCityFullForm'],
+              'mailing_state'         => $fields['txt_mailingStateFullForm'],
+              'mailing_zip'           => $fields['txt_mailingZipFullForm'],
+              'mailing_country'       => $fields['txt_mailingCountryFullForm'],
+              'other_street'          => $fields['txt_otherStreetFullForm'],
+              'other_po_box'          => $fields['txt_otherPOBoxFullForm'],
+              'other_city'            => $fields['txt_otherCityFullForm'],
+              'other_state'           => $fields['txt_otherStateFullForm'],
+              'other_zip'             => $fields['txt_otherZipFullForm'],
+              'other_country'         => $fields['txt_otherCountryFullForm'],
+              'description'           => $fields['txt_descriptionFullForm'],
+              'created_by'            => $this->session->get('arkonorllc_user_id'),
+              'created_date'          => date('Y-m-d H:i:s')
+          ];
+
+          /////////////////////////
+          // contact picture start
+          /////////////////////////
+          $imageFile = $this->request->getFile('profilePicture');
+
+          if($imageFile != null)
+          {
+              $newFileName = $imageFile->getRandomName();
+              $imageFile->move(ROOTPATH . 'public/assets/uploads/images/contacts', $newFileName);
+
+              if($imageFile->hasMoved())
               {
-                // organization updates
-                $arrContacts[] = [
-                  'contact_id'  => $insertId,
-                  'salutation'  => $fields['slc_salutation'],
-                  'first_name'  => $fields['txt_firstName'],
-                  'last_name'   => $fields['txt_lastName'],
-                ];
-                $actionDetails = $arrContacts;
-
-                $arrData = [
-                    'organization_id'   => $fields['slc_companyName'],
-                    'actions'           => 'Linked Contact To Organization',
-                    'action_details'    => json_encode($actionDetails),
-                    'action_author'     => 'User',
-                    'action_icon'       => 'fa-link',
-                    'action_background' => 'bg-success',
-                    'created_by'        => $this->session->get('arkonorllc_user_id'),
-                    'created_date'      => date('Y-m-d H:i:s')
-                ];
-                $this->organizations->addOrganizationUpdates($arrData);
+                  $arrData['picture'] = $newFileName;
               }
+          }
+          else
+          {
+              $arrData['picture'] = NULL;
+          }                
+          ///////////////////////
+          // contact picture end
+          ///////////////////////
+
+          $insertId = $this->contacts->addContact($arrData);
+          $msgResult[] = ($insertId > 0)? "Success" : "Database error"; 
+          
+          // contact updates
+          $actionDetails = [
+            'salutation'          => $fields['slc_salutationFullForm'],
+            'first_name'          => $fields['txt_firstNameFullForm'],
+            'last_name'           => $fields['txt_lastNameFullForm'],
+            'organization_id'     => ($fields['slc_companyNameFullForm'] == "")? NULL : $fields['slc_companyNameFullForm'],
+            'primary_email'       => $fields['txt_primaryEmailFullForm']
+          ];
+
+          $arrData = [
+              'contact_id'        => $insertId,
+              'actions'           => 'Created Contact',
+              'action_details'    => json_encode($actionDetails),
+              'action_author'     => 'User',
+              'action_icon'       => 'fa-user',
+              'action_background' => 'bg-success',
+              'created_by'        => $this->session->get('arkonorllc_user_id'),
+              'created_date'      => date('Y-m-d H:i:s')
+          ];
+          $this->contacts->addContactUpdates($arrData);
+
+          if($fields['slc_companyNameFullForm'] != "")
+          {
+            // organization updates
+            $arrContacts[] = [
+              'contact_id'  => $insertId,
+              'salutation'  => $fields['slc_salutationFullForm'],
+              'first_name'  => $fields['txt_firstNameFullForm'],
+              'last_name'   => $fields['txt_lastNameFullForm'],
+            ];
+            $actionDetails = $arrContacts;
+
+            $arrData = [
+                'organization_id'   => $fields['slc_companyNameFullForm'],
+                'actions'           => 'Linked Contact To Organization',
+                'action_details'    => json_encode($actionDetails),
+                'action_author'     => 'User',
+                'action_icon'       => 'fa-link',
+                'action_background' => 'bg-success',
+                'created_by'        => $this->session->get('arkonorllc_user_id'),
+                'created_date'      => date('Y-m-d H:i:s')
+            ];
+            $this->organizations->addOrganizationUpdates($arrData);
           }
       }
       else
