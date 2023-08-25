@@ -172,13 +172,36 @@ const SETTINGS = (function(){
     });
   }
 
+  thisSetting.checkSystemUpdates = function()
+  {
+    $('body').waitMe(_waitMeLoaderConfig);
+    $.ajax({
+      /* SystemUpdateController->checkSystemUpdates() */
+      url : `${baseUrl}/settings/check-system-updates`,
+      method : 'get',
+      dataType: 'json',
+      success : function(data)
+      {
+        $('body').waitMe('hide');
+        if(data[0] == '')
+        {
+          $('#lbl_systemUpdateCount').text('');
+        }
+        else
+        {
+          $('#lbl_systemUpdateCount').text('1');
+        }
+      }
+    });
+  }
+
   thisSetting.systemUpdates = function()
   {
     $('body').waitMe(_waitMeLoaderConfig);
     $('#btn_systemUpdates').prop('disabled',true);
     $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
     $.ajax({
-      /* SystemUpdateController->systemUpdates() */
+      /* SystemUpdateController->loadSystemUpdates() */
       url : `${baseUrl}/settings/load-system-updates`,
       method : 'get',
       dataType: 'json',
