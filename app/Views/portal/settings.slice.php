@@ -62,7 +62,9 @@
               <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">Messages</a>
             </li> -->
             <li class="nav-item">
-              <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">System Updates</a>
+              <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">System Updates 
+                <span class="badge badge-danger ml-1" id="lbl_systemUpdateCount"></span>
+              </a>
             </li>
           </ul>
         </div>
@@ -304,6 +306,7 @@
     //
 
     SETTINGS.selectEmailConfig();
+    SETTINGS.checkSystemUpdates();
 
     $('#btn_smtpPasswordHideShow').on('click',function(){
       if($('#txt_smtpPassword').attr('type') == 'password')
