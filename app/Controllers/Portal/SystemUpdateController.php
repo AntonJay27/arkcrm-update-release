@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 
 class SystemUpdateController extends BaseController
 {
-    private $branchName = 'arkcrm-patch-v1-0-0';
+    private $branchName = 'arkcrm-patch-v1-0-1';
 
     public function checkSystemUpdates()
     {
