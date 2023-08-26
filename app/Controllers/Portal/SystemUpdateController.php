@@ -6,16 +6,29 @@ use App\Controllers\BaseController;
 
 class SystemUpdateController extends BaseController
 {
+    private $branchName = 'arkcrm-patch-v1-0-1';
+
     public function checkSystemUpdates()
     {
       $output_array = null;
       $cmd_status = null;
 
-      exec('git pull github arkcrm-patch-v1-0-1:arkcrm-patch-v1-0-1', $output_array, $cmd_status);
+      $branchName = $this->branchName;
 
+      exec("git pull github $branchName:$branchName", $output_array, $cmd_status);
+      exec('git branch', $output_array, $cmd_status);
+
+      $arrBranches = [];
       if(count($output_array) > 0)
       {
-        $arrResult[] = str_replace(' ', '-', $output_array[0]);
+        foreach ($output_array as $key => $value) 
+        {
+          $arrBranches[] = str_replace(' ', '', $value);
+        }
+      }
+      if(in_array($branchName, $arrBranches))
+      {
+        $arrResult[] = 'New update is comming!';
       }
       else
       {
@@ -30,7 +43,9 @@ class SystemUpdateController extends BaseController
       $output_array = null;
       $cmd_status = null;
 
-      exec('git checkout arkcrm-patch-v1-0-1', $output_array, $cmd_status);
+      $branchName = $this->branchName;
+
+      exec("git checkout $branchName", $output_array, $cmd_status);
 
       $arrResult = [$output_array, $cmd_status];
 
