@@ -51,12 +51,13 @@ $routes->post('install/installation-step-five', 'InstallationController::install
 $routes->post('install/installation-step-six', 'InstallationController::installationStepSix');
 $routes->post('install/git-add-init', 'InstallationController::gitAddInit');
 $routes->post('install/git-commit-init', 'InstallationController::gitCommitInit');
-$routes->post('install/git-branch', 'InstallationController::gitBranch');
-$routes->post('install/git-checkout', 'InstallationController::gitCheckout');
-$routes->post('install/git-remote', 'InstallationController::gitRemote');
-$routes->post('install/git-pull', 'InstallationController::gitPull');
 $routes->post('install/git-add', 'InstallationController::gitAdd');
 $routes->post('install/git-commit', 'InstallationController::gitCommit');
+// $routes->post('install/git-branch', 'InstallationController::gitBranch');
+// $routes->post('install/git-checkout', 'InstallationController::gitCheckout');
+$routes->post('install/git-remote', 'InstallationController::gitRemote');
+// $routes->post('install/git-pull', 'InstallationController::gitPull');
+
 
 /*
  * --------------------------------------------------------------------
@@ -407,7 +408,7 @@ $routes->get('settings/select-email-config', 'Portal\EmailConfigurationControlle
 $routes->post('settings/edit-email-config', 'Portal\EmailConfigurationController::editEmailConfig');
 $routes->post('settings/test-email-config', 'Portal\EmailConfigurationController::testEmailConfig');
 $routes->get('settings/check-system-updates', 'Portal\SystemUpdateController::checkSystemUpdates');
-$routes->get('settings/load-system-updates', 'Portal\SystemUpdateController::loadSystemUpdates');
+$routes->get('settings/apply-system-updates', 'Portal\SystemUpdateController::applySystemUpdates');
 
 
 /////////////////////////////////////////////////////////////////////

@@ -195,14 +195,14 @@ const SETTINGS = (function(){
     });
   }
 
-  thisSetting.systemUpdates = function()
+  thisSetting.applySystemUpdates = function()
   {
     $('body').waitMe(_waitMeLoaderConfig);
     $('#btn_systemUpdates').prop('disabled',true);
     $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
     $.ajax({
-      /* SystemUpdateController->loadSystemUpdates() */
-      url : `${baseUrl}/settings/load-system-updates`,
+      /* SystemUpdateController->applySystemUpdates() */
+      url : `${baseUrl}/settings/apply-system-updates`,
       method : 'get',
       dataType: 'json',
       success : function(data)

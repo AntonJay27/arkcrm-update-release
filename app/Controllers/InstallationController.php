@@ -238,30 +238,30 @@ class InstallationController extends BaseController
 		}
 	}
 
-	public function gitPull()
-	{
-		try 
-		{
-			exec('git pull github arkcrm-patch-v1-0-0:arkcrm-patch-v1-0-0');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitPull()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git pull github arkcrm-patch-v1-0-0:arkcrm-patch-v1-0-0');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
-	public function gitCheckout()
-	{
-		try 
-		{
-			exec('git checkout arkcrm-patch-v1-0-0');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitCheckout()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git checkout arkcrm-patch-v1-0-0');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
 }
