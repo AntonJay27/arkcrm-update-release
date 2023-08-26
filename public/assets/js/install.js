@@ -519,59 +519,6 @@ thisInstall.gitRemote = function()
 		  	if(result[0] == "Success")
 		  	{
 		  		$('#lbl_task').html('<i>Create Remote Repository</i>');
-		  		INSTALL.gitPull();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
-
-thisInstall.gitPull = function()
-{
-	$.ajax({
-		  /* InstallationController->gitPull() */
-		url : `${baseUrl}/install/git-pull`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>Pull updates for your version</i>');
-		  		INSTALL.gitCheckout();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
-
-thisInstall.gitCheckout = function()
-{
-	$.ajax({
-		  /* InstallationController->gitCheckout() */
-		url : `${baseUrl}/install/git-checkout`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
 		  		$('#div_stepSix').prop('hidden',true);
 		  		$('#div_stepSeven').prop('hidden',false);
 		  	}
@@ -585,6 +532,60 @@ thisInstall.gitCheckout = function()
 		  }
 		});
 }
+
+// thisInstall.gitPull = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitPull() */
+// 		url : `${baseUrl}/install/git-pull`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>Pull updates for your version</i>');
+// 		  		INSTALL.gitCheckout();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
+
+// thisInstall.gitCheckout = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitCheckout() */
+// 		url : `${baseUrl}/install/git-checkout`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#div_stepSix').prop('hidden',true);
+// 		  		$('#div_stepSeven').prop('hidden',false);
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
 thisInstall.complete = function()
 {

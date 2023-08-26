@@ -335,7 +335,7 @@
     });
 
     $('#btn_systemUpdates').on('click',function(){
-      SETTINGS.systemUpdates();
+      SETTINGS.applySystemUpdates();
     });
     
   });
