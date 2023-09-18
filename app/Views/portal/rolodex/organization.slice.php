@@ -8,6 +8,12 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/select2/css/select2.min.css">
 
+  <!-- BS-STEPPER -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+
+  <!-- BS-DUALLISTBOX -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+
   <style type="text/css">
   	/*INTERNAL STYLES*/
   	.tbl tr td{
@@ -1409,50 +1415,194 @@
 </div>
 </div>
 
-<div class="modal fade" id="modal_importOrganizations" role="dialog">
-	<div class="modal-dialog modal-md" role="document">
-		<div class="modal-content">
-			<div class="modal-header modal-header--sticky">
-				<h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Organizations</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
+  <div class="modal fade" id="modal_importOrganizations" role="dialog">
+  	<div class="modal-dialog modal-xl" role="document">
+  		<div class="modal-content">
+  			<div class="modal-header modal-header--sticky">
+  				<h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Organizations</h5>
+  				<!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+  					<span aria-hidden="true">&times;</span>
+  				</button> -->
+  			</div>
+  			<div class="modal-body">
 
-				<form id="form_importOrganizations" enctype="multipart/form-data">
-					<label>CSV File Only:</label>
-					<input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
-					<span id="lbl_loader"><br><i>Analizing your file, please wait...</i></span>
-					<div class="pt-3" id="div_checkResult">
-						<label>Existing on DB: <span id="lbl_forUpdate"></span></label>
-						<br>
-						<label>For Insert: <span id="lbl_forInsert"></span></label>
-						<br>
-						<label>Conflict Rows: <span id="lbl_conflictRows"></span></label>
-						
-						<p id="lbl_download">
-							Click <a href="#" id="lnk_download" target="_blank">here</a> to download conflict rows.
-						</p>
-					</div>
-					<div class="pt-3" id="div_errorResult" style="color:red;">
-						<label>Error:</label>
-						<p></p>
-						<br>
-					</div>
-					<label id="lbl_uploadingProgress" class="text-danger"><i>Uploading in progress, Please wait...</i></label>
-				</form>
+  				<!-- <form id="form_importOrganizations" enctype="multipart/form-data">
+  					<label>CSV File Only:</label>
+  					<input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
+  					<span id="lbl_loader"><br><i>Analizing your file, please wait...</i></span>
+  					<div class="pt-3" id="div_checkResult">
+  						<label>Existing on DB: <span id="lbl_forUpdate"></span></label>
+  						<br>
+  						<label>For Insert: <span id="lbl_forInsert"></span></label>
+  						<br>
+  						<label>Conflict Rows: <span id="lbl_conflictRows"></span></label>
+  						
+  						<p id="lbl_download">
+  							Click <a href="#" id="lnk_download" target="_blank">here</a> to download conflict rows.
+  						</p>
+  					</div>
+  					<div class="pt-3" id="div_errorResult" style="color:red;">
+  						<label>Error:</label>
+  						<p></p>
+  						<br>
+  					</div>
+  					<label id="lbl_uploadingProgress" class="text-danger"><i>Uploading in progress, Please wait...</i></label>
+  				</form> -->
 
-			</div>
-			<div class="modal-footer modal-footer--sticky">
-				<a href="<?php echo base_url(); ?>/public/assets/files/OrganizationsCSVFileFormat.xlsx" class="btn btn-default">
-					<i class="fa fa-download"></i> Download File Format</a>
-					<button type="submit" class="btn btn-primary" id="btn_submitOrganizationList" form="form_importOrganizations">
-						<i class="fa fa-save"></i> Upload File</button>
-					</div>
-				</div>
-			</div>
-		</div>
+          <div class="bs-stepper linear">
+            <div class="bs-stepper-header" role="tablist">
+              <div class="step active" data-target="#step1" id="step1Indicator">
+                <button type="button" class="step-trigger" role="tab" aria-controls="step1" id="step1Trigger" aria-selected="true">
+                  <span class="bs-stepper-circle">1</span>
+                  <span class="bs-stepper-label">Upload CSV File</span>
+                </button>
+              </div>
+              <div class="line"></div>
+              <div class="step" data-target="#step2" id="step2Indicator">
+                <button type="button" class="step-trigger" role="tab" aria-controls="step2" id="step2Trigger" aria-selected="false" disabled>
+                  <span class="bs-stepper-circle">2</span>
+                  <span class="bs-stepper-label">Duplicate Handling</span>
+                </button>
+              </div>
+              <div class="line"></div>
+              <div class="step" data-target="#step3" id="step3Indicator">
+                <button type="button" class="step-trigger" role="tab" aria-controls="step3" id="step3Trigger" aria-selected="false" disabled>
+                  <span class="bs-stepper-circle">3</span>
+                  <span class="bs-stepper-label">Field Mapping</span>
+                </button>
+              </div>
+            </div>
+            <div class="bs-stepper-content">
+
+              <div id="step1" class="content active dstepper-block" role="tabpanel" aria-labelledby="step1Trigger">
+                <div class="container-fluid mt-5">
+                  <h6>Import from CSV file</h6>
+                  <hr>
+                  <div class="row">
+                    <div class="col-lg-3" style="margin: auto;">
+                      <label class="text-muted">Select CSV File Only</label>
+                    </div>
+                    <div class="col-lg-9">
+                      <input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="row">
+                    <div class="col-lg-3" style="margin: auto;">
+                      <label class="text-muted">Has Header</label>
+                    </div>
+                    <div class="col-lg-9">
+                      <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
+                      <label class="form-check-label" for="chk_hasHeader"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="step2" class="content" role="tabpanel" aria-labelledby="step2Trigger">
+                <div class="container-fluid mt-5">
+                  <h6>Duplicate record handling</h6>
+                  <hr>
+                  <label class="text-muted">Select how duplicate records should be handled</label>
+                  <select class="form-control form-control-sm form-select" id="slc_duplicateHandler">
+                    <option value="Skip">Skip</option>
+                    <option value="Override">Override</option>
+                    <option value="Merge">Merge</option>
+                  </select>
+
+                  <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
+                      <option value="organization-name">Organization Name</option>
+                      <option value="primary-phone">Primary Phone</option>
+                      <option value="website">Website</option>
+                      <option value="fax">Fax</option>
+                      <option value="secondary-phone">Secondary Phone</option>
+                      <option value="primary-email">Primary Email</option>
+                      <option value="secondary-email">Secondary Email</option>
+                      <option value="industry">Industry</option>
+                      <option value="naics-code">NAICS Code</option>
+                      <option value="linkedin-url">LinkedIn URL</option>
+                      <option value="facebook-url">Facebook URL</option>
+                      <option value="instagram-url">Instagram URL</option>
+                      <option value="twitter-url">Twitter URL</option>
+                      <option value="billing-street">Billing Street</option>
+                      <option value="shipping-street">Shipping Street</option>
+                      <option value="billing-city">Billing City</option>
+                      <option value="shipping-city">Shipping City</option>
+                      <option value="billing-state">Billing State</option>
+                      <option value="shipping-state">Shipping State</option>
+                      <option value="billing-postal-code">Billing Postal Code</option>
+                      <option value="shipping-postal-code">Shipping Postal Code</option>
+                      <option value="billing-country">Billing Country</option>
+                      <option value="shipping-country">Shipping Country</option>
+                      <option value="billing-po-box">Billing PO Box</option>
+                      <option value="shipping-po-box">Shipping PO Box</option>
+                  </select>
+
+                </div>
+              </div>
+              <div id="step3" class="content" role="tabpanel" aria-labelledby="step3Trigger">
+                <div class="container-fluid mt-5">
+                  <h6>Map the columns to CRM fields</h6>
+                  <hr>
+                  <div class="row mb-3">
+                    <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
+                      <label>Use Save Maps</label>
+                    </div>
+                    <div class="col-lg-4">
+                      <select class="form-control form-control-sm form-select" id="slc_savedMaps"></select>
+                    </div>
+                  </div>
+                  <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>HEADER</th>
+                        <th>ROW 1</th>
+                        <th>CRM FIELDS</th>
+                        <th>DEFAULT VALUE</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+
+                  <div class="row">
+                    <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
+                        <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3">
+                      <input type="text" class="form-control form-control-sm" name="">
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+  			</div>
+  			<div class="modal-footer modal-footer--sticky">
+          <div id="div_step1" class="pl-4 pr-4">
+              <button type="button" class="btn btn-primary" id="btn_stepOneNext">Next</button>
+              <button type="button" class="btn btn-danger" id="btn_stepOneCancel">Cancel</button>
+          </div>
+          <div id="div_step2" class="pl-4 pr-4" hidden>
+              <button type="button" class="btn btn-secondary" id="btn_stepTwoBack">Back</button>
+              <button type="button" class="btn btn-primary" id="btn_stepTwoNext">Next</button>
+              <button type="button" class="btn btn-dark" id="btn_stepTwoSkip">Skip this step</button>
+              <button type="button" class="btn btn-danger" id="btn_stepTwoCancel">Cancel</button>
+          </div>
+          <div id="div_step3" class="pl-4 pr-4" hidden>
+              <button type="button" class="btn btn-primary" id="btn_stepThreeImport">Import</button>
+              <button type="button" class="btn btn-danger" id="btn_stepThreeCancel">Cancel</button>
+          </div>
+  			</div>
+  		</div>
+  	</div>
+  </div>
 
 		<div class="modal fade" id="modal_sendOrganizationEmail" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
@@ -2477,6 +2627,12 @@
 <!-- Select2 -->
 <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
 
+<!-- BS STEPPER -->
+<script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+
+<!-- BS DUALLISTBOX -->
+<script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+
 <!-- Custom Scripts -->
 <script type="text/javascript" src="<?php echo base_url(); ?>/public/assets/js/portal/rolodex/{{ $customScripts }}.js"></script>
 
@@ -2512,10 +2668,6 @@
       	$('#modal_organization').modal({backdrop:'static',keyboard: false});
       });
 
-      $('#btn_importOrganizations').on('click',function(){
-      	$('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
-      });
-
       $('#lnk_addOrganization').on('click',function(){
       	ORGANIZATION.loadUsers('#slc_assignedTo');
       	ORGANIZATION.loadOrganizations('select','#slc_memberOf');
@@ -2524,10 +2676,6 @@
       	$('#lbl_stateOrganization i').addClass('fa-plus');
       	$('#txt_organizationState').val('add');
       	$('#modal_organization').modal({backdrop:'static',keyboard: false});
-      });
-
-      $('#lnk_importOrganizations').on('click',function(){
-      	$('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
       });
 
       $('#file_profilePicture').on('change',function(){
@@ -2540,33 +2688,71 @@
       });
 
       $('#btn_importOrganizations').on('click',function(){
-      	$('#lbl_loader').hide();
-      	$('#div_checkResult').hide();
-      	$('#lbl_download').hide();
-      	$('#div_errorResult').hide();
-      	$('#lbl_uploadingProgress').hide();
-      	$('#btn_submitOrganizationList').prop('disabled',true);
-      	$('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
+        $('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
+        var demo2 = $('.demo').bootstrapDualListbox({
+          nonSelectedListLabel: 'Non-selected',
+          selectedListLabel: 'Selected',
+          preserveSelectionOnMove: 'moved',
+          moveOnSelect: false,
+          selectorMinimalHeight: 200
+        });
       });
 
       $('#lnk_importOrganizations').on('click',function(){
-      	$('#lbl_loader').hide();
-      	$('#div_checkResult').hide();
-      	$('#lbl_download').hide();
-      	$('#div_errorResult').hide();
-      	$('#lbl_uploadingProgress').hide();
-      	$('#btn_submitOrganizationList').prop('disabled',true);
-      	$('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
+        $('#modal_importOrganizations').modal({backdrop:'static',keyboard: false});
+        var demo2 = $('.demo').bootstrapDualListbox({
+          nonSelectedListLabel: 'Non-selected',
+          selectedListLabel: 'Selected',
+          preserveSelectionOnMove: 'moved',
+          moveOnSelect: false,
+          selectorMinimalHeight: 200
+        });
       });
 
-      $('#file_organizationList').on('change',function(){
-      	ORGANIZATION.checkCSVFile(this);
+      $('#btn_stepOneNext').on('click',function(){
+        ORGANIZATION.uploadFile();
       });
 
-      $('#form_importOrganizations').on('submit',function(e){
-      	e.preventDefault();
-      	ORGANIZATION.uploadOrganizations();
+      $('#btn_stepOneCancel').on('click',function(){
+        ORGANIZATION.stepOneCancel();
       });
+
+      $('#btn_stepTwoBack').on('click',function(){
+        ORGANIZATION.backToStepOne();
+      });
+
+      $('#btn_stepTwoNext').on('click',function(){
+        ORGANIZATION.duplicateHandling();
+      });
+
+      $('#btn_stepTwoSkip').on('click',function(){
+        ORGANIZATION.skipDuplicateHandling();
+      });
+
+      $('#btn_stepTwoCancel').on('click',function(){
+        ORGANIZATION.stepTwoCancel();
+      });
+
+      $('#btn_stepThreeBack').on('click',function(){
+        ORGANIZATION.backToStepTwo();
+      });
+
+      $('#btn_stepThreeImport').on('click',function(){
+        ORGANIZATION.importOrganizations();
+      });
+
+      $('#btn_stepThreeCancel').on('click',function(){
+        ORGANIZATION.stepThreeCancel();
+      });
+
+      // $('#file_organizationList').on('change',function(){
+      // 	ORGANIZATION.checkCSVFile(this);
+      // });
+
+      // $('#form_importOrganizations').on('submit',function(e){
+      // 	e.preventDefault();
+      // 	ORGANIZATION.uploadOrganizations();
+      // });
 
       let organizationId = $('#txt_organizationId').val();
       if(organizationId == "")

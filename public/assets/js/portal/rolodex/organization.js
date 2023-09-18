@@ -5,6 +5,8 @@ const ORGANIZATION = (function(){
 
 	let baseUrl = $('#txt_baseUrl').val();
 
+	let _arrOrganizationImport = [];
+
 	let _arrSelectedDocuments = [];
 	let _arrSelectedCampaigns = [];
 
@@ -460,109 +462,957 @@ const ORGANIZATION = (function(){
 		}
 	}
 
-	function urlencode(obj, prefix) 
+	thisOrganization.uploadFile = function()
 	{
-		str = (obj + '').toString();
-		return (
-			encodeURIComponent(str)
-            // The following creates the sequences %27 %28 %29 %2A (Note that
-            // the valid encoding of "*" is %2A, which necessitates calling
-            // toUpperCase() to properly encode). Although RFC3986 reserves "!",
-            // RFC5987 does not, so we do not need to escape it.
-			.replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-            // The following are not required for percent-encoding per RFC5987,
-            // so we can allow for a little better readability over the wire: |`^
-			.replace(/%(7C|60|5E)/g, (str, hex) =>
-				String.fromCharCode(parseInt(hex, 16))
-				)
-			);
-	}
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').addClass('active');
+		$('#step2Trigger').prop('disabled',false);
+		$('#step3Indicator').removeClass('active');
 
-	thisOrganization.checkCSVFile = function(thisInput)
-	{
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').addClass('active');
+		$('#step2').addClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',false);
+		$('#div_step3').prop('hidden',true);
+
 		$('body').waitMe(_waitMeLoaderConfig);
-		var fileName = thisInput.files[0].name;
+		var fileName = document.getElementById('file_organizationList').files[0].name;
 		let formData = new FormData();
-		formData.set('organizationList',thisInput.files[0],fileName);
-		$('#lbl_loader').show();
-		$('#div_checkResult').hide();
-		$('#div_errorResult').hide();
-		$('#btn_submitContactList').prop('disabled',true);
+		formData.set('organizationList',document.getElementById('file_organizationList').files[0],fileName);
 		$.ajax({
-      // OrganizationController->checkOrganizationFile
-			url : `${baseUrl}/rolodex/check-organization-file`,
+      // OrganizationController->uploadFileOrganization
+			url : `${baseUrl}/rolodex/upload-file-organization`,
 			method : 'POST',
 			dataType: 'json',
-	      processData: false, // important
-	      contentType: false, // important
-	      data : formData,
-	      success : function(result)
-	      {
-	      	$('body').waitMe('hide');
-	      	__arrFileResult = result;
-	      	$('#lbl_loader').hide();
-	      	if(result['upload_res'] == "")
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
 	      	{
-	      		let forUpdate = result['for_update'].length;
-	      		let forInsert = result['for_insert'].length;
-	      		let conflictRows = result['conflict_rows'].length;
+		      	$('body').waitMe('hide');
 
-	      		$('#lbl_forUpdate').text(forUpdate);
-	      		$('#lbl_forInsert').text(forInsert);
-	      		$('#lbl_conflictRows').text(conflictRows);
-	      		$('#div_checkResult').show();
-	      		(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
+		      	console.log(result);
+		      	_arrOrganizationImport = result;
+		      	// $('#lbl_loader').hide();
+		      	// if(result['upload_res'] == "")
+		      	// {
+		      	// 	let forUpdate = result['for_update'].length;
+		      	// 	let forInsert = result['for_insert'].length;
+		      	// 	let conflictRows = result['conflict_rows'].length;
 
-	      		let conflictRowData = result['conflict_rows'];
+		      	// 	$('#lbl_forUpdate').text(forUpdate);
+		      	// 	$('#lbl_forInsert').text(forInsert);
+		      	// 	$('#lbl_conflictRows').text(conflictRows);
+		      	// 	$('#div_checkResult').show();
+		      	// 	(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
 
-	      		var myJSON = JSON.stringify(conflictRowData);
-	      		var trafficFilterHolder = urlencode(myJSON);
+		      	// 	let conflictRowData = result['conflict_rows'];
 
-	          // console.log(trafficFilterHolder);
+		      	// 	var myJSON = JSON.stringify(conflictRowData);
+		      	// 	var trafficFilterHolder = urlencode(myJSON);
 
-	      		$('#lnk_download').attr('href',`${baseUrl}/rolodex/organization-conflicts/${trafficFilterHolder}`);
+		        //   // console.log(trafficFilterHolder);
 
-	      		if(forInsert != 0)
-	      		{
-	      			$('#btn_submitOrganizationList').prop('disabled',false);
-	      		}
+		      	// 	$('#lnk_download').attr('href',`${baseUrl}/rolodex/organization-conflicts/${trafficFilterHolder}`);
+
+		      	// 	if(forInsert != 0)
+		      	// 	{
+		      	// 		$('#btn_submitOrganizationList').prop('disabled',false);
+		      	// 	}
+		      	// }
+		      	// else
+		      	// {
+		      	// 	$('#div_errorResult > p').text(result['upload_res']);
+		      	// 	$('#div_errorResult').show();
+		      	// }
 	      	}
-	      	else
-	      	{
-	      		$('#div_errorResult > p').text(result['upload_res']);
-	      		$('#div_errorResult').show();
-	      	}
-	      }
-	   });
+	  	});
 	}
 
-	thisOrganization.uploadOrganizations = function()
+	thisOrganization.stepOneCancel = function()
 	{
-		$('#lbl_uploadingProgress').show();
-		if(confirm("Please confirm!"))
+		if(confirm('If you press OK import process will be terminated!'))
 		{
-			$('body').waitMe(_waitMeLoaderConfig);
-			let rawData = __arrFileResult;
-			$.ajax({
-        // OrganizationController->uploadOrganizations
-				url : `${baseUrl}/rolodex/upload-organizations`,
-				method : 'POST',
-				dataType: 'json',
-				data : {
-					'rawData' : 
-					{
-						'forInsert' : JSON.stringify(rawData['for_insert'])
-					}
-				},
-				success : function(result)
-				{
-					$('body').waitMe('hide');
-					$('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
-					location.reload();      
-				}
-			});
+			$('#modal_importOrganizations').modal('hide');
+		    window.location.replace(`${baseUrl}/organizations`);
 		}
 	}
+
+	thisOrganization.backToStepOne = function()
+	{
+		$('#step1Indicator').addClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step2Trigger').prop('disabled',true);
+		$('#step3Indicator').removeClass('active');
+
+		$('#step1').addClass('active');
+		$('#step1').addClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',false);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',true);
+	}
+
+	thisOrganization.duplicateHandling = function()
+	{
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step3Indicator').addClass('active');
+		$('#step3Trigger').prop('disabled',false);
+
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').addClass('active');
+		$('#step3').addClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',false);
+
+		$('body').waitMe(_waitMeLoaderConfig);
+		let formData = new FormData();
+		formData.set('arrOrganizationList', JSON.stringify(_arrOrganizationImport));
+		formData.set('slc_duplicateHandler',$('#slc_duplicateHandler').val());
+		let arrOptions = [];
+		$("#bootstrap-duallistbox-selected-list_duallistbox_demo2 option").each(function()
+		{
+		    arrOptions.push($(this).val());
+		});
+		formData.set('arrOptions',JSON.stringify(arrOptions));
+		_arrOrganizationImport['arrDuplicateHandler'] = [
+			$('#slc_duplicateHandler').val(),
+			arrOptions
+		];
+		$.ajax({
+      // OrganizationController->duplicateHandlingOrganization
+			url : `${baseUrl}/rolodex/duplicate-handling-organization`,
+			method : 'POST',
+			dataType: 'json',
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+		      	$('body').waitMe('hide');
+
+		      	console.log(_arrOrganizationImport['arr_header']);
+
+		      	let tbody = '';
+		      	let num = 1;
+		      	_arrOrganizationImport['arr_header'].forEach(function(value,key){
+
+		      		let defaultValue = '';
+
+		      		if(value.replace(' ','-').toLowerCase() == 'organization-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'main-website')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-website')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'phone-number')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'industry')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'naics-code')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'employee-count')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'annual-revenue')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'type')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+											<option value="">--Select type--</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'ticket-symbol')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'member-of')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+											<option value="">--Select Organization--</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+											<option value="" selected>--Yes or No--</option>
+											<option value="1">Yes</option>
+											<option value="0">No</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		tbody += `<tr>
+		      					<td>${num}</td>
+                              <td>${value}</td>
+                              <td>${_arrOrganizationImport['arr_data'][0][key]}</td>
+                              <td>
+                              	<select class="form-control form-control-sm select2" onchange="ORGANIZATION.fieldMapping(this)" style="width:100%;">
+                              		<option value="" selected>--Select an Option--</option>
+                              		<option value="organization-name" ${(value.replace(' ','-').toLowerCase() == 'organization-name')? 'selected' : ''}>Organization Name</option>
+                              		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
+                              		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
+                              		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
+                              		<option value="main-website" ${(value.replace(' ','-').toLowerCase() == 'main-website')? 'selected' : ''}>Main Website</option>
+                              		<option value="other-website" ${(value.replace(' ','-').toLowerCase() == 'other-website')? 'selected' : ''}>Other Website</option>
+                              		<option value="phone-number" ${(value.replace(' ','-').toLowerCase() == 'phone-number')? 'selected' : ''}>Phone Number</option>
+                              		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+                              		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
+                              		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
+                              		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
+                              		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
+                              		<option value="industry" ${(value.replace(' ','-').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
+                              		<option value="naics-code" ${(value.replace(' ','-').toLowerCase() == 'naics-code')? 'selected' : ''}>NAICS Code</option>
+                              		<option value="employee-count" ${(value.replace(' ','-').toLowerCase() == 'employee-count')? 'selected' : ''}>Employee Count</option>
+                              		<option value="annual-revenue" ${(value.replace(' ','-').toLowerCase() == 'annual-revenue')? 'selected' : ''}>Annual Revenue</option>
+                              		<option value="type" ${(value.replace(' ','-').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
+                              		<option value="ticket-symbol" ${(value.replace(' ','-').toLowerCase() == 'ticket-symbol')? 'selected' : ''}>Ticket Symbol</option>
+                              		<option value="member-of" ${(value.replace(' ','-').toLowerCase() == 'member-of')? 'selected' : ''}>Member Of</option>
+                              		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
+                              		<option value="billing-street" ${(value.replace(' ','-').toLowerCase() == 'billing-street')? 'selected' : ''}>Billing Street</option>
+                              		<option value="shipping-street" ${(value.replace(' ','-').toLowerCase() == 'shipping-street')? 'selected' : ''}>Shipping Street</option>
+                              		<option value="billing-city" ${(value.replace(' ','-').toLowerCase() == 'billing-city')? 'selected' : ''}>Billing City</option>
+                              		<option value="shipping-city" ${(value.replace(' ','-').toLowerCase() == 'shipping-city')? 'selected' : ''}>Shipping City</option>
+                              		<option value="billing-state" ${(value.replace(' ','-').toLowerCase() == 'billing-state')? 'selected' : ''}>Billing State</option>
+                              		<option value="shipping-state" ${(value.replace(' ','-').toLowerCase() == 'shipping-state')? 'selected' : ''}>Shipping State</option>
+                              		<option value="billing-zip" ${(value.replace(' ','-').toLowerCase() == 'billing-zip')? 'selected' : ''}>Billing Zip</option>
+                              		<option value="shipping-zip" ${(value.replace(' ','-').toLowerCase() == 'shipping-zip')? 'selected' : ''}>Shipping Zip</option>
+                              		<option value="billing-country" ${(value.replace(' ','-').toLowerCase() == 'billing-country')? 'selected' : ''}>Billing Country</option>
+                              		<option value="shipping-country" ${(value.replace(' ','-').toLowerCase() == 'shipping-country')? 'selected' : ''}>Shipping Country</option>
+                              		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+                              	</select>
+                              </td>
+                              <td>${defaultValue}</td>
+                            </tr>`;
+                    num++;
+		      	});
+
+		      	$('#tbl_mapping tbody').html('');
+		      	$('#tbl_mapping tbody').html(tbody);
+
+		      	$('.select2').select2();
+	      	}
+	  	});
+	}
+
+	thisOrganization.skipDuplicateHandling = function()
+	{
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step3Indicator').addClass('active');
+		$('#step3Trigger').prop('disabled',false);
+
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').addClass('active');
+		$('#step3').addClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',false);
+
+		$('body').waitMe(_waitMeLoaderConfig);
+		let formData = new FormData();
+		formData.set('arrOrganizationList', JSON.stringify(_arrOrganizationImport));
+		formData.set('slc_duplicateHandler',$('#slc_duplicateHandler').val());
+		let arrOptions = [];
+		$("#bootstrap-duallistbox-selected-list_duallistbox_demo2 option").each(function()
+		{
+		    arrOptions.push($(this).val());
+		});
+		formData.set('arrOptions',JSON.stringify(arrOptions));
+		$.ajax({
+      // OrganizationController->duplicateHandlingOrganization
+			url : `${baseUrl}/rolodex/duplicate-handling-organization`,
+			method : 'POST',
+			dataType: 'json',
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+		      	$('body').waitMe('hide');
+
+		      	console.log(_arrOrganizationImport['arr_header']);
+
+		      	let tbody = '';
+		      	_arrOrganizationImport['arr_header'].forEach(function(value,key){
+
+		      		let defaultValue = '';
+
+		      		if(value.replace(' ','-').toLowerCase() == 'organization-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'main-website')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-website')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'phone-number')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'industry')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'naics-code')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'employee-count')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'annual-revenue')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'type')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+											<option value="">--Select type--</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'ticket-symbol')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'member-of')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+											<option value="">--Select Organization--</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+											<option value="" selected>--Yes or No--</option>
+											<option value="1">Yes</option>
+											<option value="0">No</option>
+										</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'billing-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'shipping-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		tbody += `<tr>
+                              <td>${value}</td>
+                              <td>${_arrOrganizationImport['arr_data'][0][key]}</td>
+                              <td>
+                              	<select class="form-control form-control-sm select2" onchange="ORGANIZATION.fieldMapping(this)" style="width:100%;">
+                              		<option value="" selected>--Select an Option--</option>
+                              		<option value="organization-name" ${(value.replace(' ','-').toLowerCase() == 'organization-name')? 'selected' : ''}>Organization Name</option>
+                              		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
+                              		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
+                              		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
+                              		<option value="main-website" ${(value.replace(' ','-').toLowerCase() == 'main-website')? 'selected' : ''}>Main Website</option>
+                              		<option value="other-website" ${(value.replace(' ','-').toLowerCase() == 'other-website')? 'selected' : ''}>Other Website</option>
+                              		<option value="phone-number" ${(value.replace(' ','-').toLowerCase() == 'phone-number')? 'selected' : ''}>Phone Number</option>
+                              		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+                              		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
+                              		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
+                              		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
+                              		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
+                              		<option value="industry" ${(value.replace(' ','-').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
+                              		<option value="naics-code" ${(value.replace(' ','-').toLowerCase() == 'naics-code')? 'selected' : ''}>NAICS Code</option>
+                              		<option value="employee-count" ${(value.replace(' ','-').toLowerCase() == 'employee-count')? 'selected' : ''}>Employee Count</option>
+                              		<option value="annual-revenue" ${(value.replace(' ','-').toLowerCase() == 'annual-revenue')? 'selected' : ''}>Annual Revenue</option>
+                              		<option value="type" ${(value.replace(' ','-').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
+                              		<option value="ticket-symbol" ${(value.replace(' ','-').toLowerCase() == 'ticket-symbol')? 'selected' : ''}>Ticket Symbol</option>
+                              		<option value="member-of" ${(value.replace(' ','-').toLowerCase() == 'member-of')? 'selected' : ''}>Member Of</option>
+                              		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
+                              		<option value="billing-street" ${(value.replace(' ','-').toLowerCase() == 'billing-street')? 'selected' : ''}>Billing Street</option>
+                              		<option value="shipping-street" ${(value.replace(' ','-').toLowerCase() == 'shipping-street')? 'selected' : ''}>Shipping Street</option>
+                              		<option value="billing-city" ${(value.replace(' ','-').toLowerCase() == 'billing-city')? 'selected' : ''}>Billing City</option>
+                              		<option value="shipping-city" ${(value.replace(' ','-').toLowerCase() == 'shipping-city')? 'selected' : ''}>Shipping City</option>
+                              		<option value="billing-state" ${(value.replace(' ','-').toLowerCase() == 'billing-state')? 'selected' : ''}>Billing State</option>
+                              		<option value="shipping-state" ${(value.replace(' ','-').toLowerCase() == 'shipping-state')? 'selected' : ''}>Shipping State</option>
+                              		<option value="billing-zip" ${(value.replace(' ','-').toLowerCase() == 'billing-zip')? 'selected' : ''}>Billing Zip</option>
+                              		<option value="shipping-zip" ${(value.replace(' ','-').toLowerCase() == 'shipping-zip')? 'selected' : ''}>Shipping Zip</option>
+                              		<option value="billing-country" ${(value.replace(' ','-').toLowerCase() == 'billing-country')? 'selected' : ''}>Billing Country</option>
+                              		<option value="shipping-country" ${(value.replace(' ','-').toLowerCase() == 'shipping-country')? 'selected' : ''}>Shipping Country</option>
+                              		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+                              	</select>
+                              </td>
+                              <td>${defaultValue}</td>
+                            </tr>`;
+		      	});
+
+		      	$('#tbl_mapping tbody').html('');
+		      	$('#tbl_mapping tbody').html(tbody);
+
+		      	$('.select2').select2();
+	      	}
+	  	});
+	}
+
+	thisOrganization.stepTwoCancel = function()
+	{
+		if(confirm('If you press OK import process will be terminated!'))
+		{
+			$('#modal_importOrganizations').modal('hide');
+		    window.location.replace(`${baseUrl}/organizations`);
+		}
+	}
+
+	thisOrganization.backToStepTwo = function()
+	{
+		$('#step1Indicator').addClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step2Trigger').prop('disabled',true);
+		$('#step3Indicator').removeClass('active');
+
+		$('#step1').addClass('active');
+		$('#step1').addClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',false);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',true);
+	}
+
+	thisOrganization.fieldMapping = function(dis)
+	{
+  		let defaultValue = '';
+
+  		if($(dis).val() == 'organization-name')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'assigned-to')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm"></select>`;
+  		}
+
+  		if($(dis).val() == 'primary-email')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'secondary-email')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'main-website')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-website')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'phone-number')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'fax')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'linkedin-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'facebook-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'twitter-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'instagram-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'industry')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'naics-code')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'employee-count')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'annual-revenue')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'type')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+								<option value="">--Select type--</option>
+							</select>`;
+  		}
+
+  		if($(dis).val() == 'ticket-symbol')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'member-of')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+								<option value="">--Select Organization--</option>
+							</select>`;
+  		}
+
+  		if($(dis).val() == 'email-opt-out')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm">
+								<option value="" selected>--Yes or No--</option>
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>`;
+  		}
+
+  		if($(dis).val() == 'billing-street')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		if($(dis).val() == 'shipping-street')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		if($(dis).val() == 'billing-city')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'shipping-city')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'billing-state')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'shipping-state')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'billing-zip')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'shipping-zip')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'billing-country')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'shipping-country')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'description')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		$(dis).closest('tr').find('td:eq(3)').html(defaultValue);
+	}
+
+	thisOrganization.importOrganizations = function()
+	{
+		// console.log(_arrOrganizationImport);
+
+		let arrFields = [];
+		$('#tbl_mapping tbody tr').each(function(){
+			arrFields.push($(this).find('td:eq(3) select').val());
+		});
+
+		console.log(arrFields);
+	}
+
+	thisOrganization.stepThreeCancel = function()
+	{
+		if(confirm('If you press OK import process will be terminated!'))
+		{
+			$('#modal_importOrganizations').modal('hide');
+		    window.location.replace(`${baseUrl}/organizations`);
+		}
+	}
+
+	// function urlencode(obj, prefix) 
+	// {
+	// 	str = (obj + '').toString();
+	// 	return (
+	// 		encodeURIComponent(str)
+    //         // The following creates the sequences %27 %28 %29 %2A (Note that
+    //         // the valid encoding of "*" is %2A, which necessitates calling
+    //         // toUpperCase() to properly encode). Although RFC3986 reserves "!",
+    //         // RFC5987 does not, so we do not need to escape it.
+	// 		.replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+    //         // The following are not required for percent-encoding per RFC5987,
+    //         // so we can allow for a little better readability over the wire: |`^
+	// 		.replace(/%(7C|60|5E)/g, (str, hex) =>
+	// 			String.fromCharCode(parseInt(hex, 16))
+	// 			)
+	// 		);
+	// }
+
+	// thisOrganization.checkCSVFile = function(thisInput)
+	// {
+	// 	$('body').waitMe(_waitMeLoaderConfig);
+	// 	var fileName = thisInput.files[0].name;
+	// 	let formData = new FormData();
+	// 	formData.set('organizationList',thisInput.files[0],fileName);
+	// 	$('#lbl_loader').show();
+	// 	$('#div_checkResult').hide();
+	// 	$('#div_errorResult').hide();
+	// 	$('#btn_submitContactList').prop('disabled',true);
+	// 	$.ajax({
+    //   // OrganizationController->checkOrganizationFile
+	// 		url : `${baseUrl}/rolodex/check-organization-file`,
+	// 		method : 'POST',
+	// 		dataType: 'json',
+	//       processData: false, // important
+	//       contentType: false, // important
+	//       data : formData,
+	//       success : function(result)
+	//       {
+	//       	$('body').waitMe('hide');
+	//       	_arrOrganizationImport = result;
+	//       	$('#lbl_loader').hide();
+	//       	if(result['upload_res'] == "")
+	//       	{
+	//       		let forUpdate = result['for_update'].length;
+	//       		let forInsert = result['for_insert'].length;
+	//       		let conflictRows = result['conflict_rows'].length;
+
+	//       		$('#lbl_forUpdate').text(forUpdate);
+	//       		$('#lbl_forInsert').text(forInsert);
+	//       		$('#lbl_conflictRows').text(conflictRows);
+	//       		$('#div_checkResult').show();
+	//       		(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
+
+	//       		let conflictRowData = result['conflict_rows'];
+
+	//       		var myJSON = JSON.stringify(conflictRowData);
+	//       		var trafficFilterHolder = urlencode(myJSON);
+
+	//           // console.log(trafficFilterHolder);
+
+	//       		$('#lnk_download').attr('href',`${baseUrl}/rolodex/organization-conflicts/${trafficFilterHolder}`);
+
+	//       		if(forInsert != 0)
+	//       		{
+	//       			$('#btn_submitOrganizationList').prop('disabled',false);
+	//       		}
+	//       	}
+	//       	else
+	//       	{
+	//       		$('#div_errorResult > p').text(result['upload_res']);
+	//       		$('#div_errorResult').show();
+	//       	}
+	//       }
+	//    });
+	// }
+
+	// thisOrganization.uploadOrganizations = function()
+	// {
+	// 	$('#lbl_uploadingProgress').show();
+	// 	if(confirm("Please confirm!"))
+	// 	{
+	// 		$('body').waitMe(_waitMeLoaderConfig);
+	// 		let rawData = _arrOrganizationImport;
+	// 		$.ajax({
+    //     // OrganizationController->uploadOrganizations
+	// 			url : `${baseUrl}/rolodex/upload-organizations`,
+	// 			method : 'POST',
+	// 			dataType: 'json',
+	// 			data : {
+	// 				'rawData' : 
+	// 				{
+	// 					'forInsert' : JSON.stringify(rawData['for_insert'])
+	// 				}
+	// 			},
+	// 			success : function(result)
+	// 			{
+	// 				$('body').waitMe('hide');
+	// 				$('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
+	// 				location.reload();      
+	// 			}
+	// 		});
+	// 	}
+	// }
 
 
   // Send Email

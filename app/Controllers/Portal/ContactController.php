@@ -6,6 +6,11 @@ use App\Controllers\BaseController;
 
 class ContactController extends BaseController
 {
+
+    public $_arrContactList = [];
+    public $_arrOptions = [];
+    public $_duplicateHandler = '';
+
     public function __construct()
     {
         
@@ -306,56 +311,161 @@ class ContactController extends BaseController
         return $this->response->setJSON($msgResult);
     }
 
-    function checkOnDb($forUpload = [])
-    {
-        $primaryEmails = [];
-        foreach($forUpload as $key => $value)
-        {
-            $primaryEmails[] = $value['primary_email'];
-        }
+    // function checkOnDb($forUpload = [])
+    // {
+    //     $primaryEmails = [];
+    //     foreach($forUpload as $key => $value)
+    //     {
+    //         $primaryEmails[] = $value['primary_email'];
+    //     }
 
-        $resultForUpdate = $this->contacts->checkOnDb($primaryEmails);
+    //     $resultForUpdate = $this->contacts->checkOnDb($primaryEmails);
 
-        $forUpdate = [];
-        $forInsert = [];
-        foreach ($forUpload as $key1 => $value1) 
-        {
-            $existing = false;
-            $showInfo = false;
-            if($resultForUpdate != null)
-            {
-                foreach ($resultForUpdate as $key2 => $value2) 
-                {
-                    if($value1['primary_email'] == $value2['primary_email'])
-                    {
-                        $existing = true;
-                    }
-                }
-            }            
+    //     $forUpdate = [];
+    //     $forInsert = [];
+    //     foreach ($forUpload as $key1 => $value1) 
+    //     {
+    //         $existing = false;
+    //         $showInfo = false;
+    //         if($resultForUpdate != null)
+    //         {
+    //             foreach ($resultForUpdate as $key2 => $value2) 
+    //             {
+    //                 if($value1['primary_email'] == $value2['primary_email'])
+    //                 {
+    //                     $existing = true;
+    //                 }
+    //             }
+    //         }            
 
-            if($existing)
-            {
-                // for update
-                $forUpdate[] = $value1;
-            }
-            else
-            {
-                // for insert
-                $forInsert[] = $value1;
-            }
-        }
+    //         if($existing)
+    //         {
+    //             // for update
+    //             $forUpdate[] = $value1;
+    //         }
+    //         else
+    //         {
+    //             // for insert
+    //             $forInsert[] = $value1;
+    //         }
+    //     }
 
-        $arrDbResult['forUpdate'] = $forUpdate;
-        $arrDbResult['forInsert'] = $forInsert;
+    //     $arrDbResult['forUpdate'] = $forUpdate;
+    //     $arrDbResult['forInsert'] = $forInsert;
 
-        return $arrDbResult;
+    //     return $arrDbResult;
 
-        // return $resultForUpdate;
-    }
+    //     // return $resultForUpdate;
+    // }
 
-    public function checkContactFile()
+    // public function checkContactFile()
+    // {
+    //   $file = $this->request->getFile('contactList');
+
+    //   if ($file->isValid() && ! $file->hasMoved()) 
+    //   {
+    //       $file_data = $file->getName();
+    //       $path = $file->getTempName();
+
+    //       $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+    //       $arrData = readUploadFile($path);
+
+    //       $validColumns = [];
+    //       foreach($arrData[0] as $key => $value)
+    //       {
+    //           $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
+    //           if(!in_array($value,$arrVal))
+    //           {
+    //               $validColumns[] = $value;
+    //           }
+    //       }
+    //       array_shift($arrData);
+    //       $arrResult = [];
+    //       $arrResult['upload_res'] = "";
+    //       if(count($validColumns) == 34 && count($arrData) > 0)
+    //       {
+    //           $newArrData = [];
+    //           foreach ($arrData as $key => $value) 
+    //           {
+    //               $newArrData[] = [
+    //                  'salutation'           => checkData($value[0]),
+    //                  'first_name'           => checkData($value[1]),
+    //                  'last_name'            => checkData($value[2]),
+    //                  'date_of_birth'        => checkData($value[3]),
+    //                  'position'             => checkData($value[4]),
+    //                  'organization_id'      => checkData($value[5]),
+    //                  'primary_email'        => checkData($value[6]),
+    //                  'secondary_email'      => checkData($value[7]),
+    //                  'office_phone'         => checkData($value[8]),
+    //                  'mobile_phone'         => checkData($value[9]),
+    //                  'home_phone'           => checkData($value[10]),
+    //                  'secondary_phone'      => checkData($value[11]),
+    //                  'fax'                  => checkData($value[12]),
+    //                  'do_not_call'          => checkData($value[13]),
+    //                  'linkedin_url'         => checkData($value[14]),
+    //                  'twitter_url'          => checkData($value[15]),
+    //                  'instagram_url'        => checkData($value[16]),
+    //                  'facebook_url'         => checkData($value[17]),
+    //                  'lead_source'          => checkData($value[18]),
+    //                  'department'           => checkData($value[19]),
+    //                  'email_opt_out'        => checkData($value[20]),
+    //                  'mailing_street'       => checkData($value[21]),
+    //                  'mailing_po_box'       => checkData($value[22]),
+    //                  'mailing_city'         => checkData($value[23]),
+    //                  'mailing_state'        => checkData($value[24]),
+    //                  'mailing_zip'          => checkData($value[25]),
+    //                  'mailing_country'      => checkData($value[26]),
+    //                  'other_street'         => checkData($value[27]),
+    //                  'other_po_box'         => checkData($value[28]),
+    //                  'other_city'           => checkData($value[29]),
+    //                  'other_state'          => checkData($value[30]),
+    //                  'other_zip'            => checkData($value[31]),
+    //                  'other_country'        => checkData($value[32]),
+    //                  'description'          => checkData($value[33]),
+    //                  'unsubscribe_auth_code'=> encrypt_code(generate_code()),
+    //                  'assigned_to'          => $this->session->get('arkonorllc_user_id'),
+    //                  'created_by'           => $this->session->get('arkonorllc_user_id'),
+    //                  'created_date'         => date('Y-m-d H:i:s')
+    //               ];
+    //           }
+    //           $uniqueColumns = ['primary_email','secondary_email'];
+    //           $checkDuplicateResult = checkDuplicateRows($newArrData, $uniqueColumns);
+
+    //           if(count($checkDuplicateResult['rowData']) > 0)
+    //           {
+    //               $checkOnDbResult = $this->checkOnDb($checkDuplicateResult['rowData']);
+
+    //               $arrResult['for_update'] = $checkOnDbResult['forUpdate'];
+    //               $arrResult['for_insert'] = $checkOnDbResult['forInsert'];
+    //               $arrResult['conflict_rows'] = $checkDuplicateResult['rowConflictData'];
+    //           }
+    //           else
+    //           {
+    //               $arrResult['for_update'] = [];
+    //               $arrResult['for_insert'] = [];
+    //               $arrResult['conflict_rows'] = $checkDuplicateResult['rowConflictData'];
+    //           }
+    //       }
+    //       else
+    //       {
+    //           $arrResult['upload_res'] = "Invalid file, maybe columns does not match or no data found!";
+    //       }    
+    //   }
+    //   else
+    //   {
+    //       $arrResult[] = "Invalid File";
+    //   }
+
+    //   return $this->response->setJSON($arrResult);
+    // }
+
+
+    public function uploadFileContact()
     {
       $file = $this->request->getFile('contactList');
+
+      $arrResult = [];
 
       if ($file->isValid() && ! $file->hasMoved()) 
       {
@@ -365,6 +475,8 @@ class ContactController extends BaseController
           $ext = pathinfo($path, PATHINFO_EXTENSION);
 
           $arrData = readUploadFile($path);
+
+          $arrResult['arr_header'] = $arrData[0];
 
           $validColumns = [];
           foreach($arrData[0] as $key => $value)
@@ -376,76 +488,8 @@ class ContactController extends BaseController
               }
           }
           array_shift($arrData);
-          $arrResult = [];
-          $arrResult['upload_res'] = "";
-          if(count($validColumns) == 34 && count($arrData) > 0)
-          {
-              $newArrData = [];
-              foreach ($arrData as $key => $value) 
-              {
-                  $newArrData[] = [
-                     'salutation'           => checkData($value[0]),
-                     'first_name'           => checkData($value[1]),
-                     'last_name'            => checkData($value[2]),
-                     'date_of_birth'        => checkData($value[3]),
-                     'position'             => checkData($value[4]),
-                     'organization_id'      => checkData($value[5]),
-                     'primary_email'        => checkData($value[6]),
-                     'secondary_email'      => checkData($value[7]),
-                     'office_phone'         => checkData($value[8]),
-                     'mobile_phone'         => checkData($value[9]),
-                     'home_phone'           => checkData($value[10]),
-                     'secondary_phone'      => checkData($value[11]),
-                     'fax'                  => checkData($value[12]),
-                     'do_not_call'          => checkData($value[13]),
-                     'linkedin_url'         => checkData($value[14]),
-                     'twitter_url'          => checkData($value[15]),
-                     'instagram_url'        => checkData($value[16]),
-                     'facebook_url'         => checkData($value[17]),
-                     'lead_source'          => checkData($value[18]),
-                     'department'           => checkData($value[19]),
-                     'email_opt_out'        => checkData($value[20]),
-                     'mailing_street'       => checkData($value[21]),
-                     'mailing_po_box'       => checkData($value[22]),
-                     'mailing_city'         => checkData($value[23]),
-                     'mailing_state'        => checkData($value[24]),
-                     'mailing_zip'          => checkData($value[25]),
-                     'mailing_country'      => checkData($value[26]),
-                     'other_street'         => checkData($value[27]),
-                     'other_po_box'         => checkData($value[28]),
-                     'other_city'           => checkData($value[29]),
-                     'other_state'          => checkData($value[30]),
-                     'other_zip'            => checkData($value[31]),
-                     'other_country'        => checkData($value[32]),
-                     'description'          => checkData($value[33]),
-                     'unsubscribe_auth_code'=> encrypt_code(generate_code()),
-                     'assigned_to'          => $this->session->get('arkonorllc_user_id'),
-                     'created_by'           => $this->session->get('arkonorllc_user_id'),
-                     'created_date'         => date('Y-m-d H:i:s')
-                  ];
-              }
-              $uniqueColumns = ['primary_email','secondary_email'];
-              $checkDuplicateResult = checkDuplicateRows($newArrData, $uniqueColumns);
-
-              if(count($checkDuplicateResult['rowData']) > 0)
-              {
-                  $checkOnDbResult = $this->checkOnDb($checkDuplicateResult['rowData']);
-
-                  $arrResult['for_update'] = $checkOnDbResult['forUpdate'];
-                  $arrResult['for_insert'] = $checkOnDbResult['forInsert'];
-                  $arrResult['conflict_rows'] = $checkDuplicateResult['rowConflictData'];
-              }
-              else
-              {
-                  $arrResult['for_update'] = [];
-                  $arrResult['for_insert'] = [];
-                  $arrResult['conflict_rows'] = $checkDuplicateResult['rowConflictData'];
-              }
-          }
-          else
-          {
-              $arrResult['upload_res'] = "Invalid file, maybe columns does not match or no data found!";
-          }    
+          
+          $arrResult['arr_data'] = $arrData;
       }
       else
       {
@@ -455,81 +499,100 @@ class ContactController extends BaseController
       return $this->response->setJSON($arrResult);
     }
 
-    public function uploadContacts()
+    public function duplicateHandlingContact()
     {
-      $fields = $this->request->getPost();
+        $fields = $this->request->getPost();
 
-      $forInsert = (isset($fields['rawData']['forInsert']))? json_decode($fields['rawData']['forInsert'],true) : [];
+        $this->_arrContactList = json_decode($fields['arrContactList'],true);
+        $this->_arrOptions = json_decode($fields['arrOptions'],true);
+        $this->_duplicateHandler = $fields['slc_duplicateHandler'];
 
-      $arrWhere = 'primary_email';
+        $arrResult = $this->_arrContactList;
 
-      // insert
-      if(count($forInsert) > 0)
-      {
-          $arrForInsert = [];
-          foreach ($forInsert as $key => $value) 
-          {
-              $password = encrypt_code(generate_code());
-              $arrForInsert[] = [
-                  'salutation'            => $value['salutation'],
-                  'first_name'            => $value['first_name'],
-                  'last_name'             => $value['last_name'],
-                  'date_of_birth'         => $value['date_of_birth'],
-                  'position'              => $value['position'],
-                  'organization_id'       => $value['organization_id'],
-                  'primary_email'         => $value['primary_email'],
-                  'secondary_email'       => $value['secondary_email'],
-                  'office_phone'          => $value['office_phone'],
-                  'mobile_phone'          => $value['mobile_phone'],
-                  'home_phone'            => $value['home_phone'],
-                  'secondary_phone'       => $value['secondary_phone'],
-                  'fax'                   => $value['fax'],
-                  'do_not_call'           => $value['do_not_call'],
-                  'linkedin_url'          => $value['linkedin_url'],
-                  'twitter_url'           => $value['twitter_url'],
-                  'instagram_url'         => $value['instagram_url'],
-                  'facebook_url'          => $value['facebook_url'],
-                  'lead_source'           => $value['lead_source'],
-                  'department'            => $value['department'],
-                  'email_opt_out'         => $value['email_opt_out'],
-                  'mailing_street'        => $value['mailing_street'],
-                  'mailing_po_box'        => $value['mailing_po_box'],
-                  'mailing_city'          => $value['mailing_city'],
-                  'mailing_state'         => $value['mailing_state'],
-                  'mailing_zip'           => $value['mailing_zip'],
-                  'mailing_country'       => $value['mailing_country'],
-                  'other_street'          => $value['other_street'],
-                  'other_po_box'          => $value['other_po_box'],
-                  'other_city'            => $value['other_city'],
-                  'other_state'           => $value['other_state'],
-                  'other_zip'             => $value['other_zip'],
-                  'other_country'         => $value['other_country'],
-                  'description'           => $value['description'],
-                  'unsubscribe_auth_code' => encrypt_code(generate_code()),
-                  'assigned_to'           => $this->session->get('arkonorllc_user_id'),
-                  'created_by'            => $this->session->get('arkonorllc_user_id'),
-                  'created_date'          => date('Y-m-d H:i:s')
-              ];
-          }
-      }
-      //insert
-      $uploadResult['inserted_rows'] = (count($forInsert) > 0)?$this->contacts->uploadContacts($arrForInsert) : 0;
-
-      return $this->response->setJSON($uploadResult);
+        return $this->response->setJSON($arrResult);
     }
 
-    public function contactConflicts($rawData)
+    public function importOrganizations()
     {
-      $Text = json_decode($rawData,true);
 
-      // return $this->response->setJSON($Text);
-
-      $date = date('d-m-y-'.substr((string)microtime(), 1, 8));
-      $date = str_replace(".", "", $date);
-      $filename = "export_".$date.".xlsx";
-
-      downloadContactConflicts($filename,$Text);
     }
+
+
+    // public function uploadContacts()
+    // {
+    //   $fields = $this->request->getPost();
+
+    //   $forInsert = (isset($fields['rawData']['forInsert']))? json_decode($fields['rawData']['forInsert'],true) : [];
+
+    //   $arrWhere = 'primary_email';
+
+    //   // insert
+    //   if(count($forInsert) > 0)
+    //   {
+    //       $arrForInsert = [];
+    //       foreach ($forInsert as $key => $value) 
+    //       {
+    //           $password = encrypt_code(generate_code());
+    //           $arrForInsert[] = [
+    //               'salutation'            => $value['salutation'],
+    //               'first_name'            => $value['first_name'],
+    //               'last_name'             => $value['last_name'],
+    //               'date_of_birth'         => $value['date_of_birth'],
+    //               'position'              => $value['position'],
+    //               'organization_id'       => $value['organization_id'],
+    //               'primary_email'         => $value['primary_email'],
+    //               'secondary_email'       => $value['secondary_email'],
+    //               'office_phone'          => $value['office_phone'],
+    //               'mobile_phone'          => $value['mobile_phone'],
+    //               'home_phone'            => $value['home_phone'],
+    //               'secondary_phone'       => $value['secondary_phone'],
+    //               'fax'                   => $value['fax'],
+    //               'do_not_call'           => $value['do_not_call'],
+    //               'linkedin_url'          => $value['linkedin_url'],
+    //               'twitter_url'           => $value['twitter_url'],
+    //               'instagram_url'         => $value['instagram_url'],
+    //               'facebook_url'          => $value['facebook_url'],
+    //               'lead_source'           => $value['lead_source'],
+    //               'department'            => $value['department'],
+    //               'email_opt_out'         => $value['email_opt_out'],
+    //               'mailing_street'        => $value['mailing_street'],
+    //               'mailing_po_box'        => $value['mailing_po_box'],
+    //               'mailing_city'          => $value['mailing_city'],
+    //               'mailing_state'         => $value['mailing_state'],
+    //               'mailing_zip'           => $value['mailing_zip'],
+    //               'mailing_country'       => $value['mailing_country'],
+    //               'other_street'          => $value['other_street'],
+    //               'other_po_box'          => $value['other_po_box'],
+    //               'other_city'            => $value['other_city'],
+    //               'other_state'           => $value['other_state'],
+    //               'other_zip'             => $value['other_zip'],
+    //               'other_country'         => $value['other_country'],
+    //               'description'           => $value['description'],
+    //               'unsubscribe_auth_code' => encrypt_code(generate_code()),
+    //               'assigned_to'           => $this->session->get('arkonorllc_user_id'),
+    //               'created_by'            => $this->session->get('arkonorllc_user_id'),
+    //               'created_date'          => date('Y-m-d H:i:s')
+    //           ];
+    //       }
+    //   }
+    //   //insert
+    //   $uploadResult['inserted_rows'] = (count($forInsert) > 0)?$this->contacts->uploadContacts($arrForInsert) : 0;
+
+    //   return $this->response->setJSON($uploadResult);
+    // }
+
+    // public function contactConflicts($rawData)
+    // {
+    //   $Text = json_decode($rawData,true);
+
+    //   // return $this->response->setJSON($Text);
+
+    //   $date = date('d-m-y-'.substr((string)microtime(), 1, 8));
+    //   $date = str_replace(".", "", $date);
+    //   $filename = "export_".$date.".xlsx";
+
+    //   downloadContactConflicts($filename,$Text);
+    // }
 
     public function loadContactSummary()
     {

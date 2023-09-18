@@ -53,10 +53,7 @@ $routes->post('install/git-add-init', 'InstallationController::gitAddInit');
 $routes->post('install/git-commit-init', 'InstallationController::gitCommitInit');
 $routes->post('install/git-add', 'InstallationController::gitAdd');
 $routes->post('install/git-commit', 'InstallationController::gitCommit');
-// $routes->post('install/git-branch', 'InstallationController::gitBranch');
-// $routes->post('install/git-checkout', 'InstallationController::gitCheckout');
 $routes->post('install/git-remote', 'InstallationController::gitRemote');
-// $routes->post('install/git-pull', 'InstallationController::gitPull');
 
 
 /*
@@ -204,9 +201,12 @@ $routes->post('marketing/add-contact','Portal\ContactController::addContact');
 $routes->get('marketing/select-contact','Portal\ContactController::selectContact');
 $routes->post('marketing/edit-contact','Portal\ContactController::editContact');
 $routes->post('marketing/remove-contact','Portal\ContactController::removeContact');
-$routes->post('rolodex/check-contact-file','Portal\ContactController::checkContactFile');
-$routes->post('rolodex/upload-contacts','Portal\ContactController::uploadContacts');
-$routes->get('rolodex/contact-conflicts/(:any)', 'Portal\ContactController::contactConflicts/$1');
+// $routes->post('rolodex/check-contact-file','Portal\ContactController::checkContactFile');
+// $routes->post('rolodex/upload-contacts','Portal\ContactController::uploadContacts');
+// $routes->get('rolodex/contact-conflicts/(:any)', 'Portal\ContactController::contactConflicts/$1');
+$routes->post('rolodex/upload-file-contact','Portal\ContactController::uploadFileContact');
+$routes->post('rolodex/duplicate-handling-contact','Portal\ContactController::duplicateHandlingContact');
+$routes->post('rolodex/import-contacts','Portal\ContactController::importContacts');
 
 //contact summary
 $routes->get('marketing/load-contact-summary','Portal\ContactController::loadContactSummary');
@@ -258,9 +258,11 @@ $routes->post('marketing/add-organization','Portal\OrganizationController::addOr
 $routes->get('marketing/select-organization','Portal\OrganizationController::selectOrganization');
 $routes->post('marketing/edit-organization','Portal\OrganizationController::editOrganization');
 $routes->post('marketing/remove-organization','Portal\OrganizationController::removeOrganization');
-$routes->post('rolodex/check-organization-file','Portal\OrganizationController::checkOrganizationFile');
-$routes->post('rolodex/upload-organizations','Portal\OrganizationController::uploadOrganizations');
-$routes->get('rolodex/organization-conflicts/(:any)', 'Portal\OrganizationController::organizationConflicts/$1');
+// $routes->post('rolodex/check-organization-file','Portal\OrganizationController::checkOrganizationFile');
+$routes->post('rolodex/upload-file-organization','Portal\OrganizationController::uploadFileOrganization');
+$routes->post('rolodex/duplicate-handling-organization','Portal\OrganizationController::duplicateHandlingOrganization');
+$routes->post('rolodex/import-organizations','Portal\OrganizationController::importOrganizations');
+// $routes->get('rolodex/organization-conflicts/(:any)', 'Portal\OrganizationController::organizationConflicts/$1');
 
 //organization summary
 $routes->get('marketing/load-organization-summary','Portal\OrganizationController::loadOrganizationSummary');

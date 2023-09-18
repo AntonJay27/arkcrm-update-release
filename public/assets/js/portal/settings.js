@@ -185,11 +185,13 @@ const SETTINGS = (function(){
         $('body').waitMe('hide');
         if(data[0] == '')
         {
+          $('#btn_applySystemUpdates').prop('disabled',true);
           $('#lbl_systemUpdateCount').text('');
         }
         else
         {
-          $('#lbl_systemUpdateCount').text('1');
+          $('#btn_applySystemUpdates').prop('disabled',false);
+          $('#lbl_systemUpdateCount').text('New');
         }
       }
     });

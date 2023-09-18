@@ -501,109 +501,1128 @@ const CONTACTS = (function(){
 		}
 	}
 
-		function urlencode(obj, prefix) 
-		{
-		    str = (obj + '').toString();
-	      return (
-	          encodeURIComponent(str)
-	            // The following creates the sequences %27 %28 %29 %2A (Note that
-	            // the valid encoding of "*" is %2A, which necessitates calling
-	            // toUpperCase() to properly encode). Although RFC3986 reserves "!",
-	            // RFC5987 does not, so we do not need to escape it.
-	            .replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-	            // The following are not required for percent-encoding per RFC5987,
-	            // so we can allow for a little better readability over the wire: |`^
-	            .replace(/%(7C|60|5E)/g, (str, hex) =>
-	              String.fromCharCode(parseInt(hex, 16))
-	            )
-	        );
-		}
-
-	thisContacts.checkCSVFile = function(thisInput)
+	thisContacts.uploadFile = function()
 	{
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').addClass('active');
+		$('#step2Trigger').prop('disabled',false);
+		$('#step3Indicator').removeClass('active');
+
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').addClass('active');
+		$('#step2').addClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',false);
+		$('#div_step3').prop('hidden',true);
+
 		$('body').waitMe(_waitMeLoaderConfig);
-		var fileName = thisInput.files[0].name;
+		var fileName = document.getElementById('file_contactList').files[0].name;
 		let formData = new FormData();
-		formData.set('contactList',thisInput.files[0],fileName);
-		$('#lbl_loader').show();
-		$('#div_checkResult').hide();
-		$('#div_errorResult').hide();
-		$('#btn_submitContactList').prop('disabled',true);
+		formData.set('contactList',document.getElementById('file_contactList').files[0],fileName);
 		$.ajax({
-			// ContactController->checkContactFile
-			url : `${baseUrl}/rolodex/check-contact-file`,
+      // ContactController->uploadFileContact
+			url : `${baseUrl}/rolodex/upload-file-contact`,
 			method : 'POST',
 			dataType: 'json',
-			processData: false, // important
-			contentType: false, // important
-			data : formData,
-			success : function(result)
-			{
-				$('body').waitMe('hide');
-				__arrFileResult = result;
-				$('#lbl_loader').hide();
-				if(result['upload_res'] == "")
-				{
-					let forUpdate = result['for_update'].length;
-					let forInsert = result['for_insert'].length;
-					let conflictRows = result['conflict_rows'].length;
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+		      	$('body').waitMe('hide');
 
-					$('#lbl_forUpdate').text(forUpdate);
-					$('#lbl_forInsert').text(forInsert);
-					$('#lbl_conflictRows').text(conflictRows);
-					$('#div_checkResult').show();
-					(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
+		      	console.log(result);
+		      	__arrFileResult = result;
+		      	// $('#lbl_loader').hide();
+		      	// if(result['upload_res'] == "")
+		      	// {
+		      	// 	let forUpdate = result['for_update'].length;
+		      	// 	let forInsert = result['for_insert'].length;
+		      	// 	let conflictRows = result['conflict_rows'].length;
 
-					let conflictRowData = result['conflict_rows'];
-					
-					var myJSON = JSON.stringify(conflictRowData);
-					var trafficFilterHolder = urlencode(myJSON);
+		      	// 	$('#lbl_forUpdate').text(forUpdate);
+		      	// 	$('#lbl_forInsert').text(forInsert);
+		      	// 	$('#lbl_conflictRows').text(conflictRows);
+		      	// 	$('#div_checkResult').show();
+		      	// 	(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
 
-					// console.log(trafficFilterHolder);
-						
-					$('#lnk_download').attr('href',`${baseUrl}/rolodex/contact-conflicts/${trafficFilterHolder}`);
+		      	// 	let conflictRowData = result['conflict_rows'];
 
-					if(forInsert != 0)
-					{
-						$('#btn_submitContactList').prop('disabled',false);
-					}
-				}
-				else
-				{
-					$('#div_errorResult > p').text(result['upload_res']);
-					$('#div_errorResult').show();
-				}
-			}
-		});
+		      	// 	var myJSON = JSON.stringify(conflictRowData);
+		      	// 	var trafficFilterHolder = urlencode(myJSON);
+
+		        //   // console.log(trafficFilterHolder);
+
+		      	// 	$('#lnk_download').attr('href',`${baseUrl}/rolodex/organization-conflicts/${trafficFilterHolder}`);
+
+		      	// 	if(forInsert != 0)
+		      	// 	{
+		      	// 		$('#btn_submitOrganizationList').prop('disabled',false);
+		      	// 	}
+		      	// }
+		      	// else
+		      	// {
+		      	// 	$('#div_errorResult > p').text(result['upload_res']);
+		      	// 	$('#div_errorResult').show();
+		      	// }
+	      	}
+	  	});
 	}
 
-	thisContacts.uploadContacts = function()
+	thisContacts.stepOneCancel = function()
 	{
-		$('#lbl_uploadingProgress').show();
-		if(confirm("Please confirm!"))
+		if(confirm('If you press OK import process will be terminated!'))
 		{
-			$('body').waitMe(_waitMeLoaderConfig);
-			let rawData = __arrFileResult;
-			$.ajax({
-				// ContactController->uploadContacts
-				url : `${baseUrl}/rolodex/upload-contacts`,
-				method : 'POST',
-				dataType: 'json',
-				data : {
-					'rawData' : 
-					{
-						'forInsert' : JSON.stringify(rawData['for_insert'])
-					}
-				},
-				success : function(result)
-				{
-					$('body').waitMe('hide');
-					$('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
-          location.reload();			
-				}
-			});
+			$('#modal_importContacts').modal('hide');
+		    window.location.replace(`${baseUrl}/contacts`);
 		}
 	}
+
+	thisContacts.backToStepOne = function()
+	{
+		$('#step1Indicator').addClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step2Trigger').prop('disabled',true);
+		$('#step3Indicator').removeClass('active');
+
+		$('#step1').addClass('active');
+		$('#step1').addClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',false);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',true);
+	}
+
+	thisContacts.duplicateHandling = function()
+	{
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step3Indicator').addClass('active');
+		$('#step3Trigger').prop('disabled',false);
+
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').addClass('active');
+		$('#step3').addClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',false);
+
+		$('body').waitMe(_waitMeLoaderConfig);
+		let formData = new FormData();
+		formData.set('arrContactList', JSON.stringify(__arrFileResult));
+		formData.set('slc_duplicateHandler',$('#slc_duplicateHandler').val());
+		let arrOptions = [];
+		$("#bootstrap-duallistbox-selected-list_duallistbox_demo2 option").each(function()
+		{
+		    arrOptions.push($(this).val());
+		});
+		formData.set('arrOptions',JSON.stringify(arrOptions));
+		$.ajax({
+      // ContactController->duplicateHandlingContact
+			url : `${baseUrl}/rolodex/duplicate-handling-contact`,
+			method : 'POST',
+			dataType: 'json',
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+		      	$('body').waitMe('hide');
+
+		      	console.log(__arrFileResult['arr_header']);
+
+		      	let tbody = '';
+		      	let num = 1;
+		      	__arrFileResult['arr_header'].forEach(function(value,key){
+
+		      		let defaultValue = '';
+
+		      		if(value.replace(' ','-').toLowerCase() == 'salutation')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+                                  <option value="" selected>--Salutation--</option>
+                                  <option value="Mr.">Mr.</option>
+                                  <option value="Ms.">Ms.</option>
+                                  <option value="Mrs.">Mrs.</option>
+                                  <option value="Dr.">Dr.</option>
+                                  <option value="Prof.">Prof.</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'first-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'last-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'position')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'company-name')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'date-of-birth')
+		      		{
+		      			defaultValue = `<input type="date" class="form-control form-control-sm" placeholder="(e.g. yyyy/mm/dd)">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'intro-letter')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+                                  <option value="" selected>--Sent or Respond--</option>
+                                  <option value="Sent">Sent</option>
+                                  <option value="Respond">Respond</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'office-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mobile-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'home-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'do-not-call')
+		      		{
+		      			defaultValue = `<input class="form-check-input" type="checkbox">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'lead-source')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm" style="width:100%;">
+                                  <option value="" selected>--Select an option--</option>
+                                  <option value="Cold-Call">Cold Call</option>
+                                  <option value="Existing-Customer">Existing Customer</option>
+                                  <option value="Self-Generated">Self Generated</option>
+                                  <option value="Employee">Employee</option>
+                                  <option value="Partner">Partner</option>
+                                  <option value="Public-Relations">Public Relations</option>
+                                  <option value="Direct-Mail">Direct Mail</option>
+                                  <option value="Conference">Conference</option>
+                                  <option value="Trade-Show">Trade Show</option>
+                                  <option value="Web-Site">Web Site</option>
+                                  <option value="Word-of-Mouth">Word of Mouth</option>
+                                  <option value="Other">Other</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'department')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'reports-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+																	<option value="">--Select type--</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+																	<option value="">--Select type--</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+																	<option value="" selected>--Yes or No--</option>
+																	<option value="1">Yes</option>
+																	<option value="0">No</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-po-box')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-po-box')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		tbody += `<tr>
+		      								<td>${num}</td>
+	                        <td>${value}</td>
+	                        <td>${__arrFileResult['arr_data'][0][key]}</td>
+	                        <td>
+	                        	<select class="form-control form-control-sm select2" onchange="CONTACTS.fieldMapping(this)" style="width:100%;">
+	                        		<option value="" selected>--Select an Option--</option>
+	                        		<option value="salutation" ${(value.replace(' ','-').toLowerCase() == 'salutation')? 'selected' : ''}>Salutation</option>
+	                        		<option value="first-name" ${(value.replace(' ','-').toLowerCase() == 'first-name')? 'selected' : ''}>First Name</option>
+	                        		<option value="last-name" ${(value.replace(' ','-').toLowerCase() == 'last-name')? 'selected' : ''}>Last Name</option>
+	                        		<option value="position" ${(value.replace(' ','-').toLowerCase() == 'position')? 'selected' : ''}>Position</option>
+	                        		<option value="company-name" ${(value.replace(' ','-').toLowerCase() == 'company-name')? 'selected' : ''}>Company Name</option>
+	                        		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
+	                        		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
+	                        		<option value="date-of-birth" ${(value.replace(' ','-').toLowerCase() == 'date-of-birth')? 'selected' : ''}>Date of Birth</option>
+	                        		<option value="intro-letter" ${(value.replace(' ','-').toLowerCase() == 'intro-letter')? 'selected' : ''}>Intro Letter</option>
+	                        		<option value="office-phone" ${(value.replace(' ','-').toLowerCase() == 'office-phone')? 'selected' : ''}>Office Phone</option>
+	                        		<option value="mobile-phone" ${(value.replace(' ','-').toLowerCase() == 'mobile-phone')? 'selected' : ''}>Mobile Phone</option>
+	                        		<option value="home-phone" ${(value.replace(' ','-').toLowerCase() == 'home-phone')? 'selected' : ''}>Home Phone</option>
+	                        		<option value="secondary-phone" ${(value.replace(' ','-').toLowerCase() == 'secondary-phone')? 'selected' : ''}>Secondary Phone</option>
+	                        		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+	                        		<option value="do-not-call" ${(value.replace(' ','-').toLowerCase() == 'do-not-call')? 'selected' : ''}>Do Not Call</option>
+	                        		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
+	                        		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
+	                        		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
+	                        		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
+	                        		<option value="lead-source" ${(value.replace(' ','-').toLowerCase() == 'lead-source')? 'selected' : ''}>Lead Source</option>
+	                        		<option value="department" ${(value.replace(' ','-').toLowerCase() == 'department')? 'selected' : ''}>Department</option>
+	                        		<option value="reports-to" ${(value.replace(' ','-').toLowerCase() == 'reports-to')? 'selected' : ''}>Reports To</option>
+	                        		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
+	                        		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
+	                        		<option value="mailing-street" ${(value.replace(' ','-').toLowerCase() == 'mailing-street')? 'selected' : ''}>Mailing Street</option>
+	                        		<option value="other-street" ${(value.replace(' ','-').toLowerCase() == 'other-street')? 'selected' : ''}>Other Street</option>
+	                        		<option value="mailing-po-box" ${(value.replace(' ','-').toLowerCase() == 'mailing-po-box')? 'selected' : ''}>Mailing P.O. Box</option>
+	                        		<option value="other-po-box" ${(value.replace(' ','-').toLowerCase() == 'other-po-box')? 'selected' : ''}>Other P.O. Box</option>
+	                        		<option value="mailing-city" ${(value.replace(' ','-').toLowerCase() == 'mailing-city')? 'selected' : ''}>Mailing City</option>
+	                        		<option value="other-city" ${(value.replace(' ','-').toLowerCase() == 'other-city')? 'selected' : ''}>Other City</option>
+	                        		<option value="mailing-state" ${(value.replace(' ','-').toLowerCase() == 'mailing-state')? 'selected' : ''}>Mailing State</option>
+	                        		<option value="other-state" ${(value.replace(' ','-').toLowerCase() == 'other-state')? 'selected' : ''}>Other State</option>
+	                        		<option value="mailing-zip" ${(value.replace(' ','-').toLowerCase() == 'mailing-zip')? 'selected' : ''}>Mailing Zip</option>
+	                        		<option value="other-zip" ${(value.replace(' ','-').toLowerCase() == 'other-zip')? 'selected' : ''}>Other Zip</option>
+	                        		<option value="mailing-country" ${(value.replace(' ','-').toLowerCase() == 'mailing-country')? 'selected' : ''}>Mailing Country</option>
+	                        		<option value="other-country" ${(value.replace(' ','-').toLowerCase() == 'other-country')? 'selected' : ''}>Other Country</option>
+	                        		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+	                        	</select>
+	                        </td>
+	                        <td>${defaultValue}</td>
+	                      </tr>`;
+	            num++;
+		      	});
+
+		      	$('#tbl_mapping tbody').html('');
+		      	$('#tbl_mapping tbody').html(tbody);
+
+		      	$('.select2').select2();
+	      	}
+	  	});
+	}
+
+	thisContacts.skipDuplicateHandling = function()
+	{
+		$('#step1Indicator').removeClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step3Indicator').addClass('active');
+		$('#step3Trigger').prop('disabled',false);
+
+		$('#step1').removeClass('active');
+		$('#step1').removeClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').addClass('active');
+		$('#step3').addClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',true);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',false);
+
+		$('body').waitMe(_waitMeLoaderConfig);
+		let formData = new FormData();
+		formData.set('arrContactList', JSON.stringify(__arrFileResult));
+		formData.set('slc_duplicateHandler',$('#slc_duplicateHandler').val());
+		let arrOptions = [];
+		$("#bootstrap-duallistbox-selected-list_duallistbox_demo2 option").each(function()
+		{
+		    arrOptions.push($(this).val());
+		});
+		formData.set('arrOptions',JSON.stringify(arrOptions));
+		$.ajax({
+      // ContactController->duplicateHandlingContact
+			url : `${baseUrl}/rolodex/duplicate-handling-contact`,
+			method : 'POST',
+			dataType: 'json',
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+		      	$('body').waitMe('hide');
+
+		      	console.log(__arrFileResult['arr_header']);
+
+		      	let tbody = '';
+		      	__arrFileResult['arr_header'].forEach(function(value,key){
+
+		      		let defaultValue = '';
+
+		      		if(value.replace(' ','-').toLowerCase() == 'salutation')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+                                  <option value="" selected>--Salutation--</option>
+                                  <option value="Mr.">Mr.</option>
+                                  <option value="Ms.">Ms.</option>
+                                  <option value="Mrs.">Mrs.</option>
+                                  <option value="Dr.">Dr.</option>
+                                  <option value="Prof.">Prof.</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'first-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'last-name')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'position')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'company-name')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'date-of-birth')
+		      		{
+		      			defaultValue = `<input type="date" class="form-control form-control-sm" placeholder="(e.g. yyyy/mm/dd)">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'intro-letter')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+                                  <option value="" selected>--Sent or Respond--</option>
+                                  <option value="Sent">Sent</option>
+                                  <option value="Respond">Respond</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'office-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mobile-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'home-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'secondary-phone')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'do-not-call')
+		      		{
+		      			defaultValue = `<input class="form-check-input" type="checkbox">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'lead-source')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm" style="width:100%;">
+                                  <option value="" selected>--Select an option--</option>
+                                  <option value="Cold-Call">Cold Call</option>
+                                  <option value="Existing-Customer">Existing Customer</option>
+                                  <option value="Self-Generated">Self Generated</option>
+                                  <option value="Employee">Employee</option>
+                                  <option value="Partner">Partner</option>
+                                  <option value="Public-Relations">Public Relations</option>
+                                  <option value="Direct-Mail">Direct Mail</option>
+                                  <option value="Conference">Conference</option>
+                                  <option value="Trade-Show">Trade Show</option>
+                                  <option value="Web-Site">Web Site</option>
+                                  <option value="Word-of-Mouth">Word of Mouth</option>
+                                  <option value="Other">Other</option>
+                                </select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'department')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'reports-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+																	<option value="">--Select type--</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+																	<option value="">--Select type--</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		{
+		      			defaultValue = `<select class="form-control form-control-sm">
+																	<option value="" selected>--Yes or No--</option>
+																	<option value="1">Yes</option>
+																	<option value="0">No</option>
+																</select>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-street')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-po-box')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-po-box')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-city')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-state')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-zip')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'mailing-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'other-country')
+		      		{
+		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+		      		}
+
+		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		{
+		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+		      		}
+
+		      		tbody += `<tr>
+	                        <td>${value}</td>
+	                        <td>${__arrFileResult['arr_data'][0][key]}</td>
+	                        <td>
+	                        	<select class="form-control form-control-sm select2" onchange="CONTACTS.fieldMapping(this)" style="width:100%;">
+	                        		<option value="" selected>--Select an Option--</option>
+	                        		<option value="salutation" ${(value.replace(' ','-').toLowerCase() == 'salutation')? 'selected' : ''}>Salutation</option>
+	                        		<option value="first-name" ${(value.replace(' ','-').toLowerCase() == 'first-name')? 'selected' : ''}>First Name</option>
+	                        		<option value="last-name" ${(value.replace(' ','-').toLowerCase() == 'last-name')? 'selected' : ''}>Last Name</option>
+	                        		<option value="position" ${(value.replace(' ','-').toLowerCase() == 'position')? 'selected' : ''}>Position</option>
+	                        		<option value="company-name" ${(value.replace(' ','-').toLowerCase() == 'company-name')? 'selected' : ''}>Company Name</option>
+	                        		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
+	                        		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
+	                        		<option value="date-of-birth" ${(value.replace(' ','-').toLowerCase() == 'date-of-birth')? 'selected' : ''}>Date of Birth</option>
+	                        		<option value="intro-letter" ${(value.replace(' ','-').toLowerCase() == 'intro-letter')? 'selected' : ''}>Intro Letter</option>
+	                        		<option value="office-phone" ${(value.replace(' ','-').toLowerCase() == 'office-phone')? 'selected' : ''}>Office Phone</option>
+	                        		<option value="mobile-phone" ${(value.replace(' ','-').toLowerCase() == 'mobile-phone')? 'selected' : ''}>Mobile Phone</option>
+	                        		<option value="home-phone" ${(value.replace(' ','-').toLowerCase() == 'home-phone')? 'selected' : ''}>Home Phone</option>
+	                        		<option value="secondary-phone" ${(value.replace(' ','-').toLowerCase() == 'secondary-phone')? 'selected' : ''}>Secondary Phone</option>
+	                        		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+	                        		<option value="do-not-call" ${(value.replace(' ','-').toLowerCase() == 'do-not-call')? 'selected' : ''}>Do Not Call</option>
+	                        		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
+	                        		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
+	                        		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
+	                        		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
+	                        		<option value="lead-source" ${(value.replace(' ','-').toLowerCase() == 'lead-source')? 'selected' : ''}>Lead Source</option>
+	                        		<option value="department" ${(value.replace(' ','-').toLowerCase() == 'department')? 'selected' : ''}>Department</option>
+	                        		<option value="reports-to" ${(value.replace(' ','-').toLowerCase() == 'reports-to')? 'selected' : ''}>Reports To</option>
+	                        		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
+	                        		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
+	                        		<option value="mailing-street" ${(value.replace(' ','-').toLowerCase() == 'mailing-street')? 'selected' : ''}>Mailing Street</option>
+	                        		<option value="other-street" ${(value.replace(' ','-').toLowerCase() == 'other-street')? 'selected' : ''}>Other Street</option>
+	                        		<option value="mailing-po-box" ${(value.replace(' ','-').toLowerCase() == 'mailing-po-box')? 'selected' : ''}>Mailing P.O. Box</option>
+	                        		<option value="other-po-box" ${(value.replace(' ','-').toLowerCase() == 'other-po-box')? 'selected' : ''}>Other P.O. Box</option>
+	                        		<option value="mailing-city" ${(value.replace(' ','-').toLowerCase() == 'mailing-city')? 'selected' : ''}>Mailing City</option>
+	                        		<option value="other-city" ${(value.replace(' ','-').toLowerCase() == 'other-city')? 'selected' : ''}>Other City</option>
+	                        		<option value="mailing-state" ${(value.replace(' ','-').toLowerCase() == 'mailing-state')? 'selected' : ''}>Mailing State</option>
+	                        		<option value="other-state" ${(value.replace(' ','-').toLowerCase() == 'other-state')? 'selected' : ''}>Other State</option>
+	                        		<option value="mailing-zip" ${(value.replace(' ','-').toLowerCase() == 'mailing-zip')? 'selected' : ''}>Mailing Zip</option>
+	                        		<option value="other-zip" ${(value.replace(' ','-').toLowerCase() == 'other-zip')? 'selected' : ''}>Other Zip</option>
+	                        		<option value="mailing-country" ${(value.replace(' ','-').toLowerCase() == 'mailing-country')? 'selected' : ''}>Mailing Country</option>
+	                        		<option value="other-country" ${(value.replace(' ','-').toLowerCase() == 'other-country')? 'selected' : ''}>Other Country</option>
+	                        		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+	                        	</select>
+	                        </td>
+	                        <td>${defaultValue}</td>
+	                      </tr>`;
+		      	});
+
+		      	$('#tbl_mapping tbody').html('');
+		      	$('#tbl_mapping tbody').html(tbody);
+
+		      	$('.select2').select2();
+	      	}
+	  	});
+	}
+
+	thisContacts.stepTwoCancel = function()
+	{
+		if(confirm('If you press OK import process will be terminated!'))
+		{
+			$('#modal_importContacts').modal('hide');
+		    window.location.replace(`${baseUrl}/contacts`);
+		}
+	}
+
+	thisContacts.backToStepTwo = function()
+	{
+		$('#step1Indicator').addClass('active');
+		$('#step2Indicator').removeClass('active');
+		$('#step2Trigger').prop('disabled',true);
+		$('#step3Indicator').removeClass('active');
+
+		$('#step1').addClass('active');
+		$('#step1').addClass('dstepper-block');
+		$('#step2').removeClass('active');
+		$('#step2').removeClass('dstepper-block');
+		$('#step3').removeClass('active');
+		$('#step3').removeClass('dstepper-block');
+
+		$('#div_step1').prop('hidden',false);
+		$('#div_step2').prop('hidden',true);
+		$('#div_step3').prop('hidden',true);
+	}
+
+	thisContacts.fieldMapping = function(dis)
+	{
+  		let defaultValue = '';
+
+  		if($(dis).val() == 'salutation')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm">
+                          <option value="" selected>--Salutation--</option>
+                          <option value="Mr.">Mr.</option>
+                          <option value="Ms.">Ms.</option>
+                          <option value="Mrs.">Mrs.</option>
+                          <option value="Dr.">Dr.</option>
+                          <option value="Prof.">Prof.</option>
+                        </select>`;
+  		}
+
+  		if($(dis).val() == 'first-name')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'last-name')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'position')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'company-name')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm"></select>`;
+  		}
+
+  		if($(dis).val() == 'primary-email')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'secondary-email')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'date-of-birth')
+  		{
+  			defaultValue = `<input type="date" class="form-control form-control-sm" placeholder="(e.g. yyyy/mm/dd)">`;
+  		}
+
+  		if($(dis).val() == 'intro-letter')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm">
+                          <option value="" selected>--Sent or Respond--</option>
+                          <option value="Sent">Sent</option>
+                          <option value="Respond">Respond</option>
+                        </select>`;
+  		}
+
+  		if($(dis).val() == 'office-phone')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'mobile-phone')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'home-phone')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'secondary-phone')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'fax')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'do-not-call')
+  		{
+  			defaultValue = `<input class="form-check-input" type="checkbox">`;
+  		}
+
+  		if($(dis).val() == 'linkedin-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'twitter-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'facebook-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'instagram-url')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'lead-source')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm" style="width:100%;">
+                          <option value="" selected>--Select an option--</option>
+                          <option value="Cold-Call">Cold Call</option>
+                          <option value="Existing-Customer">Existing Customer</option>
+                          <option value="Self-Generated">Self Generated</option>
+                          <option value="Employee">Employee</option>
+                          <option value="Partner">Partner</option>
+                          <option value="Public-Relations">Public Relations</option>
+                          <option value="Direct-Mail">Direct Mail</option>
+                          <option value="Conference">Conference</option>
+                          <option value="Trade-Show">Trade Show</option>
+                          <option value="Web-Site">Web Site</option>
+                          <option value="Word-of-Mouth">Word of Mouth</option>
+                          <option value="Other">Other</option>
+                        </select>`;
+  		}
+
+  		if($(dis).val() == 'department')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'reports-to')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+													<option value="">--Select type--</option>
+												</select>`;
+  		}
+
+  		if($(dis).val() == 'assigned-to')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
+													<option value="">--Select type--</option>
+												</select>`;
+  		}
+
+  		if($(dis).val() == 'email-opt-out')
+  		{
+  			defaultValue = `<select class="form-control form-control-sm">
+													<option value="" selected>--Yes or No--</option>
+													<option value="1">Yes</option>
+													<option value="0">No</option>
+												</select>`;
+  		}
+
+  		if($(dis).val() == 'mailing-street')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		if($(dis).val() == 'other-street')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		if($(dis).val() == 'mailing-po-box')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-po-box')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'mailing-city')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-city')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'mailing-state')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-state')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'mailing-zip')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-zip')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'mailing-country')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'other-country')
+  		{
+  			defaultValue = `<input type="text" class="form-control form-control-sm">`;
+  		}
+
+  		if($(dis).val() == 'description')
+  		{
+  			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
+  		}
+
+  		$(dis).closest('tr').find('td:eq(3)').html(defaultValue);
+	}
+
+	thisContacts.importContacts = function()
+	{
+		let arrFields = [];
+		$('#tbl_mapping tbody tr').each(function(){
+			arrFields.push($(this).find('td:eq(3) select').val());
+		});
+
+		console.log(arrFields);
+	}
+
+	thisContacts.stepThreeCancel = function()
+	{
+		if(confirm('If you press OK import process will be terminated!'))
+		{
+			$('#modal_importContacts').modal('hide');
+		    window.location.replace(`${baseUrl}/contacts`);
+		}
+	}
+
+	// function urlencode(obj, prefix) 
+	// {
+  //   str = (obj + '').toString();
+  //   return (
+  //       encodeURIComponent(str)
+  //         // The following creates the sequences %27 %28 %29 %2A (Note that
+  //         // the valid encoding of "*" is %2A, which necessitates calling
+  //         // toUpperCase() to properly encode). Although RFC3986 reserves "!",
+  //         // RFC5987 does not, so we do not need to escape it.
+  //         .replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+  //         // The following are not required for percent-encoding per RFC5987,
+  //         // so we can allow for a little better readability over the wire: |`^
+  //         .replace(/%(7C|60|5E)/g, (str, hex) =>
+  //           String.fromCharCode(parseInt(hex, 16))
+  //         )
+  //     );
+	// }
+
+	// thisContacts.checkCSVFile = function(thisInput)
+	// {
+	// 	$('body').waitMe(_waitMeLoaderConfig);
+	// 	var fileName = thisInput.files[0].name;
+	// 	let formData = new FormData();
+	// 	formData.set('contactList',thisInput.files[0],fileName);
+	// 	$('#lbl_loader').show();
+	// 	$('#div_checkResult').hide();
+	// 	$('#div_errorResult').hide();
+	// 	$('#btn_submitContactList').prop('disabled',true);
+	// 	$.ajax({
+	// 		// ContactController->checkContactFile
+	// 		url : `${baseUrl}/rolodex/check-contact-file`,
+	// 		method : 'POST',
+	// 		dataType: 'json',
+	// 		processData: false, // important
+	// 		contentType: false, // important
+	// 		data : formData,
+	// 		success : function(result)
+	// 		{
+	// 			$('body').waitMe('hide');
+	// 			__arrFileResult = result;
+	// 			$('#lbl_loader').hide();
+	// 			if(result['upload_res'] == "")
+	// 			{
+	// 				let forUpdate = result['for_update'].length;
+	// 				let forInsert = result['for_insert'].length;
+	// 				let conflictRows = result['conflict_rows'].length;
+
+	// 				$('#lbl_forUpdate').text(forUpdate);
+	// 				$('#lbl_forInsert').text(forInsert);
+	// 				$('#lbl_conflictRows').text(conflictRows);
+	// 				$('#div_checkResult').show();
+	// 				(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
+
+	// 				let conflictRowData = result['conflict_rows'];
+					
+	// 				var myJSON = JSON.stringify(conflictRowData);
+	// 				var trafficFilterHolder = urlencode(myJSON);
+
+	// 				// console.log(trafficFilterHolder);
+						
+	// 				$('#lnk_download').attr('href',`${baseUrl}/rolodex/contact-conflicts/${trafficFilterHolder}`);
+
+	// 				if(forInsert != 0)
+	// 				{
+	// 					$('#btn_submitContactList').prop('disabled',false);
+	// 				}
+	// 			}
+	// 			else
+	// 			{
+	// 				$('#div_errorResult > p').text(result['upload_res']);
+	// 				$('#div_errorResult').show();
+	// 			}
+	// 		}
+	// 	});
+	// }
+
+	// thisContacts.uploadContacts = function()
+	// {
+	// 	$('#lbl_uploadingProgress').show();
+	// 	if(confirm("Please confirm!"))
+	// 	{
+	// 		$('body').waitMe(_waitMeLoaderConfig);
+	// 		let rawData = __arrFileResult;
+	// 		$.ajax({
+	// 			// ContactController->uploadContacts
+	// 			url : `${baseUrl}/rolodex/upload-contacts`,
+	// 			method : 'POST',
+	// 			dataType: 'json',
+	// 			data : {
+	// 				'rawData' : 
+	// 				{
+	// 					'forInsert' : JSON.stringify(rawData['for_insert'])
+	// 				}
+	// 			},
+	// 			success : function(result)
+	// 			{
+	// 				$('body').waitMe('hide');
+	// 				$('#lbl_uploadingProgress').html("<i>Upload complete!</i>");
+  //         location.reload();			
+	// 			}
+	// 		});
+	// 	}
+	// }
 
 	//start of details
 

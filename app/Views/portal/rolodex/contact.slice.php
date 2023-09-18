@@ -8,9 +8,16 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/select2/css/select2.min.css">
 
+  <!-- BS-STEPPER -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+
+  <!-- BS-DUALLISTBOX -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+
   <style type="text/css">
     /*INTERNAL STYLES*/
-    .tbl tr td{
+    .tbl tr td
+    {
       border : none !important;
     }
 
@@ -1431,7 +1438,7 @@
         </div>
       </div>
 
-      <div class="modal fade" id="modal_importContacts" role="dialog">
+      <!-- <div class="modal fade" id="modal_importContacts" role="dialog">
         <div class="modal-dialog modal-md" role="document">
           <div class="modal-content">
             <div class="modal-header modal-header--sticky">
@@ -1474,6 +1481,179 @@
             </div>
           </div>
         </div>
+      </div> -->
+
+      <div class="modal fade" id="modal_importContacts" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+            <div class="modal-header modal-header--sticky">
+              <h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Contacts</h5>
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button> -->
+            </div>
+            <div class="modal-body">
+
+              <div class="bs-stepper linear">
+                <div class="bs-stepper-header" role="tablist">
+                  <div class="step active" data-target="#step1" id="step1Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step1" id="step1Trigger" aria-selected="true">
+                      <span class="bs-stepper-circle">1</span>
+                      <span class="bs-stepper-label">Upload CSV File</span>
+                    </button>
+                  </div>
+                  <div class="line"></div>
+                  <div class="step" data-target="#step2" id="step2Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step2" id="step2Trigger" aria-selected="false" disabled>
+                      <span class="bs-stepper-circle">2</span>
+                      <span class="bs-stepper-label">Duplicate Handling</span>
+                    </button>
+                  </div>
+                  <div class="line"></div>
+                  <div class="step" data-target="#step3" id="step3Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step3" id="step3Trigger" aria-selected="false" disabled>
+                      <span class="bs-stepper-circle">3</span>
+                      <span class="bs-stepper-label">Field Mapping</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="bs-stepper-content">
+
+                  <div id="step1" class="content active dstepper-block" role="tabpanel" aria-labelledby="step1Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Import from CSV file</h6>
+                      <hr>
+                      <div class="row">
+                        <div class="col-lg-3" style="margin: auto;">
+                          <label class="text-muted">Select CSV File Only</label>
+                        </div>
+                        <div class="col-lg-9">
+                          <input type="file" class="form-control" id="file_contactList" name="file_contactList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
+                        </div>
+                      </div>
+                      <br>
+                      <div class="row">
+                        <div class="col-lg-3" style="margin: auto;">
+                          <label class="text-muted">Has Header</label>
+                        </div>
+                        <div class="col-lg-9">
+                          <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
+                          <label class="form-check-label" for="chk_hasHeader"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="step2" class="content" role="tabpanel" aria-labelledby="step2Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Duplicate record handling</h6>
+                      <hr>
+                      <label class="text-muted">Select how duplicate records should be handled</label>
+                      <select class="form-control form-control-sm form-select" id="slc_duplicateHandler">
+                        <option value="Skip">Skip</option>
+                        <option value="Override">Override</option>
+                        <option value="Merge">Merge</option>
+                      </select>
+
+                      <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
+                          <option value="salutation">Salutation</option>
+                          <option value="first-name">First Name</option>
+                          <option value="last-name">Last Name</option>
+                          <option value="position">Position</option>
+                          <option value="company-name">Company Name</option>
+                          <option value="primary-email">Primary Email</option>
+                          <option value="secondary-email">Secondary Email</option>
+                          <option value="date-of-birth">Date of Birth</option>
+                          <option value="intro-letter">Intro Letter</option>
+                          <option value="office-phone">Office Phone</option>
+                          <option value="mobile-phone">Mobile Phone</option>
+                          <option value="home-phone">Home Phone</option>
+                          <option value="secondary-phone">Secondary Phone</option>
+                          <option value="fax">Fax</option>
+                          <option value="linkedin-url">LinkedIn URL</option>
+                          <option value="facebook-url">Facebook URL</option>
+                          <option value="instagram-url">Instagram URL</option>
+                          <option value="twitter-url">Twitter URL</option>
+                          <option value="mailing-street">Mailing Street</option>
+                          <option value="other-street">Other Street</option>
+                          <option value="mailing-po-box">Mailing P.O. Box</option>
+                          <option value="other-po-box">Other P.O. Box</option>
+                          <option value="mailing-city">Mailing City</option>
+                          <option value="other-city">Other City</option>
+                          <option value="mailing-state">Mailing State</option>
+                          <option value="other-state">Other State</option>
+                          <option value="mailing-postal-code">Mailing Postal Code</option>
+                          <option value="other-postal-code">Other Postal Code</option>
+                          <option value="mailing-country">Mailing Country</option>
+                          <option value="other-country">Other Country</option>
+                          <option value="mailing-po-box">Mailing PO Box</option>
+                          <option value="other-po-box">Other PO Box</option>
+                      </select>
+
+                    </div>
+                  </div>
+                  <div id="step3" class="content" role="tabpanel" aria-labelledby="step3Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Map the columns to CRM fields</h6>
+                      <hr>
+                      <div class="row mb-3">
+                        <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
+                          <label>Use Save Maps</label>
+                        </div>
+                        <div class="col-lg-4">
+                          <select class="form-control form-control-sm form-select" id="slc_savedMaps"></select>
+                        </div>
+                      </div>
+                      <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>HEADER</th>
+                            <th>ROW 1</th>
+                            <th>CRM FIELDS</th>
+                            <th>DEFAULT VALUE</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+
+                      <div class="row">
+                        <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
+                            <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
+                          </div>
+                        </div>
+                        <div class="col-lg-3">
+                          <input type="text" class="form-control form-control-sm" name="">
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer modal-footer--sticky">
+              <div id="div_step1" class="pl-4 pr-4">
+                  <button type="button" class="btn btn-primary" id="btn_stepOneNext">Next</button>
+                  <button type="button" class="btn btn-danger" id="btn_stepOneCancel">Cancel</button>
+              </div>
+              <div id="div_step2" class="pl-4 pr-4" hidden>
+                  <button type="button" class="btn btn-secondary" id="btn_stepTwoBack">Back</button>
+                  <button type="button" class="btn btn-primary" id="btn_stepTwoNext">Next</button>
+                  <button type="button" class="btn btn-dark" id="btn_stepTwoSkip">Skip this step</button>
+                  <button type="button" class="btn btn-danger" id="btn_stepTwoCancel">Cancel</button>
+              </div>
+              <div id="div_step3" class="pl-4 pr-4" hidden>
+                  <button type="button" class="btn btn-primary" id="btn_stepThreeImport">Import</button>
+                  <button type="button" class="btn btn-danger" id="btn_stepThreeCancel">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal fade" id="modal_sendContactEmail" role="dialog">
@@ -1490,7 +1670,7 @@
               <form id="form_sendContactEmail">
                 <div class="row">
                   <div class="col-lg-6 col-sm-12">
-                    <label class="col-form-label text-muted" for="inputError">
+                    <label class="col-form-label text-muted" for="slc_emailTemplate">
                       <i class="fa fa-info-circle"></i> Choose Email Template 
                     </label>
                     <select class="form-control select2" id="slc_emailTemplate" style="width:100%;">
@@ -1498,7 +1678,7 @@
                     </select>
                   </div>
                   <div class="col-lg-6 col-sm-12">
-                    <label class="col-form-label text-muted" for="inputError">
+                    <label class="col-form-label text-muted" for="slc_emailSignature">
                       <i class="fa fa-info-circle"></i> Choose Signature
                     </label>
                     <select class="form-control select2" id="slc_emailSignature" style="width:100%;">
@@ -1507,7 +1687,7 @@
                   </div>
                 </div>
 
-                <label class="col-form-label text-muted" for="inputError">
+                <label class="col-form-label text-muted" for="txt_to">
                   <i class="fa fa-info-circle"></i> To *
                 </label>
                 <div class="input-group">
@@ -1549,11 +1729,11 @@
                   </div>
                 </div> -->
 
-                <label class="col-form-label text-muted" for="inputError">
+                <label class="col-form-label text-muted" for="txt_subject">
                   <i class="fa fa-info-circle"></i> Subject *
                 </label>
                 <input type="text" class="form-control form-control-sm" id="txt_subject" name="txt_subject" placeholder="Required" required>
-                <label class="col-form-label text-muted" for="inputError">
+                <label class="col-form-label text-muted" for="txt_content">
                   <i class="fa fa-info-circle"></i> Content *
                 </label>
                 <textarea id="txt_content" name="txt_content" required></textarea>
@@ -1566,7 +1746,7 @@
                 <hr>
                 <div class="card shadow-none">
                   <div class="card-header p-0">
-                    <label class="col-form-label text-muted" for="inputError">
+                    <label class="col-form-label text-muted">
                       <i class="fa fa-info-circle"></i> Possible Substitutions 
                     </label>
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -1978,6 +2158,12 @@
   <!-- Select2 -->
   <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
 
+  <!-- BS STEPPER -->
+  <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+
+  <!-- BS DUALLISTBOX -->
+  <script src="<?php echo base_url(); ?>/public/assets/AdminLTE/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+
   <!-- Custom Scripts -->
   <script type="text/javascript" src="<?php echo base_url(); ?>/public/assets/js/portal/rolodex/{{ $customScripts }}.js"></script>
 
@@ -2035,33 +2221,71 @@
       });
 
       $('#btn_importContacts').on('click',function(){
-         $('#lbl_loader').hide();
-         $('#div_checkResult').hide();
-         $('#lbl_download').hide();
-         $('#div_errorResult').hide();
-         $('#lbl_uploadingProgress').hide();
-         $('#btn_submitContactList').prop('disabled',true);
          $('#modal_importContacts').modal({backdrop:'static',keyboard: false});
+         var demo2 = $('.demo').bootstrapDualListbox({
+           nonSelectedListLabel: 'Non-selected',
+           selectedListLabel: 'Selected',
+           preserveSelectionOnMove: 'moved',
+           moveOnSelect: false,
+           selectorMinimalHeight: 200
+         });
       });
 
       $('#lnk_importContacts').on('click',function(){
-         $('#lbl_loader').hide();
-         $('#div_checkResult').hide();
-         $('#lbl_download').hide();
-         $('#div_errorResult').hide();
-         $('#lbl_uploadingProgress').hide();
-         $('#btn_submitContactList').prop('disabled',true);
          $('#modal_importContacts').modal({backdrop:'static',keyboard: false});
+         var demo2 = $('.demo').bootstrapDualListbox({
+           nonSelectedListLabel: 'Non-selected',
+           selectedListLabel: 'Selected',
+           preserveSelectionOnMove: 'moved',
+           moveOnSelect: false,
+           selectorMinimalHeight: 200
+         });
       });
 
-      $('#file_contactList').on('change',function(){
-         CONTACTS.checkCSVFile(this);
+      $('#btn_stepOneNext').on('click',function(){
+        CONTACTS.uploadFile();
       });
 
-      $('#form_importContacts').on('submit',function(e){
-        e.preventDefault();
-        CONTACTS.uploadContacts();
+      $('#btn_stepOneCancel').on('click',function(){
+        CONTACTS.stepOneCancel();
       });
+
+      $('#btn_stepTwoBack').on('click',function(){
+        CONTACTS.backToStepOne();
+      });
+
+      $('#btn_stepTwoNext').on('click',function(){
+        CONTACTS.duplicateHandling();
+      });
+
+      $('#btn_stepTwoSkip').on('click',function(){
+        CONTACTS.skipDuplicateHandling();
+      });
+
+      $('#btn_stepTwoCancel').on('click',function(){
+        CONTACTS.stepTwoCancel();
+      });
+
+      $('#btn_stepThreeBack').on('click',function(){
+        CONTACTS.backToStepTwo();
+      });
+
+      $('#btn_stepThreeImport').on('click',function(){
+        CONTACTS.importContacts();
+      });
+
+      $('#btn_stepThreeCancel').on('click',function(){
+        CONTACTS.stepThreeCancel();
+      });
+
+      // $('#file_contactList').on('change',function(){
+      //    CONTACTS.checkCSVFile(this);
+      // });
+
+      // $('#form_importContacts').on('submit',function(e){
+      //   e.preventDefault();
+      //   CONTACTS.uploadContacts();
+      // });
 
       let contactId = $('#txt_contactId').val();
       if(contactId == "")
