@@ -15,7 +15,7 @@ class SystemUpdateController extends BaseController
 
       $branchName = $this->branchName;
 
-      exec("git pull github $branchName:$branchName", $output_array, $cmd_status);
+      exec("git fetch github $branchName:$branchName", $output_array, $cmd_status);
       exec('git branch', $output_array, $cmd_status);
 
       $arrBranches = [];
