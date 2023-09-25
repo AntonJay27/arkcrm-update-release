@@ -250,17 +250,19 @@
                 <h5 class="text-red">NEW UPDATES !</h5>
 
                 <div class="callout callout-info">
-                  <h5>BUILD <small class="text-muted">AUGUST 8, 2023</small></h5>
+                  <h5>BUILD <small class="text-muted">September 23, 2023</small></h5>
                   <p>
                     <ul>
                       <li>System Update Revision</li>
                       <li>GIT initialization</li>
-                      <li>Update Logs</li>
+                      <li>ROLODEX->Organizations Import Functionality</li>
                     </ul>
                   </p>
                 </div>
 
                 <button type="button" class="btn btn-primary" id="btn_applySystemUpdates" disabled>Apply System Updates</button>
+
+                <button type="button" class="btn btn-primary" id="btn_updateDatabase">Update Database</button>
 
                 <hr>
 
@@ -480,6 +482,10 @@
 
     $('#btn_applySystemUpdates').on('click',function(){
       SETTINGS.applySystemUpdates();
+    });
+
+    $('#btn_updateDatabase').on('click',function(){
+      SETTINGS.updateDatabase();
     });
     
   });

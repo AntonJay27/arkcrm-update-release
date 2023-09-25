@@ -489,7 +489,7 @@ class ContactController extends BaseController
           }
           array_shift($arrData);
           
-          $arrResult['arr_data'] = $arrData;
+          $arrResult['arrContactList'] = $arrData;
       }
       else
       {

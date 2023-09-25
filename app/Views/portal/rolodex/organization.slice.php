@@ -1420,183 +1420,168 @@
   		<div class="modal-content">
   			<div class="modal-header modal-header--sticky">
   				<h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Organizations</h5>
-  				<!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-  					<span aria-hidden="true">&times;</span>
-  				</button> -->
   			</div>
   			<div class="modal-body">
 
-  				<!-- <form id="form_importOrganizations" enctype="multipart/form-data">
-  					<label>CSV File Only:</label>
-  					<input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
-  					<span id="lbl_loader"><br><i>Analizing your file, please wait...</i></span>
-  					<div class="pt-3" id="div_checkResult">
-  						<label>Existing on DB: <span id="lbl_forUpdate"></span></label>
-  						<br>
-  						<label>For Insert: <span id="lbl_forInsert"></span></label>
-  						<br>
-  						<label>Conflict Rows: <span id="lbl_conflictRows"></span></label>
-  						
-  						<p id="lbl_download">
-  							Click <a href="#" id="lnk_download" target="_blank">here</a> to download conflict rows.
-  						</p>
-  					</div>
-  					<div class="pt-3" id="div_errorResult" style="color:red;">
-  						<label>Error:</label>
-  						<p></p>
-  						<br>
-  					</div>
-  					<label id="lbl_uploadingProgress" class="text-danger"><i>Uploading in progress, Please wait...</i></label>
-  				</form> -->
+              <div class="bs-stepper linear">
+                <div class="bs-stepper-header" role="tablist">
+                  <div class="step active" data-target="#step1" id="step1Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step1" id="step1Trigger" aria-selected="true">
+                      <span class="bs-stepper-circle">1</span>
+                      <span class="bs-stepper-label">Upload CSV File</span>
+                    </button>
+                  </div>
+                  <div class="line"></div>
+                  <div class="step" data-target="#step2" id="step2Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step2" id="step2Trigger" aria-selected="false" disabled>
+                      <span class="bs-stepper-circle">2</span>
+                      <span class="bs-stepper-label">Duplicate Handling</span>
+                    </button>
+                  </div>
+                  <div class="line"></div>
+                  <div class="step" data-target="#step3" id="step3Indicator">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="step3" id="step3Trigger" aria-selected="false" disabled>
+                      <span class="bs-stepper-circle">3</span>
+                      <span class="bs-stepper-label">Field Mapping</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="bs-stepper-content">
 
-          <div class="bs-stepper linear">
-            <div class="bs-stepper-header" role="tablist">
-              <div class="step active" data-target="#step1" id="step1Indicator">
-                <button type="button" class="step-trigger" role="tab" aria-controls="step1" id="step1Trigger" aria-selected="true">
-                  <span class="bs-stepper-circle">1</span>
-                  <span class="bs-stepper-label">Upload CSV File</span>
-                </button>
-              </div>
-              <div class="line"></div>
-              <div class="step" data-target="#step2" id="step2Indicator">
-                <button type="button" class="step-trigger" role="tab" aria-controls="step2" id="step2Trigger" aria-selected="false" disabled>
-                  <span class="bs-stepper-circle">2</span>
-                  <span class="bs-stepper-label">Duplicate Handling</span>
-                </button>
-              </div>
-              <div class="line"></div>
-              <div class="step" data-target="#step3" id="step3Indicator">
-                <button type="button" class="step-trigger" role="tab" aria-controls="step3" id="step3Trigger" aria-selected="false" disabled>
-                  <span class="bs-stepper-circle">3</span>
-                  <span class="bs-stepper-label">Field Mapping</span>
-                </button>
-              </div>
-            </div>
-            <div class="bs-stepper-content">
-
-              <div id="step1" class="content active dstepper-block" role="tabpanel" aria-labelledby="step1Trigger">
-                <div class="container-fluid mt-5">
-                  <h6>Import from CSV file</h6>
-                  <hr>
-                  <div class="row">
-                    <div class="col-lg-3" style="margin: auto;">
-                      <label class="text-muted">Select CSV File Only</label>
-                    </div>
-                    <div class="col-lg-9">
-                      <input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
+                  <div id="step1" class="content active dstepper-block" role="tabpanel" aria-labelledby="step1Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Import from CSV file</h6>
+                      <hr>
+                      <form id="form_stepOne">
+                        <div class="row">
+                          <div class="col-lg-3" style="margin: auto;">
+                            <label class="text-muted">Select CSV File Only</label>
+                          </div>
+                          <div class="col-lg-9">
+                            <input type="file" class="form-control" id="file_organizationList" name="file_organizationList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
+                          </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                          <div class="col-lg-3" style="margin: auto;">
+                            <label class="text-muted">Has Header</label>
+                          </div>
+                          <div class="col-lg-9">
+                            <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
+                            <label class="form-check-label" for="chk_hasHeader"></label>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
                     </div>
                   </div>
-                  <br>
-                  <div class="row">
-                    <div class="col-lg-3" style="margin: auto;">
-                      <label class="text-muted">Has Header</label>
+                  <div id="step2" class="content" role="tabpanel" aria-labelledby="step2Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Duplicate record handling</h6>
+                      <hr>
+                      <form id="form_stepTwo">
+                        <label class="text-muted">Select how duplicate records should be handled</label>
+                        <select class="form-control form-control-sm form-select" id="slc_duplicateHandler" required>
+                          <option value="Skip">Skip</option>
+                          <option value="Override">Override</option>
+                          <option value="Merge">Merge</option>
+                        </select>
+                        <br>
+                        <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
+                          <option value="organization_name">Organization Name</option>
+                          <option value="primary_email">Primary Email</option>
+                          <option value="secondary_email">Secondary Email</option>
+                          <option value="main_website">Main Website</option>
+                          <option value="other_website">Other Website</option>
+                          <option value="phone_number">Phone Number</option>
+                          <option value="fax">Fax</option>
+                          <option value="linkedin_url">LinkedIn URL</option>
+                          <option value="facebook_url">Facebook URL</option>
+                          <option value="instagram_url">Instagram URL</option>
+                          <option value="twitter_url">Twitter URL</option>
+                          <option value="industry">Industry</option>
+                          <option value="naics_code">NAICS Code</option>
+                          <option value="billing_street">Billing Street</option>
+                          <option value="shipping_street">Shipping Street</option>
+                          <option value="billing_city">Billing City</option>
+                          <option value="shipping_city">Shipping City</option>
+                          <option value="billing_state">Billing State</option>
+                          <option value="shipping_state">Shipping State</option>
+                          <option value="billing_zip">Billing Postal Code</option>
+                          <option value="shipping_zip">Shipping Postal Code</option>
+                          <option value="billing_country">Billing Country</option>
+                          <option value="shipping_country">Shipping Country</option>
+                        </select>
+                      </form>
                     </div>
-                    <div class="col-lg-9">
-                      <div class="form-check">
-                      <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
-                      <label class="form-check-label" for="chk_hasHeader"></label>
-                      </div>
+                  </div>
+                  <div id="step3" class="content" role="tabpanel" aria-labelledby="step3Trigger">
+                    <div class="container-fluid mt-5">
+                      <h6>Map the columns to CRM fields</h6>
+                      <hr>
+                      <form id="form_stepThree">
+                        <div class="row mb-3">
+                          <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
+                            <label>Use Save Maps</label>
+                          </div>
+                          <div class="col-lg-4">
+                            <div class="input-group">
+                                <select class="form-control form-control-sm form-select" id="slc_savedMaps">
+                                    <option value="">--No Saved Maps--</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-sm btn-default" id="btn_refreshSavedMaps">
+                                        <i class="fas fa-refresh"></i>
+                                    </button>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>HEADER</th>
+                              <th>ROW 1</th>
+                              <th>CRM FIELDS</th>
+                              <th>DEFAULT VALUE</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+
+                        <div class="row">
+                          <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
+                            <div class="form-check">
+                              <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
+                              <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
+                            </div>
+                          </div>
+                          <div class="col-lg-3">
+                            <input type="text" class="form-control form-control-sm" id="txt_customMapName" name="txt_customMapName" required>
+                          </div>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
               </div>
-              <div id="step2" class="content" role="tabpanel" aria-labelledby="step2Trigger">
-                <div class="container-fluid mt-5">
-                  <h6>Duplicate record handling</h6>
-                  <hr>
-                  <label class="text-muted">Select how duplicate records should be handled</label>
-                  <select class="form-control form-control-sm form-select" id="slc_duplicateHandler">
-                    <option value="Skip">Skip</option>
-                    <option value="Override">Override</option>
-                    <option value="Merge">Merge</option>
-                  </select>
-
-                  <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
-                      <option value="organization-name">Organization Name</option>
-                      <option value="primary-phone">Primary Phone</option>
-                      <option value="website">Website</option>
-                      <option value="fax">Fax</option>
-                      <option value="secondary-phone">Secondary Phone</option>
-                      <option value="primary-email">Primary Email</option>
-                      <option value="secondary-email">Secondary Email</option>
-                      <option value="industry">Industry</option>
-                      <option value="naics-code">NAICS Code</option>
-                      <option value="linkedin-url">LinkedIn URL</option>
-                      <option value="facebook-url">Facebook URL</option>
-                      <option value="instagram-url">Instagram URL</option>
-                      <option value="twitter-url">Twitter URL</option>
-                      <option value="billing-street">Billing Street</option>
-                      <option value="shipping-street">Shipping Street</option>
-                      <option value="billing-city">Billing City</option>
-                      <option value="shipping-city">Shipping City</option>
-                      <option value="billing-state">Billing State</option>
-                      <option value="shipping-state">Shipping State</option>
-                      <option value="billing-postal-code">Billing Postal Code</option>
-                      <option value="shipping-postal-code">Shipping Postal Code</option>
-                      <option value="billing-country">Billing Country</option>
-                      <option value="shipping-country">Shipping Country</option>
-                      <option value="billing-po-box">Billing PO Box</option>
-                      <option value="shipping-po-box">Shipping PO Box</option>
-                  </select>
-
-                </div>
-              </div>
-              <div id="step3" class="content" role="tabpanel" aria-labelledby="step3Trigger">
-                <div class="container-fluid mt-5">
-                  <h6>Map the columns to CRM fields</h6>
-                  <hr>
-                  <div class="row mb-3">
-                    <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
-                      <label>Use Save Maps</label>
-                    </div>
-                    <div class="col-lg-4">
-                      <select class="form-control form-control-sm form-select" id="slc_savedMaps"></select>
-                    </div>
-                  </div>
-                  <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>HEADER</th>
-                        <th>ROW 1</th>
-                        <th>CRM FIELDS</th>
-                        <th>DEFAULT VALUE</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-
-                  <div class="row">
-                    <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
-                      <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
-                        <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
-                      </div>
-                    </div>
-                    <div class="col-lg-3">
-                      <input type="text" class="form-control form-control-sm" name="">
-                    </div>
-                  </div>
-                  
-                </div>
-              </div>
-            </div>
-          </div>
 
   			</div>
   			<div class="modal-footer modal-footer--sticky">
           <div id="div_step1" class="pl-4 pr-4">
-              <button type="button" class="btn btn-primary" id="btn_stepOneNext">Next</button>
+              <button type="submit" class="btn btn-primary" id="btn_stepOneNext" form="form_stepOne">Next</button>
               <button type="button" class="btn btn-danger" id="btn_stepOneCancel">Cancel</button>
           </div>
           <div id="div_step2" class="pl-4 pr-4" hidden>
               <button type="button" class="btn btn-secondary" id="btn_stepTwoBack">Back</button>
-              <button type="button" class="btn btn-primary" id="btn_stepTwoNext">Next</button>
+              <button type="submit" class="btn btn-primary" id="btn_stepTwoNext" form="form_stepTwo">Next</button>
               <button type="button" class="btn btn-dark" id="btn_stepTwoSkip">Skip this step</button>
               <button type="button" class="btn btn-danger" id="btn_stepTwoCancel">Cancel</button>
           </div>
           <div id="div_step3" class="pl-4 pr-4" hidden>
-              <button type="button" class="btn btn-primary" id="btn_stepThreeImport">Import</button>
+              <button type="submit" class="btn btn-primary" id="btn_stepThreeImport" form="form_stepThree">Import</button>
               <button type="button" class="btn btn-danger" id="btn_stepThreeCancel">Cancel</button>
           </div>
   			</div>
@@ -2709,7 +2694,8 @@
         });
       });
 
-      $('#btn_stepOneNext').on('click',function(){
+      $('#form_stepOne').on('submit',function(e){
+        e.preventDefault();
         ORGANIZATION.uploadFile();
       });
 
@@ -2721,8 +2707,10 @@
         ORGANIZATION.backToStepOne();
       });
 
-      $('#btn_stepTwoNext').on('click',function(){
+      $('#form_stepTwo').on('submit',function(e){
+        e.preventDefault();
         ORGANIZATION.duplicateHandling();
+        ORGANIZATION.loadCustomMaps('organization');
       });
 
       $('#btn_stepTwoSkip').on('click',function(){
@@ -2733,11 +2721,27 @@
         ORGANIZATION.stepTwoCancel();
       });
 
-      $('#btn_stepThreeBack').on('click',function(){
-        ORGANIZATION.backToStepTwo();
+      $('#btn_refreshSavedMaps').on('click',function(){
+        ORGANIZATION.loadCustomMaps('organization');
       });
 
-      $('#btn_stepThreeImport').on('click',function(){
+      $('#slc_savedMaps').on('change',function(){
+        ORGANIZATION.selectCustomMap($(this).val());
+      });
+
+      $('#chk_saveCustomMapping').on('change',function(){
+        if($(this).is(':checked'))
+        {
+          $('#txt_customMapName').prop('required',true);
+        }
+        else
+        {
+          $('#txt_customMapName').prop('required',false);
+        }
+      });
+
+      $('#form_stepThree').on('submit',function(e){
+        e.preventDefault();
         ORGANIZATION.importOrganizations();
       });
 

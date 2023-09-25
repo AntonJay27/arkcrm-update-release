@@ -464,28 +464,13 @@ const ORGANIZATION = (function(){
 
 	thisOrganization.uploadFile = function()
 	{
-		$('#step1Indicator').removeClass('active');
-		$('#step2Indicator').addClass('active');
-		$('#step2Trigger').prop('disabled',false);
-		$('#step3Indicator').removeClass('active');
-
-		$('#step1').removeClass('active');
-		$('#step1').removeClass('dstepper-block');
-		$('#step2').addClass('active');
-		$('#step2').addClass('dstepper-block');
-		$('#step3').removeClass('active');
-		$('#step3').removeClass('dstepper-block');
-
-		$('#div_step1').prop('hidden',true);
-		$('#div_step2').prop('hidden',false);
-		$('#div_step3').prop('hidden',true);
-
 		$('body').waitMe(_waitMeLoaderConfig);
 		var fileName = document.getElementById('file_organizationList').files[0].name;
 		let formData = new FormData();
 		formData.set('organizationList',document.getElementById('file_organizationList').files[0],fileName);
+		formData.set('chk_hasHeader',($('#chk_hasHeader').is(':checked'))? 'YES' : 'NO');
 		$.ajax({
-      // OrganizationController->uploadFileOrganization
+      	// OrganizationController->uploadFileOrganization
 			url : `${baseUrl}/rolodex/upload-file-organization`,
 			method : 'POST',
 			dataType: 'json',
@@ -496,40 +481,33 @@ const ORGANIZATION = (function(){
 	      	{
 		      	$('body').waitMe('hide');
 
-		      	console.log(result);
-		      	_arrOrganizationImport = result;
-		      	// $('#lbl_loader').hide();
-		      	// if(result['upload_res'] == "")
-		      	// {
-		      	// 	let forUpdate = result['for_update'].length;
-		      	// 	let forInsert = result['for_insert'].length;
-		      	// 	let conflictRows = result['conflict_rows'].length;
+		      	if('arrOrganizationList' in result)
+		      	{
+		      		_arrOrganizationImport = result;
 
-		      	// 	$('#lbl_forUpdate').text(forUpdate);
-		      	// 	$('#lbl_forInsert').text(forInsert);
-		      	// 	$('#lbl_conflictRows').text(conflictRows);
-		      	// 	$('#div_checkResult').show();
-		      	// 	(conflictRows == 0)? $('#lbl_download').hide() : $('#lbl_download').show();
+		      		$('#step1Indicator').removeClass('active');
+		      		$('#step2Indicator').addClass('active');
+		      		$('#step2Trigger').prop('disabled',false);
+		      		$('#step3Indicator').removeClass('active');
 
-		      	// 	let conflictRowData = result['conflict_rows'];
+		      		$('#step1').removeClass('active');
+		      		$('#step1').removeClass('dstepper-block');
+		      		$('#step2').addClass('active');
+		      		$('#step2').addClass('dstepper-block');
+		      		$('#step3').removeClass('active');
+		      		$('#step3').removeClass('dstepper-block');
 
-		      	// 	var myJSON = JSON.stringify(conflictRowData);
-		      	// 	var trafficFilterHolder = urlencode(myJSON);
-
-		        //   // console.log(trafficFilterHolder);
-
-		      	// 	$('#lnk_download').attr('href',`${baseUrl}/rolodex/organization-conflicts/${trafficFilterHolder}`);
-
-		      	// 	if(forInsert != 0)
-		      	// 	{
-		      	// 		$('#btn_submitOrganizationList').prop('disabled',false);
-		      	// 	}
-		      	// }
-		      	// else
-		      	// {
-		      	// 	$('#div_errorResult > p').text(result['upload_res']);
-		      	// 	$('#div_errorResult').show();
-		      	// }
+		      		$('#div_step1').prop('hidden',true);
+		      		$('#div_step2').prop('hidden',false);
+		      		$('#div_step3').prop('hidden',true);
+		      	}
+		      	else
+		      	{
+		      		Toast.fire({
+		      			icon: 'warning',
+		      			title: `Warning! <br> ${result[0]}`,
+		      		});
+		      	}
 	      	}
 	  	});
 	}
@@ -564,22 +542,6 @@ const ORGANIZATION = (function(){
 
 	thisOrganization.duplicateHandling = function()
 	{
-		$('#step1Indicator').removeClass('active');
-		$('#step2Indicator').removeClass('active');
-		$('#step3Indicator').addClass('active');
-		$('#step3Trigger').prop('disabled',false);
-
-		$('#step1').removeClass('active');
-		$('#step1').removeClass('dstepper-block');
-		$('#step2').removeClass('active');
-		$('#step2').removeClass('dstepper-block');
-		$('#step3').addClass('active');
-		$('#step3').addClass('dstepper-block');
-
-		$('#div_step1').prop('hidden',true);
-		$('#div_step2').prop('hidden',true);
-		$('#div_step3').prop('hidden',false);
-
 		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
 		formData.set('arrOrganizationList', JSON.stringify(_arrOrganizationImport));
@@ -606,7 +568,21 @@ const ORGANIZATION = (function(){
 	      	{
 		      	$('body').waitMe('hide');
 
-		      	console.log(_arrOrganizationImport['arr_header']);
+		      	$('#step1Indicator').removeClass('active');
+		      	$('#step2Indicator').removeClass('active');
+		      	$('#step3Indicator').addClass('active');
+		      	$('#step3Trigger').prop('disabled',false);
+
+		      	$('#step1').removeClass('active');
+		      	$('#step1').removeClass('dstepper-block');
+		      	$('#step2').removeClass('active');
+		      	$('#step2').removeClass('dstepper-block');
+		      	$('#step3').addClass('active');
+		      	$('#step3').addClass('dstepper-block');
+
+		      	$('#div_step1').prop('hidden',true);
+		      	$('#div_step2').prop('hidden',true);
+		      	$('#div_step3').prop('hidden',false);
 
 		      	let tbody = '';
 		      	let num = 1;
@@ -614,106 +590,106 @@ const ORGANIZATION = (function(){
 
 		      		let defaultValue = '';
 
-		      		if(value.replace(' ','-').toLowerCase() == 'organization-name')
+		      		if(value.replace(' ','_').toLowerCase() == 'organization_name')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		if(value.replace(' ','_').toLowerCase() == 'assigned_to')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		if(value.replace(' ','_').toLowerCase() == 'primary_email')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		if(value.replace(' ','_').toLowerCase() == 'secondary_email')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'main-website')
+		      		if(value.replace(' ','_').toLowerCase() == 'main_website')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'other-website')
+		      		if(value.replace(' ','_').toLowerCase() == 'other_website')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'phone-number')
+		      		if(value.replace(' ','_').toLowerCase() == 'phone_number')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		if(value.replace(' ','_').toLowerCase() == 'fax')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'linkedin_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'facebook_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'twitter_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'instagram_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'industry')
+		      		if(value.replace(' ','_').toLowerCase() == 'industry')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'naics-code')
+		      		if(value.replace(' ','_').toLowerCase() == 'naics_code')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'employee-count')
+		      		if(value.replace(' ','_').toLowerCase() == 'employee_count')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'annual-revenue')
+		      		if(value.replace(' ','_').toLowerCase() == 'annual_revenue')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'type')
+		      		if(value.replace(' ','_').toLowerCase() == 'type')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
 											<option value="">--Select type--</option>
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'ticket-symbol')
+		      		if(value.replace(' ','_').toLowerCase() == 'ticket_symbol')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'member-of')
+		      		if(value.replace(' ','_').toLowerCase() == 'member_of')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
 											<option value="">--Select Organization--</option>
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		if(value.replace(' ','_').toLowerCase() == 'email_opt_out')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm">
 											<option value="" selected>--Yes or No--</option>
@@ -722,99 +698,99 @@ const ORGANIZATION = (function(){
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-street')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_street')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-street')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_street')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-city')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_city')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-city')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_city')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-state')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_state')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-state')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_state')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-zip')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_zip')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-zip')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_zip')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-country')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_country')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-country')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_country')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		if(value.replace(' ','_').toLowerCase() == 'description')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
 		      		tbody += `<tr>
-		      					<td>${num}</td>
+		      				  <td>${num}</td>
                               <td>${value}</td>
-                              <td>${_arrOrganizationImport['arr_data'][0][key]}</td>
+                              <td>${_arrOrganizationImport['arrOrganizationList'][0][key]}</td>
                               <td>
                               	<select class="form-control form-control-sm select2" onchange="ORGANIZATION.fieldMapping(this)" style="width:100%;">
                               		<option value="" selected>--Select an Option--</option>
-                              		<option value="organization-name" ${(value.replace(' ','-').toLowerCase() == 'organization-name')? 'selected' : ''}>Organization Name</option>
-                              		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
-                              		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
-                              		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
-                              		<option value="main-website" ${(value.replace(' ','-').toLowerCase() == 'main-website')? 'selected' : ''}>Main Website</option>
-                              		<option value="other-website" ${(value.replace(' ','-').toLowerCase() == 'other-website')? 'selected' : ''}>Other Website</option>
-                              		<option value="phone-number" ${(value.replace(' ','-').toLowerCase() == 'phone-number')? 'selected' : ''}>Phone Number</option>
-                              		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
-                              		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
-                              		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
-                              		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
-                              		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
-                              		<option value="industry" ${(value.replace(' ','-').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
-                              		<option value="naics-code" ${(value.replace(' ','-').toLowerCase() == 'naics-code')? 'selected' : ''}>NAICS Code</option>
-                              		<option value="employee-count" ${(value.replace(' ','-').toLowerCase() == 'employee-count')? 'selected' : ''}>Employee Count</option>
-                              		<option value="annual-revenue" ${(value.replace(' ','-').toLowerCase() == 'annual-revenue')? 'selected' : ''}>Annual Revenue</option>
-                              		<option value="type" ${(value.replace(' ','-').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
-                              		<option value="ticket-symbol" ${(value.replace(' ','-').toLowerCase() == 'ticket-symbol')? 'selected' : ''}>Ticket Symbol</option>
-                              		<option value="member-of" ${(value.replace(' ','-').toLowerCase() == 'member-of')? 'selected' : ''}>Member Of</option>
-                              		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
-                              		<option value="billing-street" ${(value.replace(' ','-').toLowerCase() == 'billing-street')? 'selected' : ''}>Billing Street</option>
-                              		<option value="shipping-street" ${(value.replace(' ','-').toLowerCase() == 'shipping-street')? 'selected' : ''}>Shipping Street</option>
-                              		<option value="billing-city" ${(value.replace(' ','-').toLowerCase() == 'billing-city')? 'selected' : ''}>Billing City</option>
-                              		<option value="shipping-city" ${(value.replace(' ','-').toLowerCase() == 'shipping-city')? 'selected' : ''}>Shipping City</option>
-                              		<option value="billing-state" ${(value.replace(' ','-').toLowerCase() == 'billing-state')? 'selected' : ''}>Billing State</option>
-                              		<option value="shipping-state" ${(value.replace(' ','-').toLowerCase() == 'shipping-state')? 'selected' : ''}>Shipping State</option>
-                              		<option value="billing-zip" ${(value.replace(' ','-').toLowerCase() == 'billing-zip')? 'selected' : ''}>Billing Zip</option>
-                              		<option value="shipping-zip" ${(value.replace(' ','-').toLowerCase() == 'shipping-zip')? 'selected' : ''}>Shipping Zip</option>
-                              		<option value="billing-country" ${(value.replace(' ','-').toLowerCase() == 'billing-country')? 'selected' : ''}>Billing Country</option>
-                              		<option value="shipping-country" ${(value.replace(' ','-').toLowerCase() == 'shipping-country')? 'selected' : ''}>Shipping Country</option>
-                              		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+                              		<option value="organization_name" ${(value.replace(' ','_').toLowerCase() == 'organization_name')? 'selected' : ''}>Organization Name</option>
+                              		<option value="assigned_to" ${(value.replace(' ','_').toLowerCase() == 'assigned_to')? 'selected' : ''}>Assigned To</option>
+                              		<option value="primary_email" ${(value.replace(' ','_').toLowerCase() == 'primary_email')? 'selected' : ''}>Primary Email</option>
+                              		<option value="secondary_email" ${(value.replace(' ','_').toLowerCase() == 'secondary_email')? 'selected' : ''}>Secondary Email</option>
+                              		<option value="main_website" ${(value.replace(' ','_').toLowerCase() == 'main_website')? 'selected' : ''}>Main Website</option>
+                              		<option value="other_website" ${(value.replace(' ','_').toLowerCase() == 'other_website')? 'selected' : ''}>Other Website</option>
+                              		<option value="phone_number" ${(value.replace(' ','_').toLowerCase() == 'phone_number')? 'selected' : ''}>Phone Number</option>
+                              		<option value="fax" ${(value.replace(' ','_').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+                              		<option value="linkedin_url" ${(value.replace(' ','_').toLowerCase() == 'linkedin_url')? 'selected' : ''}>LinkedIn URL</option>
+                              		<option value="facebook_url" ${(value.replace(' ','_').toLowerCase() == 'facebook_url')? 'selected' : ''}>Facebook URL</option>
+                              		<option value="twitter_url" ${(value.replace(' ','_').toLowerCase() == 'twitter_url')? 'selected' : ''}>Twitter URL</option>
+                              		<option value="instagram_url" ${(value.replace(' ','_').toLowerCase() == 'instagram_url')? 'selected' : ''}>Instagram URL</option>
+                              		<option value="industry" ${(value.replace(' ','_').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
+                              		<option value="naics_code" ${(value.replace(' ','_').toLowerCase() == 'naics_code')? 'selected' : ''}>NAICS Code</option>
+                              		<option value="employee_count" ${(value.replace(' ','_').toLowerCase() == 'employee_count')? 'selected' : ''}>Employee Count</option>
+                              		<option value="annual_revenue" ${(value.replace(' ','_').toLowerCase() == 'annual_revenue')? 'selected' : ''}>Annual Revenue</option>
+                              		<option value="type" ${(value.replace(' ','_').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
+                              		<option value="ticket_symbol" ${(value.replace(' ','_').toLowerCase() == 'ticket_symbol')? 'selected' : ''}>Ticket Symbol</option>
+                              		<option value="member_of" ${(value.replace(' ','_').toLowerCase() == 'member_of')? 'selected' : ''}>Member Of</option>
+                              		<option value="email_opt_out" ${(value.replace(' ','_').toLowerCase() == 'email_opt_out')? 'selected' : ''}>Email Opt Out</option>
+                              		<option value="billing_street" ${(value.replace(' ','_').toLowerCase() == 'billing_street')? 'selected' : ''}>Billing Street</option>
+                              		<option value="shipping_street" ${(value.replace(' ','_').toLowerCase() == 'shipping_street')? 'selected' : ''}>Shipping Street</option>
+                              		<option value="billing_city" ${(value.replace(' ','_').toLowerCase() == 'billing_city')? 'selected' : ''}>Billing City</option>
+                              		<option value="shipping_city" ${(value.replace(' ','_').toLowerCase() == 'shipping_city')? 'selected' : ''}>Shipping City</option>
+                              		<option value="billing_state" ${(value.replace(' ','_').toLowerCase() == 'billing_state')? 'selected' : ''}>Billing State</option>
+                              		<option value="shipping_state" ${(value.replace(' ','_').toLowerCase() == 'shipping_state')? 'selected' : ''}>Shipping State</option>
+                              		<option value="billing_zip" ${(value.replace(' ','_').toLowerCase() == 'billing_zip')? 'selected' : ''}>Billing Zip</option>
+                              		<option value="shipping_zip" ${(value.replace(' ','_').toLowerCase() == 'shipping_zip')? 'selected' : ''}>Shipping Zip</option>
+                              		<option value="billing_country" ${(value.replace(' ','_').toLowerCase() == 'billing_country')? 'selected' : ''}>Billing Country</option>
+                              		<option value="shipping_country" ${(value.replace(' ','_').toLowerCase() == 'shipping_country')? 'selected' : ''}>Shipping Country</option>
+                              		<option value="description" ${(value.replace(' ','_').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
                               	</select>
                               </td>
                               <td>${defaultValue}</td>
@@ -832,22 +808,6 @@ const ORGANIZATION = (function(){
 
 	thisOrganization.skipDuplicateHandling = function()
 	{
-		$('#step1Indicator').removeClass('active');
-		$('#step2Indicator').removeClass('active');
-		$('#step3Indicator').addClass('active');
-		$('#step3Trigger').prop('disabled',false);
-
-		$('#step1').removeClass('active');
-		$('#step1').removeClass('dstepper-block');
-		$('#step2').removeClass('active');
-		$('#step2').removeClass('dstepper-block');
-		$('#step3').addClass('active');
-		$('#step3').addClass('dstepper-block');
-
-		$('#div_step1').prop('hidden',true);
-		$('#div_step2').prop('hidden',true);
-		$('#div_step3').prop('hidden',false);
-
 		$('body').waitMe(_waitMeLoaderConfig);
 		let formData = new FormData();
 		formData.set('arrOrganizationList', JSON.stringify(_arrOrganizationImport));
@@ -870,113 +830,128 @@ const ORGANIZATION = (function(){
 	      	{
 		      	$('body').waitMe('hide');
 
-		      	console.log(_arrOrganizationImport['arr_header']);
+		      	$('#step1Indicator').removeClass('active');
+		      	$('#step2Indicator').removeClass('active');
+		      	$('#step3Indicator').addClass('active');
+		      	$('#step3Trigger').prop('disabled',false);
 
-		      	let tbody = '';
+		      	$('#step1').removeClass('active');
+		      	$('#step1').removeClass('dstepper-block');
+		      	$('#step2').removeClass('active');
+		      	$('#step2').removeClass('dstepper-block');
+		      	$('#step3').addClass('active');
+		      	$('#step3').addClass('dstepper-block');
+
+		      	$('#div_step1').prop('hidden',true);
+		      	$('#div_step2').prop('hidden',true);
+		      	$('#div_step3').prop('hidden',false);
+
+		      	let tbody 	= '';
+		      	let num 	= 1;
 		      	_arrOrganizationImport['arr_header'].forEach(function(value,key){
 
 		      		let defaultValue = '';
 
-		      		if(value.replace(' ','-').toLowerCase() == 'organization-name')
+		      		if(value.replace(' ','_').toLowerCase() == 'organization_name')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'assigned-to')
+		      		if(value.replace(' ','_').toLowerCase() == 'assigned_to')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm"></select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'primary-email')
+		      		if(value.replace(' ','_').toLowerCase() == 'primary_email')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'secondary-email')
+		      		if(value.replace(' ','_').toLowerCase() == 'secondary_email')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'main-website')
+		      		if(value.replace(' ','_').toLowerCase() == 'main_website')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'other-website')
+		      		if(value.replace(' ','_').toLowerCase() == 'other_website')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'phone-number')
+		      		if(value.replace(' ','_').toLowerCase() == 'phone_number')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'fax')
+		      		if(value.replace(' ','_').toLowerCase() == 'fax')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'linkedin-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'linkedin_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'facebook-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'facebook_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'twitter-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'twitter_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'instagram-url')
+		      		if(value.replace(' ','_').toLowerCase() == 'instagram_url')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'industry')
+		      		if(value.replace(' ','_').toLowerCase() == 'industry')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'naics-code')
+		      		if(value.replace(' ','_').toLowerCase() == 'naics_code')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'employee-count')
+		      		if(value.replace(' ','_').toLowerCase() == 'employee_count')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'annual-revenue')
+		      		if(value.replace(' ','_').toLowerCase() == 'annual_revenue')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'type')
+		      		if(value.replace(' ','_').toLowerCase() == 'type')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
 											<option value="">--Select type--</option>
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'ticket-symbol')
+		      		if(value.replace(' ','_').toLowerCase() == 'ticket_symbol')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'member-of')
+		      		if(value.replace(' ','_').toLowerCase() == 'member_of')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
 											<option value="">--Select Organization--</option>
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'email-opt-out')
+		      		if(value.replace(' ','_').toLowerCase() == 'email_opt_out')
 		      		{
 		      			defaultValue = `<select class="form-control form-control-sm">
 											<option value="" selected>--Yes or No--</option>
@@ -985,102 +960,104 @@ const ORGANIZATION = (function(){
 										</select>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-street')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_street')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-street')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_street')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-city')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_city')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-city')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_city')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-state')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_state')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-state')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_state')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-zip')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_zip')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-zip')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_zip')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'billing-country')
+		      		if(value.replace(' ','_').toLowerCase() == 'billing_country')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'shipping-country')
+		      		if(value.replace(' ','_').toLowerCase() == 'shipping_country')
 		      		{
 		      			defaultValue = `<input type="text" class="form-control form-control-sm">`;
 		      		}
 
-		      		if(value.replace(' ','-').toLowerCase() == 'description')
+		      		if(value.replace(' ','_').toLowerCase() == 'description')
 		      		{
 		      			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
 		      		}
 
 		      		tbody += `<tr>
-                              <td>${value}</td>
-                              <td>${_arrOrganizationImport['arr_data'][0][key]}</td>
-                              <td>
-                              	<select class="form-control form-control-sm select2" onchange="ORGANIZATION.fieldMapping(this)" style="width:100%;">
-                              		<option value="" selected>--Select an Option--</option>
-                              		<option value="organization-name" ${(value.replace(' ','-').toLowerCase() == 'organization-name')? 'selected' : ''}>Organization Name</option>
-                              		<option value="assigned-to" ${(value.replace(' ','-').toLowerCase() == 'assigned-to')? 'selected' : ''}>Assigned To</option>
-                              		<option value="primary-email" ${(value.replace(' ','-').toLowerCase() == 'primary-email')? 'selected' : ''}>Primary Email</option>
-                              		<option value="secondary-email" ${(value.replace(' ','-').toLowerCase() == 'secondary-email')? 'selected' : ''}>Secondary Email</option>
-                              		<option value="main-website" ${(value.replace(' ','-').toLowerCase() == 'main-website')? 'selected' : ''}>Main Website</option>
-                              		<option value="other-website" ${(value.replace(' ','-').toLowerCase() == 'other-website')? 'selected' : ''}>Other Website</option>
-                              		<option value="phone-number" ${(value.replace(' ','-').toLowerCase() == 'phone-number')? 'selected' : ''}>Phone Number</option>
-                              		<option value="fax" ${(value.replace(' ','-').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
-                              		<option value="linkedin-url" ${(value.replace(' ','-').toLowerCase() == 'linkedin-url')? 'selected' : ''}>LinkedIn URL</option>
-                              		<option value="facebook-url" ${(value.replace(' ','-').toLowerCase() == 'facebook-url')? 'selected' : ''}>Facebook URL</option>
-                              		<option value="twitter-url" ${(value.replace(' ','-').toLowerCase() == 'twitter-url')? 'selected' : ''}>Twitter URL</option>
-                              		<option value="instagram-url" ${(value.replace(' ','-').toLowerCase() == 'instagram-url')? 'selected' : ''}>Instagram URL</option>
-                              		<option value="industry" ${(value.replace(' ','-').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
-                              		<option value="naics-code" ${(value.replace(' ','-').toLowerCase() == 'naics-code')? 'selected' : ''}>NAICS Code</option>
-                              		<option value="employee-count" ${(value.replace(' ','-').toLowerCase() == 'employee-count')? 'selected' : ''}>Employee Count</option>
-                              		<option value="annual-revenue" ${(value.replace(' ','-').toLowerCase() == 'annual-revenue')? 'selected' : ''}>Annual Revenue</option>
-                              		<option value="type" ${(value.replace(' ','-').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
-                              		<option value="ticket-symbol" ${(value.replace(' ','-').toLowerCase() == 'ticket-symbol')? 'selected' : ''}>Ticket Symbol</option>
-                              		<option value="member-of" ${(value.replace(' ','-').toLowerCase() == 'member-of')? 'selected' : ''}>Member Of</option>
-                              		<option value="email-opt-out" ${(value.replace(' ','-').toLowerCase() == 'email-opt-out')? 'selected' : ''}>Email Opt Out</option>
-                              		<option value="billing-street" ${(value.replace(' ','-').toLowerCase() == 'billing-street')? 'selected' : ''}>Billing Street</option>
-                              		<option value="shipping-street" ${(value.replace(' ','-').toLowerCase() == 'shipping-street')? 'selected' : ''}>Shipping Street</option>
-                              		<option value="billing-city" ${(value.replace(' ','-').toLowerCase() == 'billing-city')? 'selected' : ''}>Billing City</option>
-                              		<option value="shipping-city" ${(value.replace(' ','-').toLowerCase() == 'shipping-city')? 'selected' : ''}>Shipping City</option>
-                              		<option value="billing-state" ${(value.replace(' ','-').toLowerCase() == 'billing-state')? 'selected' : ''}>Billing State</option>
-                              		<option value="shipping-state" ${(value.replace(' ','-').toLowerCase() == 'shipping-state')? 'selected' : ''}>Shipping State</option>
-                              		<option value="billing-zip" ${(value.replace(' ','-').toLowerCase() == 'billing-zip')? 'selected' : ''}>Billing Zip</option>
-                              		<option value="shipping-zip" ${(value.replace(' ','-').toLowerCase() == 'shipping-zip')? 'selected' : ''}>Shipping Zip</option>
-                              		<option value="billing-country" ${(value.replace(' ','-').toLowerCase() == 'billing-country')? 'selected' : ''}>Billing Country</option>
-                              		<option value="shipping-country" ${(value.replace(' ','-').toLowerCase() == 'shipping-country')? 'selected' : ''}>Shipping Country</option>
-                              		<option value="description" ${(value.replace(' ','-').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
-                              	</select>
-                              </td>
-                              <td>${defaultValue}</td>
+		      					<td>${num}</td>
+                              	<td>${value}</td>
+                              	<td>${_arrOrganizationImport['arrOrganizationList'][0][key]}</td>
+                              	<td>
+	                              	<select class="form-control form-control-sm select2" onchange="ORGANIZATION.fieldMapping(this)" style="width:100%;">
+	                              		<option value="" selected>--Select an Option--</option>
+	                              		<option value="organization_name" ${(value.replace(' ','_').toLowerCase() == 'organization_name')? 'selected' : ''}>Organization Name</option>
+	                              		<option value="assigned_to" ${(value.replace(' ','_').toLowerCase() == 'assigned_to')? 'selected' : ''}>Assigned To</option>
+	                              		<option value="primary_email" ${(value.replace(' ','_').toLowerCase() == 'primary_email')? 'selected' : ''}>Primary Email</option>
+	                              		<option value="secondary_email" ${(value.replace(' ','_').toLowerCase() == 'secondary_email')? 'selected' : ''}>Secondary Email</option>
+	                              		<option value="main_website" ${(value.replace(' ','_').toLowerCase() == 'main_website')? 'selected' : ''}>Main Website</option>
+	                              		<option value="other_website" ${(value.replace(' ','_').toLowerCase() == 'other_website')? 'selected' : ''}>Other Website</option>
+	                              		<option value="phone_number" ${(value.replace(' ','_').toLowerCase() == 'phone_number')? 'selected' : ''}>Phone Number</option>
+	                              		<option value="fax" ${(value.replace(' ','_').toLowerCase() == 'fax')? 'selected' : ''}>Fax</option>
+	                              		<option value="linkedin_url" ${(value.replace(' ','_').toLowerCase() == 'linkedin_url')? 'selected' : ''}>LinkedIn URL</option>
+	                              		<option value="facebook_url" ${(value.replace(' ','_').toLowerCase() == 'facebook_url')? 'selected' : ''}>Facebook URL</option>
+	                              		<option value="twitter_url" ${(value.replace(' ','_').toLowerCase() == 'twitter_url')? 'selected' : ''}>Twitter URL</option>
+	                              		<option value="instagram_url" ${(value.replace(' ','_').toLowerCase() == 'instagram_url')? 'selected' : ''}>Instagram URL</option>
+	                              		<option value="industry" ${(value.replace(' ','_').toLowerCase() == 'industry')? 'selected' : ''}>Industry</option>
+	                              		<option value="naics_code" ${(value.replace(' ','_').toLowerCase() == 'naics_code')? 'selected' : ''}>NAICS Code</option>
+	                              		<option value="employee_count" ${(value.replace(' ','_').toLowerCase() == 'employee_count')? 'selected' : ''}>Employee Count</option>
+	                              		<option value="annual_revenue" ${(value.replace(' ','_').toLowerCase() == 'annual_revenue')? 'selected' : ''}>Annual Revenue</option>
+	                              		<option value="type" ${(value.replace(' ','_').toLowerCase() == 'type')? 'selected' : ''}>Type</option>
+	                              		<option value="ticket_symbol" ${(value.replace(' ','_').toLowerCase() == 'ticket_symbol')? 'selected' : ''}>Ticket Symbol</option>
+	                              		<option value="member_of" ${(value.replace(' ','_').toLowerCase() == 'member_of')? 'selected' : ''}>Member Of</option>
+	                              		<option value="email_opt_out" ${(value.replace(' ','_').toLowerCase() == 'email_opt_out')? 'selected' : ''}>Email Opt Out</option>
+	                              		<option value="billing_street" ${(value.replace(' ','_').toLowerCase() == 'billing_street')? 'selected' : ''}>Billing Street</option>
+	                              		<option value="shipping_street" ${(value.replace(' ','_').toLowerCase() == 'shipping_street')? 'selected' : ''}>Shipping Street</option>
+	                              		<option value="billing_city" ${(value.replace(' ','_').toLowerCase() == 'billing_city')? 'selected' : ''}>Billing City</option>
+	                              		<option value="shipping_city" ${(value.replace(' ','_').toLowerCase() == 'shipping_city')? 'selected' : ''}>Shipping City</option>
+	                              		<option value="billing_state" ${(value.replace(' ','_').toLowerCase() == 'billing_state')? 'selected' : ''}>Billing State</option>
+	                              		<option value="shipping_state" ${(value.replace(' ','_').toLowerCase() == 'shipping_state')? 'selected' : ''}>Shipping State</option>
+	                              		<option value="billing_zip" ${(value.replace(' ','_').toLowerCase() == 'billing_zip')? 'selected' : ''}>Billing Zip</option>
+	                              		<option value="shipping_zip" ${(value.replace(' ','_').toLowerCase() == 'shipping_zip')? 'selected' : ''}>Shipping Zip</option>
+	                              		<option value="billing_country" ${(value.replace(' ','_').toLowerCase() == 'billing_country')? 'selected' : ''}>Billing Country</option>
+	                              		<option value="shipping_country" ${(value.replace(' ','_').toLowerCase() == 'shipping_country')? 'selected' : ''}>Shipping Country</option>
+	                              		<option value="description" ${(value.replace(' ','_').toLowerCase() == 'description')? 'selected' : ''}>Description</option>
+	                              	</select>
+                              	</td>
+                              	<td>${defaultValue}</td>
                             </tr>`;
+                    num++;
 		      	});
 
 		      	$('#tbl_mapping tbody').html('');
@@ -1100,60 +1077,98 @@ const ORGANIZATION = (function(){
 		}
 	}
 
-	thisOrganization.backToStepTwo = function()
+	thisOrganization.loadCustomMaps = function(mapType)
 	{
-		$('#step1Indicator').addClass('active');
-		$('#step2Indicator').removeClass('active');
-		$('#step2Trigger').prop('disabled',true);
-		$('#step3Indicator').removeClass('active');
+		$('body').waitMe(_waitMeLoaderConfig);
+		$.ajax({
+      	/* OrganizationController->loadCustomMaps() */
+			url : `${baseUrl}/rolodex/load-custom-maps`,
+			method : 'get',
+			dataType: 'json',
+			data : {mapType : mapType},
+			success : function(data)
+			{
+				$('body').waitMe('hide');
+				let options = '';
+				if(data.length > 0)
+				{
+					options = '<option value="">--Choose saved map--</option>';
+					data.forEach(function(value, key){
+						options += `<option value="${value['id']}">${value['map_name']}</option>`;
+					});
+					$('#slc_savedMaps').html(options).select2();
+				}
+				else
+				{
+					options = '<option value="">--No saved map--</option>';
+					$('#slc_savedMaps').html(options);
+				}
+			}
+		});
+	}
 
-		$('#step1').addClass('active');
-		$('#step1').addClass('dstepper-block');
-		$('#step2').removeClass('active');
-		$('#step2').removeClass('dstepper-block');
-		$('#step3').removeClass('active');
-		$('#step3').removeClass('dstepper-block');
+	thisOrganization.selectCustomMap = function(mapId)
+	{
+		$('body').waitMe(_waitMeLoaderConfig);
+		$.ajax({
+      	/* OrganizationController->selectCustomMap() */
+			url : `${baseUrl}/rolodex/select-custom-map`,
+			method : 'get',
+			dataType: 'json',
+			data : {mapId : mapId},
+			success : function(data)
+			{
+				$('body').waitMe('hide');
+				let x = 0;
+				$('#tbl_mapping tbody tr').each(function(){
+					$(this).find('td:eq(3) select').val(`${data['map_fields'][x]}`).change();
+					x++;
+				});
 
-		$('#div_step1').prop('hidden',false);
-		$('#div_step2').prop('hidden',true);
-		$('#div_step3').prop('hidden',true);
+				let y = 0;
+				$('#tbl_mapping tbody tr').each(function(){
+					$(this).find('td:eq(4) .form-control').val(data['map_values'][y]);
+					y++;
+				});
+			}
+		});
 	}
 
 	thisOrganization.fieldMapping = function(dis)
 	{
   		let defaultValue = '';
 
-  		if($(dis).val() == 'organization-name')
+  		if($(dis).val() == 'organization_name')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'assigned-to')
+  		if($(dis).val() == 'assigned_to')
   		{
   			defaultValue = `<select class="form-control form-control-sm"></select>`;
   		}
 
-  		if($(dis).val() == 'primary-email')
+  		if($(dis).val() == 'primary_email')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'secondary-email')
+  		if($(dis).val() == 'secondary_email')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'main-website')
+  		if($(dis).val() == 'main_website')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'other-website')
+  		if($(dis).val() == 'other_website')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'phone-number')
+  		if($(dis).val() == 'phone_number')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
@@ -1163,22 +1178,22 @@ const ORGANIZATION = (function(){
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'linkedin-url')
+  		if($(dis).val() == 'linkedin_url')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'facebook-url')
+  		if($(dis).val() == 'facebook_url')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'twitter-url')
+  		if($(dis).val() == 'twitter_url')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'instagram-url')
+  		if($(dis).val() == 'instagram_url')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
@@ -1188,17 +1203,17 @@ const ORGANIZATION = (function(){
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'naics-code')
+  		if($(dis).val() == 'naics_code')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'employee-count')
+  		if($(dis).val() == 'employee_count')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'annual-revenue')
+  		if($(dis).val() == 'annual_revenue')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
@@ -1210,19 +1225,19 @@ const ORGANIZATION = (function(){
 							</select>`;
   		}
 
-  		if($(dis).val() == 'ticket-symbol')
+  		if($(dis).val() == 'ticket_symbol')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'member-of')
+  		if($(dis).val() == 'member_of')
   		{
   			defaultValue = `<select class="form-control form-control-sm select2" style="width:100%;">
 								<option value="">--Select Organization--</option>
 							</select>`;
   		}
 
-  		if($(dis).val() == 'email-opt-out')
+  		if($(dis).val() == 'email_opt_out')
   		{
   			defaultValue = `<select class="form-control form-control-sm">
 								<option value="" selected>--Yes or No--</option>
@@ -1231,52 +1246,52 @@ const ORGANIZATION = (function(){
 							</select>`;
   		}
 
-  		if($(dis).val() == 'billing-street')
+  		if($(dis).val() == 'billing_street')
   		{
   			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
   		}
 
-  		if($(dis).val() == 'shipping-street')
+  		if($(dis).val() == 'shipping_street')
   		{
   			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
   		}
 
-  		if($(dis).val() == 'billing-city')
+  		if($(dis).val() == 'billing_city')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'shipping-city')
+  		if($(dis).val() == 'shipping_city')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'billing-state')
+  		if($(dis).val() == 'billing_state')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'shipping-state')
+  		if($(dis).val() == 'shipping_state')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'billing-zip')
+  		if($(dis).val() == 'billing_zip')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'shipping-zip')
+  		if($(dis).val() == 'shipping_zip')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'billing-country')
+  		if($(dis).val() == 'billing_country')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
 
-  		if($(dis).val() == 'shipping-country')
+  		if($(dis).val() == 'shipping_country')
   		{
   			defaultValue = `<input type="text" class="form-control form-control-sm">`;
   		}
@@ -1286,19 +1301,59 @@ const ORGANIZATION = (function(){
   			defaultValue = `<textarea class="form-control form-control-sm" rows="3"></textarea>`;
   		}
 
-  		$(dis).closest('tr').find('td:eq(3)').html(defaultValue);
+  		$(dis).closest('tr').find('td:eq(4)').html(defaultValue);
 	}
 
 	thisOrganization.importOrganizations = function()
 	{
-		// console.log(_arrOrganizationImport);
-
 		let arrFields = [];
 		$('#tbl_mapping tbody tr').each(function(){
 			arrFields.push($(this).find('td:eq(3) select').val());
 		});
 
-		console.log(arrFields);
+		let arrValues = [];
+		$('#tbl_mapping tbody tr').each(function(){
+			arrValues.push($(this).find('td:eq(4) .form-control').val());
+		});
+
+		$('body').waitMe(_waitMeLoaderConfig);
+		let formData = new FormData();
+		formData.set('arrMapFields', JSON.stringify(arrFields));
+		formData.set('arrDefaultValues', JSON.stringify(arrValues));
+		formData.set('chk_saveCustomMapping',($('#chk_saveCustomMapping').is(':checked'))? 'YES' : 'NO');
+		formData.set('txt_customMapName',$('#txt_customMapName').val());
+		formData.set('arrDuplicateHandler',JSON.stringify(_arrOrganizationImport['arrDuplicateHandler']));
+		formData.set('arrOrganizationList',JSON.stringify(_arrOrganizationImport['arrOrganizationList']));
+		$.ajax({
+      	// OrganizationController->importOrganizations
+			url : `${baseUrl}/rolodex/import-organizations`,
+			method : 'POST',
+			dataType: 'json',
+	      	processData: false, // important
+	      	contentType: false, // important
+	      	data : formData,
+	      	success : function(result)
+	      	{
+	      		$('body').waitMe('hide');
+	      		if(result == 'Success')
+	      		{
+	      			Toast.fire({
+	      				icon: 'success',
+	      				title: 'Success! <br>Organizations uploaded successfully.',
+	      			});
+	      			setTimeout(function(){
+	      				window.location.replace(`${baseUrl}/organizations`);
+	      			}, 1000);
+	      		}
+	      		else
+	      		{
+	      			Toast.fire({
+	      				icon: 'error',
+	      				title: 'Error! <br>Database error!'
+	      			});
+	      		}
+	      	}
+	    });
 	}
 
 	thisOrganization.stepThreeCancel = function()

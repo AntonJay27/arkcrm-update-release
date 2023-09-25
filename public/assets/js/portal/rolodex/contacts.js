@@ -870,7 +870,7 @@ const CONTACTS = (function(){
 		      		tbody += `<tr>
 		      								<td>${num}</td>
 	                        <td>${value}</td>
-	                        <td>${__arrFileResult['arr_data'][0][key]}</td>
+	                        <td>${__arrFileResult['arrContactList'][0][key]}</td>
 	                        <td>
 	                        	<select class="form-control form-control-sm select2" onchange="CONTACTS.fieldMapping(this)" style="width:100%;">
 	                        		<option value="" selected>--Select an Option--</option>
@@ -1193,7 +1193,7 @@ const CONTACTS = (function(){
 
 		      		tbody += `<tr>
 	                        <td>${value}</td>
-	                        <td>${__arrFileResult['arr_data'][0][key]}</td>
+	                        <td>${__arrFileResult['arrContactList'][0][key]}</td>
 	                        <td>
 	                        	<select class="form-control form-control-sm select2" onchange="CONTACTS.fieldMapping(this)" style="width:100%;">
 	                        		<option value="" selected>--Select an Option--</option>

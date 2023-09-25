@@ -1523,113 +1523,119 @@
                     <div class="container-fluid mt-5">
                       <h6>Import from CSV file</h6>
                       <hr>
-                      <div class="row">
-                        <div class="col-lg-3" style="margin: auto;">
-                          <label class="text-muted">Select CSV File Only</label>
-                        </div>
-                        <div class="col-lg-9">
-                          <input type="file" class="form-control" id="file_contactList" name="file_contactList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
-                        </div>
-                      </div>
-                      <br>
-                      <div class="row">
-                        <div class="col-lg-3" style="margin: auto;">
-                          <label class="text-muted">Has Header</label>
-                        </div>
-                        <div class="col-lg-9">
-                          <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
-                          <label class="form-check-label" for="chk_hasHeader"></label>
+                      <form id="form_stepOne">
+                        <div class="row">
+                          <div class="col-lg-3" style="margin: auto;">
+                            <label class="text-muted">Select CSV File Only</label>
+                          </div>
+                          <div class="col-lg-9">
+                            <input type="file" class="form-control" id="file_contactList" name="file_contactList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
                           </div>
                         </div>
-                      </div>
+                        <br>
+                        <div class="row">
+                          <div class="col-lg-3" style="margin: auto;">
+                            <label class="text-muted">Has Header</label>
+                          </div>
+                          <div class="col-lg-9">
+                            <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="chk_hasHeader" checked>
+                            <label class="form-check-label" for="chk_hasHeader"></label>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
                     </div>
                   </div>
                   <div id="step2" class="content" role="tabpanel" aria-labelledby="step2Trigger">
                     <div class="container-fluid mt-5">
                       <h6>Duplicate record handling</h6>
                       <hr>
-                      <label class="text-muted">Select how duplicate records should be handled</label>
-                      <select class="form-control form-control-sm form-select" id="slc_duplicateHandler">
-                        <option value="Skip">Skip</option>
-                        <option value="Override">Override</option>
-                        <option value="Merge">Merge</option>
-                      </select>
+                      <form id="form_stepTwo">
+                        <label class="text-muted">Select how duplicate records should be handled</label>
+                        <select class="form-control form-control-sm form-select" id="slc_duplicateHandler" required>
+                          <option value="Skip">Skip</option>
+                          <option value="Override">Override</option>
+                          <option value="Merge">Merge</option>
+                        </select>
 
-                      <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
-                          <option value="salutation">Salutation</option>
-                          <option value="first-name">First Name</option>
-                          <option value="last-name">Last Name</option>
-                          <option value="position">Position</option>
-                          <option value="company-name">Company Name</option>
-                          <option value="primary-email">Primary Email</option>
-                          <option value="secondary-email">Secondary Email</option>
-                          <option value="date-of-birth">Date of Birth</option>
-                          <option value="intro-letter">Intro Letter</option>
-                          <option value="office-phone">Office Phone</option>
-                          <option value="mobile-phone">Mobile Phone</option>
-                          <option value="home-phone">Home Phone</option>
-                          <option value="secondary-phone">Secondary Phone</option>
-                          <option value="fax">Fax</option>
-                          <option value="linkedin-url">LinkedIn URL</option>
-                          <option value="facebook-url">Facebook URL</option>
-                          <option value="instagram-url">Instagram URL</option>
-                          <option value="twitter-url">Twitter URL</option>
-                          <option value="mailing-street">Mailing Street</option>
-                          <option value="other-street">Other Street</option>
-                          <option value="mailing-po-box">Mailing P.O. Box</option>
-                          <option value="other-po-box">Other P.O. Box</option>
-                          <option value="mailing-city">Mailing City</option>
-                          <option value="other-city">Other City</option>
-                          <option value="mailing-state">Mailing State</option>
-                          <option value="other-state">Other State</option>
-                          <option value="mailing-postal-code">Mailing Postal Code</option>
-                          <option value="other-postal-code">Other Postal Code</option>
-                          <option value="mailing-country">Mailing Country</option>
-                          <option value="other-country">Other Country</option>
-                          <option value="mailing-po-box">Mailing PO Box</option>
-                          <option value="other-po-box">Other PO Box</option>
-                      </select>
-
+                        <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
+                            <option value="salutation">Salutation</option>
+                            <option value="first_name">First Name</option>
+                            <option value="last_name">Last Name</option>
+                            <option value="position">Position</option>
+                            <option value="organization_id">Organization Name</option>
+                            <option value="primary_email">Primary Email</option>
+                            <option value="secondary_email">Secondary Email</option>
+                            <option value="office_phone">Office Phone</option>
+                            <option value="mobile_phone">Mobile Phone</option>
+                            <option value="home_phone">Home Phone</option>
+                            <option value="secondary_phone">Secondary Phone</option>
+                            <option value="fax">Fax</option>
+                            <option value="date_of_birth">Date of Birth</option>
+                            <option value="intro_letter">Intro Letter</option>
+                            <option value="linkedin_url">LinkedIn URL</option>
+                            <option value="facebook_url">Facebook URL</option>
+                            <option value="instagram_url">Instagram URL</option>
+                            <option value="twitter_url">Twitter URL</option>
+                            <option value="department">Department</option>
+                            <option value="mailing_street">Mailing Street</option>
+                            <option value="other_street">Other Street</option>
+                            <option value="mailing_po_box">Mailing P.O. Box</option>
+                            <option value="other_po_box">Other P.O. Box</option>
+                            <option value="mailing_city">Mailing City</option>
+                            <option value="other_city">Other City</option>
+                            <option value="mailing_state">Mailing State</option>
+                            <option value="other_state">Other State</option>
+                            <option value="mailing_zip">Mailing Postal Code</option>
+                            <option value="other_zip">Other Postal Code</option>
+                            <option value="mailing_country">Mailing Country</option>
+                            <option value="other_country">Other Country</option>
+                            <option value="description">Description</option>
+                        </select>
+                      </form>
                     </div>
                   </div>
                   <div id="step3" class="content" role="tabpanel" aria-labelledby="step3Trigger">
                     <div class="container-fluid mt-5">
                       <h6>Map the columns to CRM fields</h6>
                       <hr>
-                      <div class="row mb-3">
-                        <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
-                          <label>Use Save Maps</label>
-                        </div>
-                        <div class="col-lg-4">
-                          <select class="form-control form-control-sm form-select" id="slc_savedMaps"></select>
-                        </div>
-                      </div>
-                      <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>HEADER</th>
-                            <th>ROW 1</th>
-                            <th>CRM FIELDS</th>
-                            <th>DEFAULT VALUE</th>
-                          </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
-
-                      <div class="row">
-                        <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
-                          <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
-                            <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
+                      <form id="form_stepThree">
+                        <div class="row mb-3">
+                          <div class="col-lg-2" style="margin-top:auto; margin-bottom: auto;">
+                            <label>Use Save Maps</label>
+                          </div>
+                          <div class="col-lg-4">
+                            <select class="form-control form-control-sm form-select" id="slc_savedMaps">
+                              <option value="">--No saved maps</option>
+                            </select>
                           </div>
                         </div>
-                        <div class="col-lg-3">
-                          <input type="text" class="form-control form-control-sm" name="">
+                        <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>HEADER</th>
+                              <th>ROW 1</th>
+                              <th>CRM FIELDS</th>
+                              <th>DEFAULT VALUE</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+
+                        <div class="row">
+                          <div class="col-lg-3" style="margin-top:auto; margin-bottom: auto;">
+                            <div class="form-check">
+                              <input type="checkbox" class="form-check-input" id="chk_saveCustomMapping" checked>
+                              <label class="form-check-label" for="chk_saveCustomMapping"> Save as Custom Mapping</label>
+                            </div>
+                          </div>
+                          <div class="col-lg-3">
+                            <input type="text" class="form-control form-control-sm" id="txt_customMapName" name="txt_customMapName" required>
+                          </div>
                         </div>
-                      </div>
-                      
+                      </form>
                     </div>
                   </div>
                 </div>

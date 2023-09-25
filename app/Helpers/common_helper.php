@@ -1,4 +1,17 @@
-<?php  
+<?php
+
+function checkEmptyField($fieldValue, $newValue = "")
+{
+	$arrValues = ['',"",NULL,null];
+	if(in_array($fieldValue,$arrValues))
+	{
+		return $newValue;
+	}
+	else
+	{
+		return $fieldValue;
+	}
+}  
 
 function dayTime($start)
 {

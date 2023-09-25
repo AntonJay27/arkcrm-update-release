@@ -199,19 +199,53 @@ const SETTINGS = (function(){
 
   thisSetting.applySystemUpdates = function()
   {
+    if(confirm('Please Confirm!'))
+    {
+      $('body').waitMe(_waitMeLoaderConfig);
+      $('#btn_systemUpdates').prop('disabled',true);
+      $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
+      $.ajax({
+        /* SystemUpdateController->applySystemUpdates() */
+        url : `${baseUrl}/settings/apply-system-updates`,
+        method : 'get',
+        dataType: 'json',
+        success : function(data)
+        {
+          $('body').waitMe('hide');
+          $('#btn_systemUpdates').prop('disabled',false);
+          $('#div_systemUpdateResult').html(`<code>${data[0]}</code>`);
+        }
+      });
+    }
+  }
+
+  thisSetting.updateDatabase = function()
+  {
     $('body').waitMe(_waitMeLoaderConfig);
-    $('#btn_systemUpdates').prop('disabled',true);
-    $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
+    $('#btn_test').prop('disabled',true);
     $.ajax({
-      /* SystemUpdateController->applySystemUpdates() */
-      url : `${baseUrl}/settings/apply-system-updates`,
+      /* SystemUpdateController->updateDatabase() */
+      url : `${baseUrl}/settings/update-database`,
       method : 'get',
       dataType: 'json',
-      success : function(data)
+      success : function(result)
       {
         $('body').waitMe('hide');
-        $('#btn_systemUpdates').prop('disabled',false);
-        $('#div_systemUpdateResult').html(`<code>${data[0]}</code>`);
+        $('#btn_test').prop('disabled',false);
+        if(result[0] == 'Success')
+        {
+          Toast.fire({
+            icon: 'success',
+            title: `Success! <br>${result[1]}`,
+          });
+        }
+        else
+        {
+          Toast.fire({
+            icon: 'warning',
+            title: `Warning! <br>${result[1]}`,
+          });
+        }
       }
     });
   }

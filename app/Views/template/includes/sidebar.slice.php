@@ -209,7 +209,10 @@
         <li class="nav-item">
           <a href="<?php echo base_url(); ?>/settings" id="nav_settings" class="nav-link">
             <i class="nav-icon fas fa-cog"></i>
-            <p>SETTINGS <span class="right badge badge-danger">New</span></p> 
+            <p>
+              SETTINGS 
+              <!-- <span class="right badge badge-danger">New</span> -->
+            </p> 
           </a>
         </li>
         @endif

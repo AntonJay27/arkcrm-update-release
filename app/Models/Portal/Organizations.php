@@ -260,46 +260,120 @@ class Organizations extends Model
     ////////////////////////////////////////////////////////////
     ///// OrganizationController->checkOnDb()
     ////////////////////////////////////////////////////////////
-    public function checkOnDb($primaryEmail)
-    {
-      $columns = [
-         'a.id',
-         'a.organization_name',
-         'a.primary_email',
-         'a.secondary_email',
-         'a.main_website',
-         'a.other_website',
-         'a.phone_number',
-         'a.fax',
-         'a.linkedin_url',
-         'a.facebook_url',
-         'a.twitter_url',
-         'a.instagram_url',
-         'a.industry',
-         'a.naics_code',
-         'a.employee_count',
-         'a.annual_revenue',
-         'a.type',
-         'a.ticket_symbol',
-         'a.member_of',
-         'a.email_opt_out',
-         'a.unsubscribe_auth_code',
-         'a.assigned_to',
-         '(SELECT CONCAT(salutation, " ",first_name, " ", last_name) FROM users WHERE id = a.assigned_to) assigned_to_name',
-         'a.created_by',
-         'a.created_date',
-      ];
+    // public function checkOnDb($primaryEmail)
+    // {
+    //   $columns = [
+    //      'a.id',
+    //      'a.organization_name',
+    //      'a.primary_email',
+    //      'a.secondary_email',
+    //      'a.main_website',
+    //      'a.other_website',
+    //      'a.phone_number',
+    //      'a.fax',
+    //      'a.linkedin_url',
+    //      'a.facebook_url',
+    //      'a.twitter_url',
+    //      'a.instagram_url',
+    //      'a.industry',
+    //      'a.naics_code',
+    //      'a.employee_count',
+    //      'a.annual_revenue',
+    //      'a.type',
+    //      'a.ticket_symbol',
+    //      'a.member_of',
+    //      'a.email_opt_out',
+    //      'a.unsubscribe_auth_code',
+    //      'a.assigned_to',
+    //      '(SELECT CONCAT(salutation, " ",first_name, " ", last_name) FROM users WHERE id = a.assigned_to) assigned_to_name',
+    //      'a.created_by',
+    //      'a.created_date',
+    //   ];
 
-      $builder = $this->db->table('organizations a')->select($columns);
-      $builder->whereIn('a.primary_email',$primaryEmail);
-      $query = $builder->get();
-      return  $query->getResultArray();
-    }
+    //   $builder = $this->db->table('organizations a')->select($columns);
+    //   $builder->whereIn('a.primary_email',$primaryEmail);
+    //   $query = $builder->get();
+    //   return  $query->getResultArray();
+    // }
 
     ////////////////////////////////////////////////////////////
     ///// OrganizationController->uploadOrganizations()
     ////////////////////////////////////////////////////////////
-    public function uploadOrganizations($arrData)
+    // public function uploadOrganizations($arrData)
+    // {
+    //   try {
+    //       $this->db->transStart();
+    //           $builder = $this->db->table('organizations');
+    //           $builder->insertBatch($arrData);
+    //       $this->db->transComplete();
+    //       return ($this->db->transStatus() === TRUE)? 1 : 0;
+    //   } catch (PDOException $e) {
+    //       throw $e;
+    //   }
+    // }
+
+    ////////////////////////////////////////////////////////////
+    ///// OrganizationController->importOrganizations()
+    ////////////////////////////////////////////////////////////
+    public function addCustomMapping($arrData)
+    {
+      try {
+          $this->db->transStart();
+              $builder = $this->db->table('custom_maps');
+              $builder->insert($arrData);
+          $this->db->transComplete();
+          return ($this->db->transStatus() === TRUE)? 1 : 0;
+      } catch (PDOException $e) {
+          throw $e;
+      }
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// OrganizationController->loadCustomMaps()
+    ////////////////////////////////////////////////////////////
+    public function loadCustomMaps($mapType)
+    {
+        $columns = [
+            'a.id',
+            'a.map_type',
+            'a.map_name',
+            'a.map_fields',
+            'a.map_values',
+            'a.created_by',
+            'a.created_date',
+        ];
+
+        $builder = $this->db->table('custom_maps a')->select($columns);
+        $builder->where('a.map_type',$mapType);
+        $query = $builder->get();
+        return  $query->getResultArray();
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// OrganizationController->selectCustomMap()
+    ////////////////////////////////////////////////////////////
+    public function selectCustomMap($mapId)
+    {
+        $columns = [
+            'a.id',
+            'a.map_type',
+            'a.map_name',
+            'a.map_fields',
+            'a.map_values',
+            'a.created_by',
+            'a.created_date',
+        ];
+
+        $builder = $this->db->table('custom_maps a')->select($columns);
+        $builder->where('a.id',$mapId);
+        $query = $builder->get();
+        return  $query->getRowArray();
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// OrganizationController->importOrganizations()
+    ////////////////////////////////////////////////////////////
+    public function importOrganizations($arrData)
     {
       try {
           $this->db->transStart();
@@ -311,8 +385,6 @@ class Organizations extends Model
           throw $e;
       }
     }
-
-
 
 
 

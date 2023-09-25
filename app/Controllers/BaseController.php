@@ -54,7 +54,7 @@ abstract class BaseController extends Controller
 
         $this->validation = \Config\Services::validation();
 
-        // $this->request = \Config\Services::request();
+        $this->forge = \Config\Database::forge();
 
         $this->session = \Config\Services::session();
     }

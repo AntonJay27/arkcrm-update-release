@@ -444,40 +444,60 @@ class OrganizationController extends BaseController
 
     public function uploadFileOrganization()
     {
-      $file = $this->request->getFile('organizationList');
+        $fields = $this->request->getPost();
+      
+        $file = $this->request->getFile('organizationList');
 
-      $arrResult = [];
+        $arrResult = [];
 
-      if ($file->isValid() && ! $file->hasMoved()) 
-      {
-          $file_data = $file->getName();
-          $path = $file->getTempName();
+        if ($file->isValid() && ! $file->hasMoved()) 
+        {
+            $file_data = $file->getName();
+            $path = $file->getTempName();
 
-          $ext = pathinfo($path, PATHINFO_EXTENSION);
+            $ext = pathinfo($path, PATHINFO_EXTENSION);
 
-          $arrData = readUploadFile($path);
+            $arrData = readUploadFile($path);
 
-          $arrResult['arr_header'] = $arrData[0];
+            $validColumns = [];
+            $arrHeader = [];
+            foreach($arrData[0] as $key => $value)
+            {
+                $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
+                if(!in_array($value,$arrVal))
+                {
+                    $validColumns[] = $value;
+                    if($fields['chk_hasHeader'] == 'NO')
+                    {
+                        $arrHeader[] = "";
+                    }
+                }
+            }
 
-          $validColumns = [];
-          foreach($arrData[0] as $key => $value)
-          {
-              $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
-              if(!in_array($value,$arrVal))
-              {
-                  $validColumns[] = $value;
-              }
-          }
-          array_shift($arrData);
-          
-          $arrResult['arr_data'] = $arrData;
-      }
-      else
-      {
-          $arrResult[] = "Invalid File";
-      }
+            if(count($validColumns) > 0)
+            {
+                if($fields['chk_hasHeader'] == 'YES')
+                {
+                    $arrResult['arr_header'] = $arrData[0];
+                    array_shift($arrData);
+                }
+                else
+                {
+                    $arrResult['arr_header'] = $arrHeader;
+                }
+                $arrResult['arrOrganizationList'] = $arrData;
+            }
+            else
+            {
+                $arrResult[] = "Your file is empty!";
+            }
+        }
+        else
+        {
+            $arrResult[] = "Invalid File";
+        }
 
-      return $this->response->setJSON($arrResult);
+        return $this->response->setJSON($arrResult);
     }
 
     public function duplicateHandlingOrganization()
@@ -493,9 +513,98 @@ class OrganizationController extends BaseController
         return $this->response->setJSON($arrResult);
     }
 
+    public function loadCustomMaps()
+    {
+        $fields = $this->request->getGet();
+
+        $arrData = $this->organizations->loadCustomMaps($fields['mapType']);
+        return $this->response->setJSON($arrData);
+    }
+
+    public function selectCustomMap()
+    {
+        $fields = $this->request->getGet();
+
+        $arrData = $this->organizations->selectCustomMap($fields['mapId']);
+        $arrNewData = [
+            'id'            => $arrData['id'],
+            'map_name'      => $arrData['map_name'],
+            'map_fields'    => json_decode($arrData['map_fields'],true),
+            'map_values'    => json_decode($arrData['map_values'],true),
+        ];
+        return $this->response->setJSON($arrNewData);
+    }
+
     public function importOrganizations()
     {
+        $fields = $this->request->getPost();
 
+        $arrMapFields           = json_decode($fields['arrMapFields'],true);
+        $arrDefaultValues       = json_decode($fields['arrDefaultValues'],true);
+        $arrDuplicateHandler    = json_decode($fields['arrDuplicateHandler'],true);
+        $arrOrganizationList    = json_decode($fields['arrOrganizationList'],true);
+
+        $arrData = [];
+        foreach ($arrOrganizationList as $key => $value) 
+        {
+            for ($i=0; $i < count($arrMapFields); $i++) 
+            { 
+                if($arrMapFields[$i] != null)
+                {
+                    if(checkEmptyField($value[$i]) != '')
+                    {
+                        $arrColumns[$arrMapFields[$i]] = $value[$i];
+                    }
+                    else
+                    {
+                        $arrColumns[$arrMapFields[$i]] = $arrDefaultValues[$i];
+                    }
+                }
+            }  
+            $arrData[] = $arrColumns;          
+        }
+
+        // Duplicate Handling
+        // $arrDuplicateHandlerFields = [];
+        // foreach ($arrDuplicateHandler[1] as $key => $value) 
+        // {
+        //     if(in_array($value,$arrMapFields))
+        //     {
+        //         $arrDuplicateHandlerFields[] = $value;
+        //     }
+        // }
+
+        // if($arrDuplicateHandler[0] == 'Skip')
+        // {
+            
+        // }
+        // else if($arrDuplicateHandler[0] == 'Override')
+        // {
+            
+        // }
+        // else if($arrDuplicateHandler[0] == 'Merge')
+        // {
+            
+        // }
+
+        // Field Mapping
+        if($fields['chk_saveCustomMapping'] == 'YES')
+        {
+            $arrFieldMapping = [
+                'map_type'      => 'organization',
+                'map_name'      => $fields['txt_customMapName'],
+                'map_fields'    => $fields['arrMapFields'],
+                'map_values'    => $fields['arrDefaultValues'],
+                'created_by'    => $this->session->get('arkonorllc_user_id'),
+                'created_date'  => date('Y-m-d H:i:s')
+            ];
+            $this->organizations->addCustomMapping($arrFieldMapping);
+        }
+
+        $result = $this->organizations->importOrganizations($arrData);
+        $msgResult[] = ($result > 0)? "Success" : "Database error";
+
+        return $this->response->setJSON($msgResult);
     }
 
     // public function uploadOrganizations()

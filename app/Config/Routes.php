@@ -261,6 +261,8 @@ $routes->post('marketing/remove-organization','Portal\OrganizationController::re
 // $routes->post('rolodex/check-organization-file','Portal\OrganizationController::checkOrganizationFile');
 $routes->post('rolodex/upload-file-organization','Portal\OrganizationController::uploadFileOrganization');
 $routes->post('rolodex/duplicate-handling-organization','Portal\OrganizationController::duplicateHandlingOrganization');
+$routes->get('rolodex/load-custom-maps', 'Portal\OrganizationController::loadCustomMaps');
+$routes->get('rolodex/select-custom-map', 'Portal\OrganizationController::selectCustomMap');
 $routes->post('rolodex/import-organizations','Portal\OrganizationController::importOrganizations');
 // $routes->get('rolodex/organization-conflicts/(:any)', 'Portal\OrganizationController::organizationConflicts/$1');
 
@@ -411,6 +413,8 @@ $routes->post('settings/edit-email-config', 'Portal\EmailConfigurationController
 $routes->post('settings/test-email-config', 'Portal\EmailConfigurationController::testEmailConfig');
 $routes->get('settings/check-system-updates', 'Portal\SystemUpdateController::checkSystemUpdates');
 $routes->get('settings/apply-system-updates', 'Portal\SystemUpdateController::applySystemUpdates');
+
+$routes->get('settings/update-database','Portal\SystemUpdateController::updateDatabase');
 
 
 /////////////////////////////////////////////////////////////////////
