@@ -203,7 +203,7 @@ const SETTINGS = (function(){
     {
       $('body').waitMe(_waitMeLoaderConfig);
       $('#btn_systemUpdates').prop('disabled',true);
-      $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
+      // $('#div_systemUpdateResult').html(`<code>Processing, please wait...</code>`);
       $.ajax({
         /* SystemUpdateController->applySystemUpdates() */
         url : `${baseUrl}/settings/apply-system-updates`,
@@ -213,7 +213,16 @@ const SETTINGS = (function(){
         {
           $('body').waitMe('hide');
           $('#btn_systemUpdates').prop('disabled',false);
-          $('#div_systemUpdateResult').html(`<code>${data[0]}</code>`);
+          // $('#div_systemUpdateResult').html(`<code>${data[0]}</code>`);
+
+          Toast.fire({
+            icon: 'success',
+            title: `Success! <br>${data[0]}`,
+          });
+
+          setTimeout(function(){
+            window.location.replace(`${baseUrl}/settings`);
+          }, 1000);
         }
       });
     }
