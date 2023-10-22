@@ -1438,59 +1438,11 @@
         </div>
       </div>
 
-      <!-- <div class="modal fade" id="modal_importContacts" role="dialog">
-        <div class="modal-dialog modal-md" role="document">
-          <div class="modal-content">
-            <div class="modal-header modal-header--sticky">
-              <h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Contacts</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-
-              <form id="form_importContacts" enctype="multipart/form-data">
-               <label>CSV File Only:</label>
-                <input type="file" class="form-control" id="file_contactList" name="file_contactList" style="padding: 3px 3px 3px 3px !important;" accept=".csv" required>
-                <span id="lbl_loader"><br><i>Analizing your file, please wait...</i></span>
-                <div class="pt-3" id="div_checkResult">
-                  <label>Existing on DB: <span id="lbl_forUpdate"></span></label>
-                  <br>
-                  <label>For Insert: <span id="lbl_forInsert"></span></label>
-                  <br>
-                  <label>Conflict Rows: <span id="lbl_conflictRows"></span></label>
-                  
-                  <p id="lbl_download">
-                    Click <a href="#" id="lnk_download" target="_blank">here</a> to download conflict rows.
-                  </p>
-                </div>
-                <div class="pt-3" id="div_errorResult" style="color:red;">
-                  <label>Error:</label>
-                  <p></p>
-                  <br>
-                </div>
-                <label id="lbl_uploadingProgress" class="text-danger"><i>Uploading in progress, Please wait...</i></label>
-              </form>
-
-            </div>
-            <div class="modal-footer modal-footer--sticky">
-              <a href="<?php echo base_url(); ?>/public/assets/files/ContactsCSVFileFormat.xlsx" class="btn btn-default">
-               <i class="fa fa-download"></i> Download File Format</a>
-              <button type="submit" class="btn btn-primary" id="btn_submitContactList" form="form_importContacts">
-               <i class="fa fa-save"></i> Upload File</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
       <div class="modal fade" id="modal_importContacts" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
           <div class="modal-content">
             <div class="modal-header modal-header--sticky">
               <h5 class="modal-title"><i class="fa fa-plus mr-1"></i> Import Contacts</h5>
-              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button> -->
             </div>
             <div class="modal-body">
 
@@ -1516,6 +1468,13 @@
                       <span class="bs-stepper-label">Field Mapping</span>
                     </button>
                   </div>
+                  <div class="line"></div>
+									<div class="step" data-target="#step4" id="step4Indicator">
+										<button type="button" class="step-trigger" role="tab" aria-controls="step4" id="step4Trigger" aria-selected="false" disabled>
+											<span class="bs-stepper-circle">4</span>
+											<span class="bs-stepper-label">Review Data</span>
+										</button>
+									</div>
                 </div>
                 <div class="bs-stepper-content">
 
@@ -1558,7 +1517,8 @@
                           <option value="Override">Override</option>
                           <option value="Merge">Merge</option>
                         </select>
-
+                        <br>
+                        <label class="text-muted">Select the matching fields to find duplicate records</label>
                         <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo" style="display: none;">
                             <option value="salutation">Salutation</option>
                             <option value="first_name">First Name</option>
@@ -1606,9 +1566,16 @@
                             <label>Use Save Maps</label>
                           </div>
                           <div class="col-lg-4">
-                            <select class="form-control form-control-sm form-select" id="slc_savedMaps">
-                              <option value="">--No saved maps</option>
-                            </select>
+                            <div class="input-group">
+                              <select class="form-control form-control-sm form-select" id="slc_savedMaps">
+                                <option value="">--No Saved Maps--</option>
+                              </select>
+                              <div class="input-group-append">
+                                <button type="button" class="btn btn-sm btn-default" id="btn_refreshSavedMaps">
+                                  <i class="fas fa-refresh"></i>
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <table class="table table-sm table-bordered mb-3" id="tbl_mapping">
@@ -1616,7 +1583,7 @@
                             <tr>
                               <th>#</th>
                               <th>HEADER</th>
-                              <th>ROW 1</th>
+                              <th>ROW 1 of <span id="lbl_totalRows"></span></th>
                               <th>CRM FIELDS</th>
                               <th>DEFAULT VALUE</th>
                             </tr>
@@ -1638,25 +1605,88 @@
                       </form>
                     </div>
                   </div>
+                  <div id="step4" class="content" role="tabpanel" aria-labelledby="step4Trigger">
+										<div class="container-fluid mt-5">
+											<h6>Review data before import</h6>
+											<hr>
+											<form id="form_stepFour">
+                        <div id="div_duplicateRows1">
+													<label class="text-muted">Duplicate rows found on CSV file</label>
+													<table class="table table-sm table-bordered mb-3" id="tbl_duplicateRows1">
+														<thead></thead>
+														<tbody></tbody>
+													</table>
+													<hr>
+												</div>
+
+												<div id="div_duplicateRows2">
+													<label class="text-muted">Existing rows found on database</label>
+													<table class="table table-sm table-bordered mb-3" id="tbl_duplicateRows2">
+														<thead></thead>
+														<tbody></tbody>
+													</table>
+													<hr>
+												</div>
+
+												<label class="text-muted" id="lbl_duplicateHandler"></label>
+                        <div class="row">
+													<div class="col-sm-3">
+														<div class="info-box" style="background-color:#C3E6CB;">
+															<span class="info-box-icon bg-success" id="lbl_percentForInsert" style="font-size:15px;">0%</span>
+															<div class="info-box-content">
+																<span class="info-box-text">FOR INSERT</span>
+																<span class="info-box-number" id="lbl_countForInsert">0</span>
+																<div class="progress">
+																	<div class="progress-bar bg-success" id="div_percentForInsert" style="width: 0%"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="col-sm-3">
+														<div class="info-box" style="background-color:#FFEEBA;">
+															<span class="info-box-icon bg-warning" id="lbl_percentForUpdate" style="font-size:15px;">0%</span>
+															<div class="info-box-content">
+																<span class="info-box-text">FOR UPDATE</span>
+																<span class="info-box-number" id="lbl_countForUpdate">0</span>
+																<div class="progress">
+																	<div class="progress-bar bg-warning" id="div_percentForUpdate" style="width: 0%"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<table class="table table-sm table-bordered mb-3" id="tbl_importData">
+													<thead></thead>
+													<tbody></tbody>
+												</table>
+
+											</form>
+										</div>
+									</div>
                 </div>
               </div>
 
             </div>
             <div class="modal-footer modal-footer--sticky">
               <div id="div_step1" class="pl-4 pr-4">
-                  <button type="button" class="btn btn-primary" id="btn_stepOneNext">Next</button>
-                  <button type="button" class="btn btn-danger" id="btn_stepOneCancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn_stepOneNext" form="form_stepOne">Next</button>
+                <button type="button" class="btn btn-danger" id="btn_stepOneCancel">Cancel</button>
               </div>
               <div id="div_step2" class="pl-4 pr-4" hidden>
-                  <button type="button" class="btn btn-secondary" id="btn_stepTwoBack">Back</button>
-                  <button type="button" class="btn btn-primary" id="btn_stepTwoNext">Next</button>
-                  <button type="button" class="btn btn-dark" id="btn_stepTwoSkip">Skip this step</button>
-                  <button type="button" class="btn btn-danger" id="btn_stepTwoCancel">Cancel</button>
+                <button type="button" class="btn btn-secondary" id="btn_stepTwoBack">Back</button>
+                <button type="submit" class="btn btn-primary" id="btn_stepTwoNext" form="form_stepTwo">Next</button>
+                <button type="button" class="btn btn-dark" id="btn_stepTwoSkip">Skip this step</button>
+                <button type="button" class="btn btn-danger" id="btn_stepTwoCancel">Cancel</button>
               </div>
               <div id="div_step3" class="pl-4 pr-4" hidden>
-                  <button type="button" class="btn btn-primary" id="btn_stepThreeImport">Import</button>
-                  <button type="button" class="btn btn-danger" id="btn_stepThreeCancel">Cancel</button>
+                <button type="button" class="btn btn-secondary" id="btn_stepThreeBack">Back</button>
+								<button type="submit" class="btn btn-primary" id="btn_stepThreeNext" form="form_stepThree">Next</button>
+								<button type="button" class="btn btn-danger" id="btn_stepThreeCancel">Cancel</button>
               </div>
+              <div id="div_step4" class="pl-4 pr-4" hidden>
+								<button type="submit" class="btn btn-primary" id="btn_stepFourImport" form="form_stepFour">Import</button>
+								<button type="button" class="btn btn-danger" id="btn_stepFourCancel">Cancel</button>
+							</div>
             </div>
           </div>
         </div>
@@ -2148,10 +2178,6 @@
     <div class="float-right d-none d-sm-inline-block">
       <b>Version</b> 1.0.0
     </div>
-    <!-- <center>
-      <button type="button" class="btn btn-info btn-sm"><i class="fa fa-save mr-1"></i> Save</button>
-      <button type="button" class="btn btn-default btn-sm"><i class="fa fa-times mr-1"></i> Cancel</button>
-    </center> -->
   </footer>
 
   @endsection
@@ -2229,8 +2255,8 @@
       $('#btn_importContacts').on('click',function(){
          $('#modal_importContacts').modal({backdrop:'static',keyboard: false});
          var demo2 = $('.demo').bootstrapDualListbox({
-           nonSelectedListLabel: 'Non-selected',
-           selectedListLabel: 'Selected',
+           nonSelectedListLabel: 'Available Fields',
+           selectedListLabel: 'Fields to be matched on',
            preserveSelectionOnMove: 'moved',
            moveOnSelect: false,
            selectorMinimalHeight: 200
@@ -2240,15 +2266,16 @@
       $('#lnk_importContacts').on('click',function(){
          $('#modal_importContacts').modal({backdrop:'static',keyboard: false});
          var demo2 = $('.demo').bootstrapDualListbox({
-           nonSelectedListLabel: 'Non-selected',
-           selectedListLabel: 'Selected',
+           nonSelectedListLabel: 'Available Fields',
+           selectedListLabel: 'Fields to be matched on',
            preserveSelectionOnMove: 'moved',
            moveOnSelect: false,
            selectorMinimalHeight: 200
          });
       });
 
-      $('#btn_stepOneNext').on('click',function(){
+      $('#form_stepOne').on('submit',function(e){
+        e.preventDefault();
         CONTACTS.uploadFile();
       });
 
@@ -2260,7 +2287,8 @@
         CONTACTS.backToStepOne();
       });
 
-      $('#btn_stepTwoNext').on('click',function(){
+      $('#form_stepTwo').on('submit',function(e){
+        e.preventDefault();
         CONTACTS.duplicateHandling();
       });
 
@@ -2273,25 +2301,45 @@
       });
 
       $('#btn_stepThreeBack').on('click',function(){
-        CONTACTS.backToStepTwo();
+				CONTACTS.backToStepTwo();
+			});
+
+      $('#btn_refreshSavedMaps').on('click',function(){
+        CONTACTS.loadCustomMaps('contact');
       });
 
-      $('#btn_stepThreeImport').on('click',function(){
-        CONTACTS.importContacts();
+      $('#slc_savedMaps').on('change',function(){
+        CONTACTS.selectCustomMap($(this).val());
+      });
+
+      $('#chk_saveCustomMapping').on('change',function(){
+        if($(this).is(':checked'))
+        {
+          $('#txt_customMapName').prop('required',true);
+        }
+        else
+        {
+          $('#txt_customMapName').prop('required',false);
+        }
+      });
+
+      $('#form_stepThree').on('submit',function(e){
+        e.preventDefault();
+        CONTACTS.reviewData();
       });
 
       $('#btn_stepThreeCancel').on('click',function(){
         CONTACTS.stepThreeCancel();
       });
 
-      // $('#file_contactList').on('change',function(){
-      //    CONTACTS.checkCSVFile(this);
-      // });
+      $('#form_stepFour').on('submit',function(e){
+				e.preventDefault();
+				CONTACTS.importContacts();
+			});
 
-      // $('#form_importContacts').on('submit',function(e){
-      //   e.preventDefault();
-      //   CONTACTS.uploadContacts();
-      // });
+			$('#btn_stepFourCancel').on('click',function(){
+				CONTACTS.stepFourCancel();
+			});
 
       let contactId = $('#txt_contactId').val();
       if(contactId == "")

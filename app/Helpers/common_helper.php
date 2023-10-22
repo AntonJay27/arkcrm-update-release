@@ -1,5 +1,103 @@
 <?php
 
+function checkDuplicateRowsForOrganizations($organizationList, $uniqueColumns, $hasHeader)
+{
+	$arrRowNumber = [];
+	for ($i=0; $i < count($uniqueColumns); $i++) 
+	{ 
+		$uniqueColumns[$i];
+		$arrTempData1 = [];
+		$arrTempData2 = [];
+		foreach($organizationList as $value)
+		{
+			if(in_array($value[$uniqueColumns[$i]],$arrTempData2))
+			{
+				$arrTempData1[] = $value[$uniqueColumns[$i]];
+			}
+			{
+				$arrTempData2[] = $value[$uniqueColumns[$i]];
+			}
+		}
+		$num = ($hasHeader == 'YES')? 2 : 1;
+		foreach($organizationList as $value)
+		{
+			if(in_array($value[$uniqueColumns[$i]],$arrTempData1))
+			{	
+				$arrRowNumber[] = $num;
+			}
+			$num++;
+		}
+	}
+
+	$arrData = [];
+	$num = ($hasHeader == 'YES')? 2 : 1;
+	foreach($organizationList as $value)
+	{
+		if(in_array($num,$arrRowNumber))
+		{
+			$value['row_number'] = $num;
+			$arrData['arrDuplicateRows'][] = $value;
+		}
+		else
+		{
+			$value['row_number'] = $num;
+			$arrData['arrNotDuplicateRows'][] = $value;
+		}
+		$num++;
+	}
+
+	return $arrData;
+}
+
+function checkDuplicateRowsForContacts($contactList, $uniqueColumns, $hasHeader)
+{
+	$arrRowNumber = [];
+	for ($i=0; $i < count($uniqueColumns); $i++) 
+	{ 
+		$uniqueColumns[$i];
+		$arrTempData1 = [];
+		$arrTempData2 = [];
+		foreach($contactList as $value)
+		{
+			if(in_array($value[$uniqueColumns[$i]],$arrTempData2))
+			{
+				$arrTempData1[] = $value[$uniqueColumns[$i]];
+			}
+			{
+				$arrTempData2[] = $value[$uniqueColumns[$i]];
+			}
+		}
+		$num = ($hasHeader == 'YES')? 2 : 1;
+		foreach($contactList as $value)
+		{
+			if(in_array($value[$uniqueColumns[$i]],$arrTempData1))
+			{	
+				$arrRowNumber[] = $num;
+			}
+			$num++;
+		}
+	}
+
+	$arrData = [];
+	$num = ($hasHeader == 'YES')? 2 : 1;
+	foreach($contactList as $value)
+	{
+		if(in_array($num,$arrRowNumber))
+		{
+			$value['row_number'] = $num;
+			$arrData['arrDuplicateRows'][] = $value;
+		}
+		else
+		{
+			$value['row_number'] = $num;
+			$arrData['arrNotDuplicateRows'][] = $value;
+		}
+		$num++;
+	}
+
+	return $arrData;
+}
+
 function checkEmptyField($fieldValue, $newValue = "")
 {
 	$arrValues = ['',"",NULL,null];

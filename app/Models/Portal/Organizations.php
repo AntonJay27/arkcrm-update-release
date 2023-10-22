@@ -329,9 +329,9 @@ class Organizations extends Model
     }
 
     ////////////////////////////////////////////////////////////
-    ///// OrganizationController->loadCustomMaps()
+    ///// OrganizationController->loadCustomMapsOrganization()
     ////////////////////////////////////////////////////////////
-    public function loadCustomMaps($mapType)
+    public function loadCustomMapsOrganization($mapType)
     {
         $columns = [
             'a.id',
@@ -350,9 +350,9 @@ class Organizations extends Model
     }
 
     ////////////////////////////////////////////////////////////
-    ///// OrganizationController->selectCustomMap()
+    ///// OrganizationController->selectCustomMapOrganization()
     ////////////////////////////////////////////////////////////
-    public function selectCustomMap($mapId)
+    public function selectCustomMapOrganization($mapId)
     {
         $columns = [
             'a.id',
@@ -371,19 +371,79 @@ class Organizations extends Model
     }
 
     ////////////////////////////////////////////////////////////
+    ///// OrganizationController->reviewData()
+    ////////////////////////////////////////////////////////////
+    public function checkDuplicateRowsForOrganizations($arrWhereInColumns)
+    {
+        $columns = [
+            'a.id',
+            'a.organization_name',
+            'a.primary_email',
+            'a.secondary_email',
+            'a.main_website',
+            'a.other_website',
+            'a.phone_number',
+            'a.fax',
+            'a.linkedin_url',
+            'a.facebook_url',
+            'a.twitter_url',
+            'a.instagram_url',
+            'a.industry',
+            'a.naics_code',
+            'a.employee_count',
+            'a.annual_revenue',
+            'a.type',
+            'a.ticket_symbol',
+            'a.member_of',
+            'a.email_opt_out',
+            'a.assigned_to',
+            '(SELECT CONCAT(first_name, " ", last_name) FROM users WHERE id = a.assigned_to) as assigned_to_name',
+            'a.billing_street',
+            'a.billing_city',
+            'a.billing_state',
+            'a.billing_zip',
+            'a.billing_country',
+            'a.shipping_street',
+            'a.shipping_city',
+            'a.shipping_state',
+            'a.shipping_zip',
+            'a.shipping_country',
+            'a.description'
+        ];
+
+        $builder = $this->db->table('organizations a')->select($columns);
+        $builder->groupStart();
+        foreach ($arrWhereInColumns as $key => $value) 
+        {
+            $builder->orGroupStart();
+                $builder->whereIn('a.'.$key,$value);
+            $builder->groupEnd();
+        }
+        $builder->groupEnd();
+        $query = $builder->get();
+        return  $query->getResultArray();
+    }
+
+    ////////////////////////////////////////////////////////////
     ///// OrganizationController->importOrganizations()
     ////////////////////////////////////////////////////////////
-    public function importOrganizations($arrData)
+    public function importOrganizations($arrDataForInsert,$arrDataForUpdate)
     {
-      try {
-          $this->db->transStart();
-              $builder = $this->db->table('organizations');
-              $builder->insertBatch($arrData);
-          $this->db->transComplete();
-          return ($this->db->transStatus() === TRUE)? 1 : 0;
-      } catch (PDOException $e) {
-          throw $e;
-      }
+        try {
+            $this->db->transStart();
+                if(count($arrDataForInsert) > 0)
+                {
+                    $this->db->table('organizations')->insertBatch($arrDataForInsert);
+                }
+                if(count($arrDataForUpdate) > 0)
+                {
+                    $this->db->table('organizations')->updateBatch($arrDataForUpdate,'id');
+                }
+            $this->db->transComplete();
+            return ($this->db->transStatus() === TRUE)? 1 : 0;
+        } catch (PDOException $e) {
+            throw $e;
+        }
     }
 
 

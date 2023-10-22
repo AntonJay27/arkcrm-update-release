@@ -263,63 +263,205 @@ class Contacts extends Model
         }
     }
 
-    ////////////////////////////////////////////////////////////
-    ///// ContactController->checkOnDb()
-    ////////////////////////////////////////////////////////////
-    public function checkOnDb($primaryEmail)
-    {
-      $columns = [
-         'a.id',
-         'a.salutation',
-         'a.first_name',
-         'a.last_name',
-         'a.position',
-         'a.organization_id',
-         '(SELECT organization_name FROM organizations WHERE id = a.organization_id) as organization_name',
-         'a.primary_email',
-         'a.secondary_email',
-         'a.date_of_birth',
-         'a.intro_letter',
-         'a.office_phone',
-         'a.mobile_phone',
-         'a.home_phone',
-         'a.secondary_phone',
-         'a.fax',
-         'a.do_not_call',
-         'a.linkedin_url',
-         'a.twitter_url',
-         'a.facebook_url',
-         'a.instagram_url',
-         'a.lead_source',
-         'a.department',
-         'a.reports_to',
-         'a.assigned_to',
-         'a.email_opt_out',
-         'a.unsubscribe_auth_code',
-         'a.created_by',
-         'a.created_date',
-      ];
+    // ////////////////////////////////////////////////////////////
+    // ///// ContactController->checkOnDb()
+    // ////////////////////////////////////////////////////////////
+    // public function checkOnDb($primaryEmail)
+    // {
+    //   $columns = [
+    //      'a.id',
+    //      'a.salutation',
+    //      'a.first_name',
+    //      'a.last_name',
+    //      'a.position',
+    //      'a.organization_id',
+    //      '(SELECT organization_name FROM organizations WHERE id = a.organization_id) as organization_name',
+    //      'a.primary_email',
+    //      'a.secondary_email',
+    //      'a.date_of_birth',
+    //      'a.intro_letter',
+    //      'a.office_phone',
+    //      'a.mobile_phone',
+    //      'a.home_phone',
+    //      'a.secondary_phone',
+    //      'a.fax',
+    //      'a.do_not_call',
+    //      'a.linkedin_url',
+    //      'a.twitter_url',
+    //      'a.facebook_url',
+    //      'a.instagram_url',
+    //      'a.lead_source',
+    //      'a.department',
+    //      'a.reports_to',
+    //      'a.assigned_to',
+    //      'a.email_opt_out',
+    //      'a.unsubscribe_auth_code',
+    //      'a.created_by',
+    //      'a.created_date',
+    //   ];
 
-      $builder = $this->db->table('contacts a')->select($columns);
-      $builder->whereIn('a.primary_email',$primaryEmail);
-      $query = $builder->get();
-      return  $query->getResultArray();
-    }
+    //   $builder = $this->db->table('contacts a')->select($columns);
+    //   $builder->whereIn('a.primary_email',$primaryEmail);
+    //   $query = $builder->get();
+    //   return  $query->getResultArray();
+    // }
+
+    // ////////////////////////////////////////////////////////////
+    // ///// ContactController->uploadContacts()
+    // ////////////////////////////////////////////////////////////
+    // public function uploadContacts($arrData)
+    // {
+    //   try {
+    //       $this->db->transStart();
+    //           $builder = $this->db->table('contacts');
+    //           $builder->insertBatch($arrData);
+    //       $this->db->transComplete();
+    //       return ($this->db->transStatus() === TRUE)? 1 : 0;
+    //   } catch (PDOException $e) {
+    //       throw $e;
+    //   }
+    // }
 
     ////////////////////////////////////////////////////////////
-    ///// ContactController->uploadContacts()
+    ///// ContactController->importContacts()
     ////////////////////////////////////////////////////////////
-    public function uploadContacts($arrData)
+    public function addCustomMapping($arrData)
     {
       try {
           $this->db->transStart();
-              $builder = $this->db->table('contacts');
-              $builder->insertBatch($arrData);
+              $builder = $this->db->table('custom_maps');
+              $builder->insert($arrData);
           $this->db->transComplete();
           return ($this->db->transStatus() === TRUE)? 1 : 0;
       } catch (PDOException $e) {
           throw $e;
       }
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// ContactController->loadCustomMapsContact()
+    ////////////////////////////////////////////////////////////
+    public function loadCustomMapsContact($mapType)
+    {
+        $columns = [
+            'a.id',
+            'a.map_type',
+            'a.map_name',
+            'a.map_fields',
+            'a.map_values',
+            'a.created_by',
+            'a.created_date',
+        ];
+
+        $builder = $this->db->table('custom_maps a')->select($columns);
+        $builder->where('a.map_type',$mapType);
+        $query = $builder->get();
+        return  $query->getResultArray();
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// ContactController->selectCustomMapContact()
+    ////////////////////////////////////////////////////////////
+    public function selectCustomMapContact($mapId)
+    {
+        $columns = [
+            'a.id',
+            'a.map_type',
+            'a.map_name',
+            'a.map_fields',
+            'a.map_values',
+            'a.created_by',
+            'a.created_date',
+        ];
+
+        $builder = $this->db->table('custom_maps a')->select($columns);
+        $builder->where('a.id',$mapId);
+        $query = $builder->get();
+        return  $query->getRowArray();
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// ContactController->reviewData()
+    ////////////////////////////////////////////////////////////
+    public function checkDuplicateRowsForContacts($arrWhereInColumns)
+    {
+        $columns = [
+            'a.id',
+            'a.salutation',
+            'a.first_name',
+            'a.last_name',
+            'a.position',
+            'a.organization_id',
+            '(SELECT organization_name FROM organizations WHERE id = a.organization_id) as organization_name',
+            'a.primary_email',
+            'a.secondary_email',
+            'a.office_phone',
+            'a.mobile_phone',
+            'a.home_phone',
+            'a.secondary_phone',
+            'a.fax',
+            'a.do_not_call',
+            'a.date_of_birth',
+            'a.intro_letter',
+            'a.linkedin_url',
+            'a.twitter_url',
+            'a.facebook_url',
+            'a.instagram_url',
+            'a.lead_source',
+            'a.department',
+            'a.reports_to',
+            'a.email_opt_out',
+            'a.assigned_to',
+            'a.mailing_street',
+            'a.mailing_po_box',
+            'a.mailing_city',
+            'a.mailing_state',
+            'a.mailing_zip',
+            'a.mailing_country',
+            'a.other_street',
+            'a.other_po_box',
+            'a.other_city',
+            'a.other_state',
+            'a.other_zip',
+            'a.other_country',
+            'a.description',
+            'a.created_by',
+            'a.created_date',
+        ];
+
+        $builder = $this->db->table('contacts a')->select($columns);
+        $builder->groupStart();
+        foreach ($arrWhereInColumns as $key => $value) 
+        {
+            $builder->orGroupStart();
+                $builder->whereIn('a.'.$key,$value);
+            $builder->groupEnd();
+        }
+        $builder->groupEnd();
+        $query = $builder->get();
+        return  $query->getResultArray();
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///// ContactController->importContacts()
+    ////////////////////////////////////////////////////////////
+    public function importContacts($arrDataForInsert,$arrDataForUpdate)
+    {
+        try {
+            $this->db->transStart();
+                if(count($arrDataForInsert) > 0)
+                {
+                    $this->db->table('contacts')->insertBatch($arrDataForInsert);
+                }
+                if(count($arrDataForUpdate) > 0)
+                {
+                    $this->db->table('contacts')->updateBatch($arrDataForUpdate,'id');
+                }
+            $this->db->transComplete();
+            return ($this->db->transStatus() === TRUE)? 1 : 0;
+        } catch (PDOException $e) {
+            throw $e;
+        }
     }
 
     ////////////////////////////////////////////////////////////

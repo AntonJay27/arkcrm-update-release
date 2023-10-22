@@ -205,7 +205,10 @@ $routes->post('marketing/remove-contact','Portal\ContactController::removeContac
 // $routes->post('rolodex/upload-contacts','Portal\ContactController::uploadContacts');
 // $routes->get('rolodex/contact-conflicts/(:any)', 'Portal\ContactController::contactConflicts/$1');
 $routes->post('rolodex/upload-file-contact','Portal\ContactController::uploadFileContact');
-$routes->post('rolodex/duplicate-handling-contact','Portal\ContactController::duplicateHandlingContact');
+// $routes->post('rolodex/duplicate-handling-contact','Portal\ContactController::duplicateHandlingContact');
+$routes->get('rolodex/load-custom-maps-contact', 'Portal\ContactController::loadCustomMapsContact');
+$routes->get('rolodex/select-custom-map-contact', 'Portal\ContactController::selectCustomMapContact');
+$routes->post('rolodex/review-data-contact','Portal\ContactController::reviewDataContact');
 $routes->post('rolodex/import-contacts','Portal\ContactController::importContacts');
 
 //contact summary
@@ -260,9 +263,11 @@ $routes->post('marketing/edit-organization','Portal\OrganizationController::edit
 $routes->post('marketing/remove-organization','Portal\OrganizationController::removeOrganization');
 // $routes->post('rolodex/check-organization-file','Portal\OrganizationController::checkOrganizationFile');
 $routes->post('rolodex/upload-file-organization','Portal\OrganizationController::uploadFileOrganization');
-$routes->post('rolodex/duplicate-handling-organization','Portal\OrganizationController::duplicateHandlingOrganization');
-$routes->get('rolodex/load-custom-maps', 'Portal\OrganizationController::loadCustomMaps');
-$routes->get('rolodex/select-custom-map', 'Portal\OrganizationController::selectCustomMap');
+// $routes->post('rolodex/duplicate-handling-organization','Portal\OrganizationController::duplicateHandlingOrganization');
+// $routes->post('rolodex/skip-duplicate-handling-organization','Portal\OrganizationController::skipDuplicateHandlingOrganization');
+$routes->get('rolodex/load-custom-maps-organization', 'Portal\OrganizationController::loadCustomMapsOrganization');
+$routes->get('rolodex/select-custom-map-organization', 'Portal\OrganizationController::selectCustomMapOrganization');
+$routes->post('rolodex/review-data-organization','Portal\OrganizationController::reviewDataOrganization');
 $routes->post('rolodex/import-organizations','Portal\OrganizationController::importOrganizations');
 // $routes->get('rolodex/organization-conflicts/(:any)', 'Portal\OrganizationController::organizationConflicts/$1');
 

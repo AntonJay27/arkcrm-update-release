@@ -351,3 +351,17 @@ lbc tracking number : 381059308268
 Skype Account
 user: 09395202340
 pass: Skype@2023
+
+
+Skip
+-Skip conflict rows
+-download conflict rows
+
+-Show conflict rows from file
+-Show conflict rows from db
+
+Override
+-Overwrite the existing data
+
+Merge 
+-Merge to database columns that do not have data

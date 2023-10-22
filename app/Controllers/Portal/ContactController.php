@@ -463,40 +463,75 @@ class ContactController extends BaseController
 
     public function uploadFileContact()
     {
-      $file = $this->request->getFile('contactList');
+        $fields = $this->request->getPost();
 
-      $arrResult = [];
+        $file = $this->request->getFile('contactList');
 
-      if ($file->isValid() && ! $file->hasMoved()) 
-      {
-          $file_data = $file->getName();
-          $path = $file->getTempName();
+        $arrResult = [];
 
-          $ext = pathinfo($path, PATHINFO_EXTENSION);
+        if ($file->isValid() && ! $file->hasMoved()) 
+        {
+            $file_data = $file->getName();
+            $path = $file->getTempName();
 
-          $arrData = readUploadFile($path);
+            $ext = pathinfo($path, PATHINFO_EXTENSION);
 
-          $arrResult['arr_header'] = $arrData[0];
+            $arrData = readUploadFile($path);
 
-          $validColumns = [];
-          foreach($arrData[0] as $key => $value)
-          {
-              $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
-              if(!in_array($value,$arrVal))
-              {
-                  $validColumns[] = $value;
-              }
-          }
-          array_shift($arrData);
+            $validColumns = [];
+            $arrHeader = [];
+            foreach($arrData[0] as $key => $value)
+            {
+                $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
+                if(!in_array($value,$arrVal))
+                {
+                    $validColumns[] = $value;
+                    if($fields['chk_hasHeader'] == 'NO')
+                    {
+                        $arrHeader[] = "";
+                    }
+                }
+            }
+
+            if(count($validColumns) > 0)
+            {
+                if($fields['chk_hasHeader'] == 'YES')
+                {
+                    $arrResult['arrHeader'] = $arrData[0];
+                    array_shift($arrData);
+                }
+                else
+                {
+                    $arrResult['arrHeader'] = $arrHeader;
+                }
+                $arrResult['arrContactList'] = $arrData;
+            }
+            else
+            {
+                $arrResult[] = "Your file is empty!";
+            }
+
+            // $arrResult['arrHeader'] = $arrData[0];
+
+            // $validColumns = [];
+            // foreach($arrData[0] as $key => $value)
+            // {
+            //     $arrVal = ["NULL","null","","N/A","n/a","NA","na"];
+            //     if(!in_array($value,$arrVal))
+            //     {
+            //         $validColumns[] = $value;
+            //     }
+            // }
+            // array_shift($arrData);
           
-          $arrResult['arrContactList'] = $arrData;
-      }
-      else
-      {
-          $arrResult[] = "Invalid File";
-      }
+            // $arrResult['arrContactList'] = $arrData;
+        }
+        else
+        {
+            $arrResult[] = "Invalid File";
+        }
 
-      return $this->response->setJSON($arrResult);
+        return $this->response->setJSON($arrResult);
     }
 
     public function duplicateHandlingContact()
@@ -512,10 +547,327 @@ class ContactController extends BaseController
         return $this->response->setJSON($arrResult);
     }
 
-    public function importOrganizations()
+    public function loadCustomMapsContact()
     {
+        $fields = $this->request->getGet();
 
+        $arrData = $this->contacts->loadCustomMapsContact($fields['mapType']);
+        return $this->response->setJSON($arrData);
     }
+
+    public function selectCustomMapContact()
+    {
+        $fields = $this->request->getGet();
+
+        $arrData = $this->contacts->selectCustomMapContact($fields['mapId']);
+        $arrNewData = [
+            'id'            => $arrData['id'],
+            'map_name'      => $arrData['map_name'],
+            'map_fields'    => json_decode($arrData['map_fields'],true),
+            'map_values'    => json_decode($arrData['map_values'],true),
+        ];
+        return $this->response->setJSON($arrNewData);
+    }
+
+    public function reviewDataContact()
+	{
+		$fields = $this->request->getPost();
+
+		// get map fields and set as headers/indexes
+		$arrMapFields 	= json_decode($fields['arrMapFields'],true);
+		$arrHeaders 	= [];
+		for ($i=0; $i < count($arrMapFields); $i++) 
+		{ 
+			if($arrMapFields[$i] != null)
+			{
+				$arrHeaders[] = $arrMapFields[$i];
+			}
+		} 
+
+		// get organization list in array object with row number
+		$arrContactList    	    = json_decode($fields['arrContactList'],true);
+		$arrDefaultValues       = json_decode($fields['arrDefaultValues'],true);
+		$hasHeader 				= $fields['chk_hasHeader'];
+		$arrContactsDataList 	= [];
+		$rowNumber 				= ($hasHeader == 'YES')? 2 : 1;
+		foreach ($arrContactList as $key => $value) 
+		{
+			$arrColumns['row_number'] = $rowNumber;
+			for ($i=0; $i < count($arrMapFields); $i++) 
+			{ 
+				if($arrMapFields[$i] != null)
+				{
+					if(checkEmptyField($value[$i]) != '')
+					{
+						$arrColumns[$arrMapFields[$i]] = $value[$i];
+					}
+					else
+					{
+						$arrColumns[$arrMapFields[$i]] = $arrDefaultValues[$i];
+					}
+				}
+			}  
+			$arrContactsDataList[] = $arrColumns;    
+			$rowNumber++;      
+		}
+
+		
+		
+		// Duplicate Handling
+		$duplicateHandlerStatus 	= $fields['duplicateHandlerStatus'];
+		$arrDuplicateHandler    	= json_decode($fields['arrDuplicateHandler'],true);
+		$arrDuplicateRowsFromFile 	= [];
+		$arrDataForImport 			= [];
+		if($duplicateHandlerStatus == "YES")
+		{
+			// Compress duplicate handling fields
+			$arrDuplicateHandlerFields = [];
+			foreach ($arrDuplicateHandler[1] as $key => $value) 
+			{
+				if(in_array($value,$arrMapFields))
+				{
+					$arrDuplicateHandlerFields[] = $value;
+				}
+			}
+			$arrCheckDuplicateFromFileResult = checkDuplicateRowsForContacts($arrContactsDataList, $arrDuplicateHandlerFields, $hasHeader);
+			$arrDuplicateRowsFromFile = $arrCheckDuplicateFromFileResult['arrDuplicateRows'];
+
+			// Prepare where columns to check duplicate on db
+			$arrWhereInColumns = [];
+			for ($i=0; $i < count($arrDuplicateHandlerFields); $i++) 
+			{ 
+				foreach($arrCheckDuplicateFromFileResult['arrNotDuplicateRows'] as $value)
+				{
+					$arrWhereInColumns[$arrDuplicateHandlerFields[$i]][] = $value[$arrDuplicateHandlerFields[$i]];
+				}
+			}
+			$arrCheckDuplicateFromDatabaseResult = $this->contacts->checkDuplicateRowsForContacts($arrWhereInColumns);
+			
+			// get duplicate rows on db
+			$arrDuplicateRowsFromDatabase = [];
+			foreach ($arrCheckDuplicateFromDatabaseResult as $key => $value) 
+			{
+				$arrData = [];
+				$arrData['id'] = $value['id'];
+				for ($i=0; $i < count($arrMapFields); $i++) 
+				{ 
+					if($arrMapFields[$i] != null)
+					{
+						$arrData[$arrMapFields[$i]] = $value[$arrMapFields[$i]];
+					}
+				}
+				$arrDuplicateRowsFromDatabase[] = $arrData;
+			}
+
+			
+			
+			if($arrDuplicateHandler[0] == 'Skip')
+			{
+				//lipasan
+
+				// get where in columns or duplicate handler fields
+				$arrWhereInColumns = [];
+				for ($i=0; $i < count($arrDuplicateHandlerFields); $i++) 
+				{ 
+					$arrTemp = [];
+					foreach($arrDuplicateRowsFromDatabase as $value)
+					{
+						$arrTemp[$arrDuplicateHandlerFields[$i]][] = $value[$arrDuplicateHandlerFields[$i]];
+					}
+					$arrWhereInColumns[$arrDuplicateHandlerFields[$i]] = array_unique($arrTemp[$arrDuplicateHandlerFields[$i]]);
+				}
+
+				// get no duplicate data for import
+				if(count($arrWhereInColumns) > 0)
+				{
+					foreach ($arrCheckDuplicateFromFileResult['arrNotDuplicateRows'] as $key1 => $value1) 
+					{
+						$duplicateStatus = false;
+						foreach ($arrWhereInColumns as $key2 => $value2) 
+						{
+							if(in_array($value1[$key2], $value2))
+							{
+								$duplicateStatus = true;
+							}
+						}
+						if($duplicateStatus == false)
+						{
+							$value1['id'] = '';
+							$arrDataForImport[] = $value1;
+						}
+					}
+				}
+				else
+				{
+					$arrDataForImport = $arrCheckDuplicateFromFileResult['arrNotDuplicateRows'];
+				}
+			}
+			else if($arrDuplicateHandler[0] == 'Override')
+			{
+				//palitan
+
+				$arrNewData = [];
+				foreach ($arrCheckDuplicateFromFileResult['arrNotDuplicateRows'] as $key1 => $value1) 
+				{
+					$duplicateStatus1 = false;
+					foreach ($arrDuplicateRowsFromDatabase as $key2 => $value2) 
+					{
+						$duplicateStatus2 = false;
+						for ($i=0; $i < count($arrDuplicateHandler[1]); $i++) 
+						{
+							if($value1[$arrDuplicateHandler[1][$i]] == $value2[$arrDuplicateHandler[1][$i]])
+							{
+								$duplicateStatus1 = true;
+								$duplicateStatus2 = true;
+							}
+						}
+						if($duplicateStatus2 == true)
+						{
+							foreach ($arrHeaders as $key3 => $value3) 
+							{
+								$value2[$value3] = $value1[$value3];
+							}
+							$value2['row_number'] = $value1['row_number'];
+							$arrNewData[] = $value2;
+						}
+					}
+					if($duplicateStatus1 == false)
+					{
+						$value1['id'] = "";
+						$arrNewData[] = $value1;
+					}
+				}
+				$arrDataForImport = $arrNewData;
+			}
+			else if($arrDuplicateHandler[0] == 'Merge')
+			{
+				//pagsamahin
+				$arrNewData = [];
+				foreach ($arrCheckDuplicateFromFileResult['arrNotDuplicateRows'] as $key1 => $value1) 
+				{
+					$duplicateStatus1 = false;
+					foreach ($arrDuplicateRowsFromDatabase as $key2 => $value2) 
+					{
+						$duplicateStatus2 = false;
+						for ($i=0; $i < count($arrDuplicateHandler[1]); $i++) 
+						{
+							if($value1[$arrDuplicateHandler[1][$i]] == $value2[$arrDuplicateHandler[1][$i]])
+							{
+								$duplicateStatus1 = true;
+								$duplicateStatus2 = true;
+							}
+						}
+						if($duplicateStatus2 == true)
+						{
+							foreach ($arrHeaders as $key3 => $value3) 
+							{
+								if($value2[$value3] == "")
+								{
+									$value2[$value3] = $value1[$value3];
+								}
+							}
+							$value2['row_number'] = $value1['row_number'];
+							$arrNewData[] = $value2;
+						}
+					}
+					if($duplicateStatus1 == false)
+					{
+						$value1['id'] = "";
+						$arrNewData[] = $value1;
+					}
+				}
+				$arrDataForImport = $arrNewData;
+				
+			}
+
+			$arrData = [];
+			$arrData['arrHeaders'] = $arrHeaders;
+			$arrData['arrDuplicateHandlerFields'] = $arrDuplicateHandlerFields;
+			$arrData['arrDuplicateRowsFromFile'] = $arrDuplicateRowsFromFile;
+			$arrData['arrDuplicateRowsFromDatabase'] = $arrDuplicateRowsFromDatabase;
+			$arrData['arrDataForImport'] = $arrDataForImport;
+			$arrData['arrContactsDataList'] = $arrContactsDataList;
+		}
+		else
+		{
+			// skip duplicate handling
+			$arrNewData = [];
+			foreach ($arrOrganizationsDataList as $key => $value) 
+			{
+				$value['id'] = '';
+				$arrNewData[] = $value;
+			}
+			$arrDataForImport = $arrNewData;
+
+			$arrData = [];
+			$arrData['arrHeaders'] = $arrHeaders;
+			$arrData['arrDuplicateHandlerFields'] = [];
+			$arrData['arrDuplicateRowsFromFile'] = [];
+			$arrData['arrDuplicateRowsFromDatabase'] = [];
+			$arrData['arrDataForImport'] = $arrDataForImport;
+			$arrData['arrContactsDataList'] = $arrContactsDataList;
+		}
+
+		return $this->response->setJSON($arrData);
+	}
+
+    public function importContacts()
+    {
+        $fields = $this->request->getPost();
+
+		$arrContactImport 	= json_decode($fields['arrContactImport'],true);
+		$duplicateHandlerStatus = $arrContactImport['duplicateHandlerStatus'];
+		$arrDuplicateHandler 	= $arrContactImport['arrDuplicateHandler'];
+
+		$arrDataForInsert = [];
+		$arrDataForUpdate = [];
+		if($duplicateHandlerStatus == "YES")
+		{
+			if($arrDuplicateHandler[0] == 'Skip')
+			{
+				//lipasan
+				foreach ($arrContactImport['arrDataForImport'] as $key => $value) 
+				{
+					unset($value['id']);
+					unset($value['row_number']);
+					$arrDataForInsert[] = $value;
+				}
+			}
+			else if($arrDuplicateHandler[0] == 'Override' || $arrDuplicateHandler[0] == 'Merge')
+			{
+				//palitan
+				foreach ($arrContactImport['arrDataForImport'] as $key => $value) 
+				{
+					if($value['id'] == '')
+					{
+						unset($value['id']);
+						unset($value['row_number']);
+						$arrDataForInsert[] = $value;
+					}
+					else
+					{
+						unset($value['row_number']);
+						$arrDataForUpdate[] = $value;
+					}
+				}
+			}
+		}
+		else
+		{
+			foreach ($arrContactImport['arrDataForImport'] as $key => $value) 
+			{
+				unset($value['id']);
+				unset($value['row_number']);
+				$arrDataForInsert[] = $value;
+			}
+		}
+
+		$result = $this->contacts->importContacts($arrDataForInsert,$arrDataForUpdate);
+		$msgResult[] = ($result > 0)? "Success" : "Database error";
+
+		return $this->response->setJSON($msgResult);
+    }
+    
 
 
     // public function uploadContacts()
