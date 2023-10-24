@@ -808,6 +808,16 @@ class ContactController extends BaseController
 			$arrData['arrContactsDataList'] = $arrContactsDataList;
 		}
 
+        $arrFieldMapping = [
+			'map_type'      => 'contact',
+			'map_name'      => $fields['txt_customMapName'],
+			'map_fields'    => $fields['arrMapFields'],
+			'map_values'    => $fields['arrDefaultValues'],
+			'created_by'    => $this->session->get('arkonorllc_user_id'),
+			'created_date'  => date('Y-m-d H:i:s')
+		];
+		$this->contacts->addCustomMapping($arrFieldMapping);
+
 		return $this->response->setJSON($arrData);
 	}
 

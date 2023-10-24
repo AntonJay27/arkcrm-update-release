@@ -778,6 +778,16 @@ class OrganizationController extends BaseController
 			$arrData['arrOrganizationsDataList'] = $arrOrganizationsDataList;
 		}
 
+		$arrFieldMapping = [
+			'map_type'      => 'organization',
+			'map_name'      => $fields['txt_customMapName'],
+			'map_fields'    => $fields['arrMapFields'],
+			'map_values'    => $fields['arrDefaultValues'],
+			'created_by'    => $this->session->get('arkonorllc_user_id'),
+			'created_date'  => date('Y-m-d H:i:s')
+		];
+		$this->organizations->addCustomMapping($arrFieldMapping);
+
 		return $this->response->setJSON($arrData);
 	}
 
