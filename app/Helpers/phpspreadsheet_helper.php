@@ -212,20 +212,20 @@ function checkDuplicateRows($rawData, $uniqueColumns)
 	return $finalDataArr;
 }
 
-function downloadContactConflicts($filename, $rawData = [])
+function downloadContactConflicts($filename, $rawData = [], $header = [])
 {
 	$spreadsheet = new Spreadsheet();
 	$sheet = $spreadsheet->getActiveSheet();
 
-	$arrColumns = [
-		['A1','Salutation'],
-		['B1','First Name'],
-		['C1','Last Name'],
-		['D1','Position'],
-		['E1','Primary Email'],
-		['F1','Secondary Email'],
-		['G1','Date of Birth']
+	$column = [
+		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+		'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ'
 	];
+	$arrColumns = [];
+	for ($i=0; $i < count($header); $i++) 
+	{ 
+		$arrColumns[] = ["{$column[$i]}1", $header[$i]];
+	}
 
 	foreach ($arrColumns as $key => $value) 
 	{
@@ -236,15 +236,11 @@ function downloadContactConflicts($filename, $rawData = [])
 	foreach ($rawData as $key => $value) 
 	{
 		$index++;
-		$sheet->setCellValue("A{$index}", $value['salutation']);
-		$sheet->setCellValue("B{$index}", $value['first_name']);
-		$sheet->setCellValue("C{$index}", $value['last_name']);
-		$sheet->setCellValue("D{$index}", $value['position']);
-		$sheet->setCellValue("E{$index}", $value['primary_email']);
-		$sheet->setCellValue("F{$index}", $value['secondary_email']);
-		$sheet->setCellValue("G{$index}", $value['date_of_birth']);
+		for ($i=0; $i < count($header); $i++) 
+		{ 
+			$sheet->setCellValue("{$column[$i]}{$index}",$value["$header[$i]"]);
+		}
 	}
-	
 
 	$writer = new Xlsx($spreadsheet);
 
@@ -253,41 +249,39 @@ function downloadContactConflicts($filename, $rawData = [])
 	header('Cache-Control: max-age=0');
 
 	$writer->save('php://output'); // download file 
+
+	exit();
 }
 
-function downloadOrganizationConflicts($filename, $rawData = [])
+function downloadOrganizationConflicts($filename, $rawData = [], $header = [])
 {
-   $spreadsheet = new Spreadsheet();
-   $sheet = $spreadsheet->getActiveSheet();
+   	$spreadsheet = new Spreadsheet();
+   	$sheet = $spreadsheet->getActiveSheet();
+	
+   	$column = [
+		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+		'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ'
+	];
+	$arrColumns = [];
+	for ($i=0; $i < count($header); $i++) 
+	{ 
+		$arrColumns[] = ["{$column[$i]}1", $header[$i]];
+	}
 
-   $arrColumns = [
-      ['A1','Organization Name'],
-      ['B1','Primary Email'],
-      ['C1','Secondary Email'],
-      ['D1','Main Website'],
-      ['E1','Other Website'],
-      ['F1','Phone Number'],
-      ['G1','Fax']
-   ];
+	foreach ($arrColumns as $key => $value) 
+	{
+		$sheet->setCellValue($value[0], $value[1]);
+	}
 
-   foreach ($arrColumns as $key => $value) 
-   {
-      $sheet->setCellValue($value[0], $value[1]);
-   }
-
-   $index = 1;
-   foreach ($rawData as $key => $value) 
-   {
-      $index++;
-      $sheet->setCellValue("A{$index}", $value['organization_name']);
-      $sheet->setCellValue("B{$index}", $value['primary_email']);
-      $sheet->setCellValue("C{$index}", $value['secondary_email']);
-      $sheet->setCellValue("D{$index}", $value['main_website']);
-      $sheet->setCellValue("E{$index}", $value['other_website']);
-      $sheet->setCellValue("F{$index}", $value['phone_number']);
-      $sheet->setCellValue("G{$index}", $value['fax']);
-   }
-   
+	$index = 1;
+	foreach ($rawData as $key => $value) 
+	{
+		$index++;
+		for ($i=0; $i < count($header); $i++) 
+		{ 
+			$sheet->setCellValue("{$column[$i]}{$index}",$value["$header[$i]"]);
+		}
+	}
 
    $writer = new Xlsx($spreadsheet);
 
@@ -296,6 +290,8 @@ function downloadOrganizationConflicts($filename, $rawData = [])
    header('Cache-Control: max-age=0');
 
    $writer->save('php://output'); // download file 
+
+   exit();
 }
 
 function downloadConflictRows($filename, $rawData = [])

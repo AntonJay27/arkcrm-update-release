@@ -6,6 +6,7 @@ const ORGANIZATION = (function(){
 	let baseUrl = $('#txt_baseUrl').val();
 
 	let _arrOrganizationImport = [];
+	// let _arrOrganizationImportParams = [];
 
 	let _arrSelectedDocuments = [];
 	let _arrSelectedCampaigns = [];
@@ -80,6 +81,17 @@ const ORGANIZATION = (function(){
 		showConfirmButton: false,
 		timer: 3000
 	});
+
+	function urlencode(obj, prefix) {
+		str = (obj + '').toString();
+		return encodeURIComponent(str)
+		.replace(/!/g, '%21')
+		.replace(/'/g, '%27')
+		.replace(/\(/g, '%28')
+		.replace(/\)/g, '%29')
+        .replace(/\*/g, '%2A')
+		.replace(/%20/g, '+');
+	}
 
 	thisOrganization.loadOrganizations = function(loadTo, elemId = '', organizationId = '')
 	{
@@ -1376,8 +1388,6 @@ const ORGANIZATION = (function(){
 		      	$('#div_step2').prop('hidden',true);
 		      	$('#div_step3').prop('hidden',true);
 		      	$('#div_step4').prop('hidden',false);
-
-				// _arrOrganizationImport = [];
 				
 				let thead = '';
 				let tbody = '';
@@ -1420,7 +1430,7 @@ const ORGANIZATION = (function(){
 
 				if(data['arrDuplicateRowsFromFile'].length > 0)
 				{
-					let downloadButton1 = `<button type="button" class="btn btn-sm btn-default" onclick="ORGANIZATION.downloadDuplicateRowsFromFile();">Download</button>`;
+					let downloadButton1 = `<a href="${baseUrl}/rolodex/download-duplicate-rows-from-csv-organization" target="_blank" class="btn btn-sm btn-default">Download</a>`;
 					$('#tbl_duplicateRows1_length').html(downloadButton1);
 				}
 
@@ -1443,6 +1453,7 @@ const ORGANIZATION = (function(){
 				_arrOrganizationImport['arrDuplicateRowsFromDatabase'] = data['arrDuplicateRowsFromDatabase'];
 
 				tbody = '';
+				// arrParams = [];
 				data['arrDuplicateRowsFromDatabase'].forEach(function(value,key){
 					tbody += `<tr>`;
 					tr = `<td style="white-space:nowrap">${value['id']}</td>`;
@@ -1463,11 +1474,13 @@ const ORGANIZATION = (function(){
 				$('#tbl_duplicateRows2 tbody').html(tbody);
 				$('#tbl_duplicateRows2').DataTable({'scrollX':true});
 
-				if(data['arrDuplicateRowsFromDatabase'].length > 0)
-				{
-					let downloadButton2 = `<button type="button" class="btn btn-sm btn-default" onclick="ORGANIZATION.downloadDuplicateRowsFromDatabase();">Download</button>`;
-					$('#tbl_duplicateRows2_length').html(downloadButton2);
-				}
+				// if(data['arrDuplicateRowsFromDatabase'].length > 0)
+				// {
+				// 	let columns2 = urlencode(JSON.stringify(data['arrHeaders']));
+				// 	let strParams2 = urlencode(JSON.stringify(arrParams));
+				// 	let downloadButton2 = `<a href="javascript:void(0)" class="btn btn-sm btn-default" onclick="ORGANIZATION.downloadDuplicateRowsFromDatabase(\'${columns2}\',\'${strParams2}\')">Download</a>`;
+				// 	$('#tbl_duplicateRows2_length').html(downloadButton2);
+				// }
 
 				//==================================================================>
 				
@@ -1565,16 +1578,6 @@ const ORGANIZATION = (function(){
 			$('#modal_importOrganizations').modal('hide');
 		    window.location.replace(`${baseUrl}/organizations`);
 		}
-	}
-
-	thisOrganization.downloadDuplicateRowsFromFile = function()
-	{
-		alert('In-Progress');
-	}
-
-	thisOrganization.downloadDuplicateRowsFromDatabase = function()
-	{
-		alert('In-Progress');
 	}
 
 	thisOrganization.importOrganizations = function()

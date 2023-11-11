@@ -1623,7 +1623,7 @@ const CONTACTS = (function(){
 
 				if(data['arrDuplicateRowsFromFile'].length > 0)
 				{
-					let downloadButton1 = `<button type="button" class="btn btn-sm btn-default" onclick="CONTACTS.downloadDuplicateRowsFromFile();">Download</button>`;
+					let downloadButton1 = `<a href="${baseUrl}/rolodex/download-duplicate-rows-from-csv-contact" target="_blank" class="btn btn-sm btn-default">Download</a>`;
 					$('#tbl_duplicateRows1_length').html(downloadButton1);
 				}
 
@@ -1666,11 +1666,11 @@ const CONTACTS = (function(){
 				$('#tbl_duplicateRows2 tbody').html(tbody);
 				$('#tbl_duplicateRows2').DataTable({'scrollX':true});
 
-				if(data['arrDuplicateRowsFromDatabase'].length > 0)
-				{
-					let downloadButton2 = `<button type="button" class="btn btn-sm btn-default" onclick="CONTACTS.downloadDuplicateRowsFromDatabase();">Download</button>`;
-					$('#tbl_duplicateRows2_length').html(downloadButton2);
-				}
+				// if(data['arrDuplicateRowsFromDatabase'].length > 0)
+				// {
+				// 	let downloadButton2 = `<button type="button" class="btn btn-sm btn-default" onclick="CONTACTS.downloadDuplicateRowsFromDatabase();">Download</button>`;
+				// 	$('#tbl_duplicateRows2_length').html(downloadButton2);
+				// }
 
 				//==================================================================>
 				
@@ -1770,15 +1770,15 @@ const CONTACTS = (function(){
 		}
 	}
 
-	thisContacts.downloadDuplicateRowsFromFile = function()
-	{
-		alert('In-Progress');
-	}
+	// thisContacts.downloadDuplicateRowsFromFile = function()
+	// {
+	// 	alert('In-Progress');
+	// }
 
-	thisContacts.downloadDuplicateRowsFromDatabase = function()
-	{
-		alert('In-Progress');
-	}
+	// thisContacts.downloadDuplicateRowsFromDatabase = function()
+	// {
+	// 	alert('In-Progress');
+	// }
 
 	thisContacts.importContacts = function()
 	{

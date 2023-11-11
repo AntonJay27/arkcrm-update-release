@@ -778,18 +778,42 @@ class OrganizationController extends BaseController
 			$arrData['arrOrganizationsDataList'] = $arrOrganizationsDataList;
 		}
 
-		$arrFieldMapping = [
-			'map_type'      => 'organization',
-			'map_name'      => $fields['txt_customMapName'],
-			'map_fields'    => $fields['arrMapFields'],
-			'map_values'    => $fields['arrDefaultValues'],
-			'created_by'    => $this->session->get('arkonorllc_user_id'),
-			'created_date'  => date('Y-m-d H:i:s')
+		$arrOrganizationImportData = [
+			'arkonorllc_organization_import_columns' => json_encode($arrData['arrHeaders']),
+			'arkonorllc_organization_import_conflicts' => json_encode($arrData['arrDuplicateRowsFromFile'])
 		];
-		$this->organizations->addCustomMapping($arrFieldMapping);
+		$this->session->set($arrOrganizationImportData);
+
+		if($fields['chk_saveCustomMapping'] == 'YES')
+		{
+			$arrFieldMapping = [
+				'map_type'      => 'organization',
+				'map_name'      => $fields['txt_customMapName'],
+				'map_fields'    => $fields['arrMapFields'],
+				'map_values'    => $fields['arrDefaultValues'],
+				'created_by'    => $this->session->get('arkonorllc_user_id'),
+				'created_date'  => date('Y-m-d H:i:s')
+			];
+			$this->organizations->addCustomMapping($arrFieldMapping);
+		}
 
 		return $this->response->setJSON($arrData);
 	}
+
+	public function downloadDuplicateRowsFromCSVOrganization()
+	{
+		$arrColumns = json_decode($this->session->get('arkonorllc_organization_import_columns'),true);
+		$arrData = json_decode($this->session->get('arkonorllc_organization_import_conflicts'),true);
+		downloadOrganizationConflicts('conflict-rows-from-file.xlsx',$arrData,$arrColumns);
+	}
+
+	// public function downloadDuplicateRowsFromDBOrganization()
+	// {
+	// 	$fields = $this->request->getPost();
+	// 	$arrColumns = json_decode(urldecode($fields['columns2']),true);
+	// 	$arrData = json_decode(urldecode($fields['strParams2']),true);
+	// 	return $this->response->setJSON($arrData);
+	// }
 
 	public function importOrganizations()
 	{

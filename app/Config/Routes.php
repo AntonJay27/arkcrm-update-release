@@ -209,6 +209,8 @@ $routes->post('rolodex/upload-file-contact','Portal\ContactController::uploadFil
 $routes->get('rolodex/load-custom-maps-contact', 'Portal\ContactController::loadCustomMapsContact');
 $routes->get('rolodex/select-custom-map-contact', 'Portal\ContactController::selectCustomMapContact');
 $routes->post('rolodex/review-data-contact','Portal\ContactController::reviewDataContact');
+$routes->get('rolodex/download-duplicate-rows-from-csv-contact', 'Portal\ContactController::downloadDuplicateRowsFromCSVContact');
+// $routes->get('rolodex/download-duplicate-rows-from-db-contact/(:any)', 'Portal\ContactController::downloadDuplicateRowsFromDBContact/$1');
 $routes->post('rolodex/import-contacts','Portal\ContactController::importContacts');
 
 //contact summary
@@ -268,6 +270,8 @@ $routes->post('rolodex/upload-file-organization','Portal\OrganizationController:
 $routes->get('rolodex/load-custom-maps-organization', 'Portal\OrganizationController::loadCustomMapsOrganization');
 $routes->get('rolodex/select-custom-map-organization', 'Portal\OrganizationController::selectCustomMapOrganization');
 $routes->post('rolodex/review-data-organization','Portal\OrganizationController::reviewDataOrganization');
+$routes->get('rolodex/download-duplicate-rows-from-csv-organization', 'Portal\OrganizationController::downloadDuplicateRowsFromCSVOrganization');
+// $routes->post('rolodex/download-duplicate-rows-from-db-organization', 'Portal\OrganizationController::downloadDuplicateRowsFromDBOrganization');
 $routes->post('rolodex/import-organizations','Portal\OrganizationController::importOrganizations');
 // $routes->get('rolodex/organization-conflicts/(:any)', 'Portal\OrganizationController::organizationConflicts/$1');
 

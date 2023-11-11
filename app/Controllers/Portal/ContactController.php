@@ -808,17 +808,33 @@ class ContactController extends BaseController
 			$arrData['arrContactsDataList'] = $arrContactsDataList;
 		}
 
-        $arrFieldMapping = [
-			'map_type'      => 'contact',
-			'map_name'      => $fields['txt_customMapName'],
-			'map_fields'    => $fields['arrMapFields'],
-			'map_values'    => $fields['arrDefaultValues'],
-			'created_by'    => $this->session->get('arkonorllc_user_id'),
-			'created_date'  => date('Y-m-d H:i:s')
+        $arrContactImportData = [
+			'arkonorllc_contact_import_columns' => json_encode($arrData['arrHeaders']),
+			'arkonorllc_contact_import_conflicts' => json_encode($arrData['arrDuplicateRowsFromFile'])
 		];
-		$this->contacts->addCustomMapping($arrFieldMapping);
+		$this->session->set($arrContactImportData);
+
+        if($fields['chk_saveCustomMapping'] == 'YES')
+        {
+            $arrFieldMapping = [
+                'map_type'      => 'contact',
+                'map_name'      => $fields['txt_customMapName'],
+                'map_fields'    => $fields['arrMapFields'],
+                'map_values'    => $fields['arrDefaultValues'],
+                'created_by'    => $this->session->get('arkonorllc_user_id'),
+                'created_date'  => date('Y-m-d H:i:s')
+            ];
+            $this->contacts->addCustomMapping($arrFieldMapping);
+        }
 
 		return $this->response->setJSON($arrData);
+	}
+
+    public function downloadDuplicateRowsFromCSVContact()
+	{
+		$arrColumns = json_decode($this->session->get('arkonorllc_contact_import_columns'),true);
+		$arrData = json_decode($this->session->get('arkonorllc_contact_import_conflicts'),true);
+		downloadContactConflicts('conflict-rows-from-file.xlsx',$arrData,$arrColumns);
 	}
 
     public function importContacts()
