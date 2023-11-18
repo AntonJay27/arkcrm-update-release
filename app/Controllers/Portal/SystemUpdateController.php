@@ -8,6 +8,11 @@ class SystemUpdateController extends BaseController
 {
     private $branchName = 'arkcrm-patch-v1-0-3';
 
+    public function __construct()
+    {
+      $this->forge = \Config\Database::forge();
+    }
+
     public function checkSystemUpdates()
     {
       $output_array = null;
