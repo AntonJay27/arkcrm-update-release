@@ -31,3 +31,4 @@ app/Database/Seeds/UsersSeeder.example.php
 app/Database/Seeds/UsersSeeder.php
 
 public/*
+vendor/*
