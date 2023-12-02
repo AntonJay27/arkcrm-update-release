@@ -365,3 +365,12 @@ Override
 
 Merge 
 -Merge to database columns that do not have data
+
+
+
+GIT remote for updates release
+git@github.com:AntonJay27/arkcrm-update-release.git
+
+
+GIT remote for installer release
+git@github.com:AntonJay27/arkcrm-installer-release.git

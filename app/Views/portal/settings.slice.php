@@ -260,6 +260,7 @@
                   </p>
                 </div>
 
+                <button type="button" class="btn btn-primary" id="btn_downloadSystemUpdates">Download System Updates</button>
                 <button type="button" class="btn btn-primary" id="btn_applySystemUpdates" disabled>Apply System Updates</button>
 
                 <button type="button" class="btn btn-primary" id="btn_updateDatabase">Update Database</button>
@@ -452,7 +453,7 @@
     //
 
     SETTINGS.selectEmailConfig();
-    SETTINGS.checkSystemUpdates();
+    // SETTINGS.checkSystemUpdates();
 
     $('#btn_smtpPasswordHideShow').on('click',function(){
       if($('#txt_smtpPassword').attr('type') == 'password')
@@ -478,6 +479,10 @@
     $('#form_testEmailConfiguration').on('submit',function(e){
       e.preventDefault();
       SETTINGS.testEmailConfiguration(this);
+    });
+
+    $('#btn_downloadSystemUpdates').on('click',function(){
+      SETTINGS.downloadSystemUpdates();
     });
 
     $('#btn_applySystemUpdates').on('click',function(){

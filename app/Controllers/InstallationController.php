@@ -127,89 +127,89 @@ class InstallationController extends BaseController
 
 	}
 
-	public function installationStepSix()
-	{
-		try 
-		{
-			exec('git init');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
+	// public function installationStepSix()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git init');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
 
-	}
+	// }
 
-	public function gitAddInit()
-	{
-		try 
-		{
-			exec('git add .');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitAddInit()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git add .');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
-	public function gitCommitInit()
-	{
-		try 
-		{
-			exec('git commit -m "Initial Commit"');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitCommitInit()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git commit -m "Initial Commit"');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
-	public function gitAdd()
-	{
-		try 
-		{
-			$filePath = '.gitignore.sample';
-			$myfile = file_get_contents(FCPATH.$filePath);
+	// public function gitAdd()
+	// {
+	// 	try 
+	// 	{
+	// 		$filePath = '.gitignore.sample';
+	// 		$myfile = file_get_contents(FCPATH.$filePath);
 
-			$filePath = '.gitignore';
-			$result = file_put_contents(FCPATH.$filePath,$myfile);
+	// 		$filePath = '.gitignore';
+	// 		$result = file_put_contents(FCPATH.$filePath,$myfile);
 
-			exec('git add .');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// 		exec('git add .');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
-	public function gitCommit()
-	{
-		try 
-		{
-			exec('git commit -m "Fix conflict on .gitignore file"');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitCommit()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git commit -m "Fix conflict on .gitignore file"');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
-	public function gitRemote()
-	{
-		try 
-		{
-			exec('git remote add github "git@github.com:rportojr/ARK-CRM.git"');
-			return $this->response->setJSON(["Success","Installation in Progress!"]);
-		} 
-		catch (\Throwable $e) 
-		{
-			return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
-		}
-	}
+	// public function gitRemote()
+	// {
+	// 	try 
+	// 	{
+	// 		exec('git remote add github "git@github.com:rportojr/ARK-CRM.git"');
+	// 		return $this->response->setJSON(["Success","Installation in Progress!"]);
+	// 	} 
+	// 	catch (\Throwable $e) 
+	// 	{
+	// 		return $this->response->setJSON(["Error","<b>Something went wrong</b>"]);
+	// 	}
+	// }
 
 }

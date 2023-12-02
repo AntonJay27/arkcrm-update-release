@@ -300,7 +300,9 @@ let id = setInterval(function frame() {
 			$('#div_stepFour').prop('hidden',true);
 			$('#div_stepFive').prop('hidden',true);
 		}, 8000);   
-		INSTALL.loadStepSix();       	  
+		// INSTALL.loadStepSix();  
+  		$('#div_stepSix').prop('hidden',true);
+  		$('#div_stepSeven').prop('hidden',false);     	  
 	} 
 	else 
 	{
@@ -317,167 +319,167 @@ let id = setInterval(function frame() {
 });		
 }
 
-thisInstall.loadStepSix = function()
-{
-	$.ajax({
-		  /* InstallationController->installationStepSix() */
-		url : `${baseUrl}/install/installation-step-six`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>GIT Initialization</i>');
-		  		INSTALL.gitAddInit();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.loadStepSix = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->installationStepSix() */
+// 		url : `${baseUrl}/install/installation-step-six`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>GIT Initialization</i>');
+// 		  		INSTALL.gitAddInit();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
-thisInstall.gitAddInit = function()
-{
-	$.ajax({
-		  /* InstallationController->gitAddInit() */
-		url : `${baseUrl}/install/git-add-init`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		INSTALL.gitCommitInit();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.gitAddInit = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitAddInit() */
+// 		url : `${baseUrl}/install/git-add-init`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		INSTALL.gitCommitInit();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
-thisInstall.gitCommitInit = function()
-{
-	$.ajax({
-		  /* InstallationController->gitCommitInit() */
-		url : `${baseUrl}/install/git-commit-init`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>GIT Initialization Completed!</i>');
-		  		INSTALL.gitAdd();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.gitCommitInit = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitCommitInit() */
+// 		url : `${baseUrl}/install/git-commit-init`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>GIT Initialization Completed!</i>');
+// 		  		INSTALL.gitAdd();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
-thisInstall.gitAdd = function()
-{
-	$.ajax({
-		  /* InstallationController->gitAdd() */
-		url : `${baseUrl}/install/git-add`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>Update gitignore file.</i>');
-		  		INSTALL.gitCommit();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.gitAdd = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitAdd() */
+// 		url : `${baseUrl}/install/git-add`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>Update gitignore file.</i>');
+// 		  		INSTALL.gitCommit();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
-thisInstall.gitCommit = function()
-{
-	$.ajax({
-		  /* InstallationController->gitCommit() */
-		url : `${baseUrl}/install/git-commit`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>Save gitignore file.</i>');
-		  		INSTALL.gitRemote();
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.gitCommit = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitCommit() */
+// 		url : `${baseUrl}/install/git-commit`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>Save gitignore file.</i>');
+// 		  		INSTALL.gitRemote();
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
-thisInstall.gitRemote = function()
-{
-	$.ajax({
-		  /* InstallationController->gitRemote() */
-		url : `${baseUrl}/install/git-remote`,
-		method : 'post',
-		dataType: 'json',
-		  processData: false, // important
-		  contentType: false, // important
-		  success : function(result)
-		  {
-		  	if(result[0] == "Success")
-		  	{
-		  		$('#lbl_task').html('<i>Create Remote Repository</i>');
-		  		$('#div_stepSix').prop('hidden',true);
-		  		$('#div_stepSeven').prop('hidden',false);
-		  	}
-		  	else
-		  	{
-		  		Toast.fire({
-		  			icon: 'error',
-		  			title: `Error! <br>${result[1]}`,
-		  		});
-		  	}
-		  }
-		});
-}
+// thisInstall.gitRemote = function()
+// {
+// 	$.ajax({
+// 		  /* InstallationController->gitRemote() */
+// 		url : `${baseUrl}/install/git-remote`,
+// 		method : 'post',
+// 		dataType: 'json',
+// 		  processData: false, // important
+// 		  contentType: false, // important
+// 		  success : function(result)
+// 		  {
+// 		  	if(result[0] == "Success")
+// 		  	{
+// 		  		$('#lbl_task').html('<i>Create Remote Repository</i>');
+// 		  		$('#div_stepSix').prop('hidden',true);
+// 		  		$('#div_stepSeven').prop('hidden',false);
+// 		  	}
+// 		  	else
+// 		  	{
+// 		  		Toast.fire({
+// 		  			icon: 'error',
+// 		  			title: `Error! <br>${result[1]}`,
+// 		  		});
+// 		  	}
+// 		  }
+// 		});
+// }
 
 thisInstall.complete = function()
 {

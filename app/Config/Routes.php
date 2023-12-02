@@ -420,7 +420,8 @@ $routes->post('settings/add-email-config', 'Portal\EmailConfigurationController:
 $routes->get('settings/select-email-config', 'Portal\EmailConfigurationController::selectEmailConfig');
 $routes->post('settings/edit-email-config', 'Portal\EmailConfigurationController::editEmailConfig');
 $routes->post('settings/test-email-config', 'Portal\EmailConfigurationController::testEmailConfig');
-$routes->get('settings/check-system-updates', 'Portal\SystemUpdateController::checkSystemUpdates');
+// $routes->get('settings/check-system-updates', 'Portal\SystemUpdateController::checkSystemUpdates');
+$routes->get('settings/download-system-updates', 'Portal\SystemUpdateController::downloadSystemUpdates');
 $routes->get('settings/apply-system-updates', 'Portal\SystemUpdateController::applySystemUpdates');
 
 $routes->get('settings/update-database','Portal\SystemUpdateController::updateDatabase');

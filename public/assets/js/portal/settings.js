@@ -172,26 +172,58 @@ const SETTINGS = (function(){
     });
   }
 
-  thisSetting.checkSystemUpdates = function()
+  // thisSetting.checkSystemUpdates = function()
+  // {
+  //   $('body').waitMe(_waitMeLoaderConfig);
+  //   $.ajax({
+  //     /* SystemUpdateController->checkSystemUpdates() */
+  //     url : `${baseUrl}/settings/check-system-updates`,
+  //     method : 'get',
+  //     dataType: 'json',
+  //     success : function(data)
+  //     {
+  //       $('body').waitMe('hide');
+  //       if(data[0] == '')
+  //       {
+  //         $('#btn_applySystemUpdates').prop('disabled',true);
+  //         $('#lbl_systemUpdateCount').text('');
+  //       }
+  //       else
+  //       {
+  //         $('#btn_applySystemUpdates').prop('disabled',false);
+  //         $('#lbl_systemUpdateCount').text('New');
+  //       }
+  //     }
+  //   });
+  // }
+
+  thisSetting.downloadSystemUpdates = function()
   {
     $('body').waitMe(_waitMeLoaderConfig);
     $.ajax({
-      /* SystemUpdateController->checkSystemUpdates() */
-      url : `${baseUrl}/settings/check-system-updates`,
+      /* SystemUpdateController->downloadSystemUpdates() */
+      url : `${baseUrl}/settings/download-system-updates`,
       method : 'get',
       dataType: 'json',
       success : function(data)
       {
         $('body').waitMe('hide');
-        if(data[0] == '')
-        {
-          $('#btn_applySystemUpdates').prop('disabled',true);
-          $('#lbl_systemUpdateCount').text('');
-        }
-        else
+        if(data[0] == 'Success')
         {
           $('#btn_applySystemUpdates').prop('disabled',false);
-          $('#lbl_systemUpdateCount').text('New');
+          // $('#lbl_systemUpdateCount').text('New');
+          console.log('Download success!');
+        }
+        else if(data[0] == 'Failed')
+        {
+          $('#btn_applySystemUpdates').prop('disabled',true);
+          console.log('Download failed!');
+        }
+        else if(data[0] == 'Not Existing')
+        {
+          $('#btn_applySystemUpdates').prop('disabled',true);
+          // $('#lbl_systemUpdateCount').text('New');
+          console.log('No new updates found, unable to execute download!');
         }
       }
     });
