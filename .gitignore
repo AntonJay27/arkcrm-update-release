@@ -29,3 +29,11 @@ tests/coverage*
 
 app/Database/Seeds/UsersSeeder.example.php
 app/Database/Seeds/UsersSeeder.php
+
+app/*
+install/*
+public/*
+system/*
+tests/*
+vendor/*
+writable/*
